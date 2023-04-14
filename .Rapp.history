@@ -1,4 +1,0 @@
-library(devtools)
-usethis::use_package("mvabund")
-usethis::use_package("vegan")
-check()

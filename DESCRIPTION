@@ -1,5 +1,5 @@
 Package: turkuwasps
-Title: Analyse the ecology and taxonomy of tropical wasps.
+Title: Analyse the ecology and taxonomy of tropical wasps
 Version: 0.0.0.9000
 Authors@R: 
     person("Tapani", "Hopkins", , "tapani-hopkins@users.noreply.github.com", role = c("aut", "cre"),

@@ -1,0 +1,38 @@
+#' @keywords internal
+"_PACKAGE"
+
+
+#' Forest types
+#'
+#' Ugandan and Peruvian forest types. Used by some functions to get all the forest types, what order to plot them in by default, and what colours to use.
+#'
+#' @format A data frame with 3 variables. The variables are:
+#' * name Name of the forest type, e.g. "primary". 
+#' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
+#' * colour Colour to use by default when plotting.
+#' 
+#' Forest types are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status (e.g. Uganda primary forest to farm).
+"forest_type"
+
+
+#' Traps
+#'
+#' Ugandan and Peruvian Malaise trap sites. Used by some functions to get all the traps, what order to plot them in by default, and what colours to use.
+#'
+#' @format A data frame with 11 variables. The variables are:
+#' * name Name of the trap, e.g. "CCT1".
+#' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
+#' * forest_type Name of forest type, e.g. "primary". 
+#' * site Name of site, e.g. "CC". Mainly relevant for Uganda.
+#' * colour Colour to use by default when plotting. Different colour for each forest type.
+#' * latitude Latitude of trap, in decimal degrees. 
+#' * longitude Longitude of trap, in decimal degrees. 
+#' * elevation Elevation of trap, in metres. 
+#' * deadwood Amount of dead wood near trap. Clearly decaying wood, sum of diameter squared per distance from trap.
+#' * livewood Amount of live trees near trap. Sum of diameter (dbh) squared per distance from trap. 
+#' * canopy_open Percentage of the sky visible from the trap. (0% = closed canopy, 100% = open sky)
+#' 
+#' Traps are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda CCT1 to FARMT2).
+#'
+#' @seealso Zenodo has more details on the trap data, e.g. on how the amount of dead and live wood was calculated: https://doi.org/10.5281/zenodo.2225643
+"trap"

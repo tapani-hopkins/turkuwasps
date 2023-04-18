@@ -16,3 +16,6 @@ RoxygenNote: 7.2.3
 Imports: 
     mvabund,
     vegan
+Depends: 
+    R (>= 2.10)
+LazyData: true

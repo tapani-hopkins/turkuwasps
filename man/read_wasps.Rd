@@ -9,20 +9,27 @@ read_wasps(file, simplify = TRUE, ...)
 \arguments{
 \item{file}{Name of the file to read from.}
 
-\item{simplify}{If TRUE, drop irrelevant columns such as notes.}
+\item{simplify}{If TRUE, convert the data to something more usable. Drop irrelevant columns, rename remaining columns, get forest type, trap etc from the sample data.}
 
 \item{...}{Arguments passed to \link{read.csv}.}
 }
 \value{
 Data frame with the wasp data. If simplified, has the following columns:
 \itemize{
-\item id
+\item id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
+\item sex F for female, M for male, U for unknown.
+\item taxon
 \item event
 \item forest_type
+\item site
 \item trap
-\item sample
+\item sample Malaise sample the wasp came from.
+\item start Date and time when the wasp's sample started to be collected.
+\item end Date and time when the wasp's sample stopped being collected.
+\item tdiff Number of days that the sample was collected.
+\item ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch.
 }
 }
 \description{
-Read a csv file downloaded from Kotka (Kotka Collection Managemen System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Preserves the column names, removes extra header rows, and (optionally) simplifies the columns. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
+Read a csv file downloaded from Kotka (Kotka Collection Managemen System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Reads the column names ok (read.csv often corrupts them), removes extra header rows, and (optionally) simplifies the data. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
 }

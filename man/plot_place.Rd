@@ -7,7 +7,7 @@
 plot_place(x, taxon = NULL, weights = 1, defaults = TRUE, ...)
 }
 \arguments{
-\item{x}{Vector of which trap, site or other location each wasp came from. Either as strings or factor. (If factor, and \code{defaults}=FALSE, one bar is plotted for each factor level, in the same order as the levels)}
+\item{x}{Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and \code{defaults}=FALSE, one bar is plotted for each factor level, in the same order as the levels)}
 
 \item{taxon}{Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.}
 
@@ -21,5 +21,5 @@ plot_place(x, taxon = NULL, weights = 1, defaults = TRUE, ...)
 x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
 }
 \description{
-Barplot the number of wasps caught in each trap, site, or other location. This is basically a wrapper for two base R functions: \code{\link[=table]{table()}} for counting how many wasps belong to each bar, and \code{\link[=barplot]{barplot()}} to draw the plot.
+Barplot the number of wasps caught in each trap, forest type, or other location. This is basically a wrapper for two base R functions: \code{\link[=table]{table()}} for counting how many wasps belong to each bar, and \code{\link[=barplot]{barplot()}} to draw the plot.
 }

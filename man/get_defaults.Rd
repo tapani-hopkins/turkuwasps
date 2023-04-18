@@ -7,7 +7,7 @@
 get_defaults(x)
 }
 \arguments{
-\item{x}{Vector of which trap, site or other location each wasp came from. Either as strings or factor.}
+\item{x}{Vector of which trap, forest type or other location each wasp came from. Either as strings or factor.}
 }
 \value{
 List with items \code{x} (locations converted to factor, with the factor levels telling what bars to plot) and \code{colour} (the colours to give each bar).

@@ -27,7 +27,7 @@ plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
 		
 		# add default colours to barplot arguments, except if bars are split by taxon
 		if (is.null(taxon)){
-			barplot_args = c(barplot_args, list(col=d$colour))
+			barplot_args["col"] = list(d$colour)
 		}
 	
 	# .. if not using default bars, make sure 'x' is a factor
@@ -36,8 +36,8 @@ plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
 	}
 	
 	# add the barplot arguments given by the user (overwrite any defaults with the same name)
-	userpar = list(...)
-	barplot_args[names(userpar)] <- userpar
+	user_args = list(...)
+	barplot_args[names(user_args)] = user_args
 		
 	# if no taxa were given, get bar heights, by counting the wasps then scaling by `weights`..
 	if(is.null(taxon)){
@@ -51,7 +51,7 @@ plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
 	}
 		
 	# add the bar heights to the barplot arguments
-	barplot_args = c(list(height=height), barplot_args)
+	barplot_args["height"] = list(height)
 	
 	# barplot the wasps
 	xcoords = do.call(graphics::barplot, args=barplot_args)

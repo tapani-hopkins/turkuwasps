@@ -14,13 +14,15 @@ read_wasps(file, simplify = TRUE, ...)
 \item{...}{Arguments passed to \link{read.csv}.}
 }
 \value{
-Data frame with the wasp data. The following columns are added:
+Data frame with the wasp data. If simplified, has the following columns:
 \itemize{
+\item id
 \item event
 \item forest_type
 \item trap
+\item sample
 }
 }
 \description{
-Read a csv file downloaded from Kotka (the Kotka Collection Managemen System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Preserves the column names, removes extra header rows, and removes columns that are not needed. Also saves data such as the trap, forest type etc of each wasp in a format which can be directly used by other functions.
+Read a csv file downloaded from Kotka (Kotka Collection Managemen System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Preserves the column names, removes extra header rows, and (optionally) simplifies the columns. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
 }

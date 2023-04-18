@@ -37,7 +37,7 @@ read_wasps = function(file, simplify=TRUE, ...){
 		
 		#
 		msample = sub("http://mus.utu.fi/ZMUT.", "", x$"MYSeparatedFrom")
-		i = match(msample, malaise_sample$name)
+		i = match(msample, turkuwasps::malaise_sample$name)
 		
 		X$id = paste0("ZMUT.", x$MYObjectID)
 		X$event = x$"MYGathering[0][MYCollectingEventName]"

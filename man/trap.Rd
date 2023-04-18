@@ -10,7 +10,7 @@ A data frame with 11 variables. The variables are:
 \item name Name of the trap, e.g. "CCT1".
 \item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011".
 \item forest_type Name of forest type, e.g. "primary".
-\item site Name of site, e.g. "CC". Mainly relevant for Uganda.
+\item site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
 \item colour Colour to use by default when plotting. Different colour for each forest type.
 \item latitude Latitude of trap, in decimal degrees.
 \item longitude Longitude of trap, in decimal degrees.

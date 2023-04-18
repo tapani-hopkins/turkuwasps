@@ -23,7 +23,7 @@
 #' * name Name of the trap, e.g. "CCT1".
 #' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
 #' * forest_type Name of forest type, e.g. "primary". 
-#' * site Name of site, e.g. "CC". Mainly relevant for Uganda.
+#' * site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
 #' * colour Colour to use by default when plotting. Different colour for each forest type.
 #' * latitude Latitude of trap, in decimal degrees. 
 #' * longitude Longitude of trap, in decimal degrees. 
@@ -36,3 +36,25 @@
 #'
 #' @seealso Zenodo has more details on the trap data, e.g. on how the amount of dead and live wood was calculated: https://doi.org/10.5281/zenodo.2225643
 "trap"
+
+
+#' Samples
+#'
+#' Ugandan and Peruvian Malaise samples. Used by e.g. [read_wasps()] to get forest type etc for each wasp, and by other functions to find out when and how long each sample was collected. Could also be used to get all the samples, what order to plot them in by default, and what colours to use.
+#'
+#' @format A data frame with 10 variables. The variables are:
+#' * name Name of the sample, e.g. "CCT1-141022".
+#' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
+#' * forest_type Name of forest type, e.g. "primary". 
+#' * site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
+#' * trap Name of trap, e.g. "CCT1". 
+#' * colour Colour to use by default when plotting. Different colour for each forest type.
+#' * latitude Latitude of trap, in decimal degrees. 
+#' * start Datetime when sample started to be collected by the Malaise trap, e.g. "2014-10-14 11:04:00 UTC+03:00".
+#' * end Datetime when sample stopped being collected by the Malaise trap, e.g. "2014-10-22 11:34:00 UTC+03:00".
+#' * tdiff Length of time the sample was collected, in days.
+#' * damaged TRUE if the sample was damaged in some way (e.g. trampled by elephant), or doesn't have a complete catch for some other reason. FALSE if all is ok. Damaged samples and wasps from them should not be included in ecological analyses.
+#' 
+#' Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
+#'
+"malaise_sample"

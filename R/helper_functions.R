@@ -1,6 +1,6 @@
 #' Get default bar order and bar colours for barplots
 #'
-#' This is a helper function used by [plot_place()]. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
+#' Helper function used by [plot_place()]. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
 #'
 #' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor.
 #'
@@ -34,4 +34,28 @@ get_defaults = function(x){
 	
 	# return as list
 	return(list(x=x, colour=colour))
+}
+
+
+#' Add together all the numbers that belong to the same category
+#'
+#' Helper function used by [get_weights()]. Used to count the total sampling effort for each forest type, trap or other location. This is basically a wrapper for [aggregate()].
+#'
+#' @param x Vector of numbers to add together.
+#' @param by Vector of same length as `x`, giving the category that each number belongs to
+#' @param ... Other arguments passed to [aggregate()], which mostly passes them on to [sum()].
+#'
+#' @return Vector of the sums for each category. Named vector, categories are used as names. 
+#'
+sum_by = function(x, by, ...){
+	
+	# aggregate 
+	m = stats::aggregate(x, list(by), FUN=sum, ...)
+	
+	# convert to vector
+	X = m[, 2]
+	names(X) = m[, 1]
+	
+	# return
+	return(X)
 }

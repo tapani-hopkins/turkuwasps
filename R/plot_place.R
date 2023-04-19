@@ -4,13 +4,13 @@
 #'
 #' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and `defaults`=FALSE, one bar is plotted for each factor level, in the same order as the levels)
 #' @param taxon Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.
-#' @param weights How much to scale each bar by. Vector of same length as the number of bars, or can also be a single number. Typically used to scale down bars by sampling effort.
+#' @param weight How much to scale the bars by. Named vector, with each name telling which bar to scale. (e.g. if plotting traps, names should be trap names) Should include weights for all the bars. Weights which do not correspond to any bar will be ignored. Typically got from [get_weights()], and used to scale down bars by sampling effort.
 #' @param defaults If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if `x` contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.
 #' @param ...  Graphical parameters and other arguments passed to [barplot()]. These will override any default values (e.g. colours). Colours (argument `col`) are for each taxon if `taxon` was given, or for each bar if it was not. 
 #'
 #' @return x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
 #' @export
-plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
+plot_place = function(x, taxon=NULL, weight=1, defaults=TRUE, ...){
 	
 	# store various default arguments for the barplot
 	barplot_args = list(
@@ -39,15 +39,17 @@ plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
 	user_args = list(...)
 	barplot_args[names(user_args)] = user_args
 		
-	# if no taxa were given, get bar heights, by counting the wasps then scaling by `weights`..
+	# if no taxa were given, get bar heights, by counting the wasps then scaling by `weight`..
 	if(is.null(taxon)){
 		height = table(x)
-		height = height * weights
+		i = match(names(height), names(weight))
+		height = height * weight[i]
 	
-	# ..if taxa were given, get bar heights split by taxon, by counting the wasps then scaling by `weights`
+	# ..if taxa were given, get bar heights split by taxon, by counting the wasps then scaling by `weight`
 	} else {
 		height = table(x, taxon)
-		height = t(height * weights)
+		i = match(rownames(height), names(weight))
+		height = t(height * weight[i])
 	}
 		
 	# add the bar heights to the barplot arguments

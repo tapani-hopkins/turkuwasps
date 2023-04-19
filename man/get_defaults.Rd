@@ -13,5 +13,5 @@ get_defaults(x)
 List with items \code{x} (locations converted to factor, with the factor levels telling what bars to plot) and \code{colour} (the colours to give each bar).
 }
 \description{
-This is a helper function used by \code{\link[=plot_place]{plot_place()}}. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
+Helper function used by \code{\link[=plot_place]{plot_place()}}. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
 }

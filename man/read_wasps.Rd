@@ -27,7 +27,7 @@ Data frame with the wasp data. If simplified, has the following columns:
 \item start Date and time when the wasp's sample started to be collected.
 \item end Date and time when the wasp's sample stopped being collected.
 \item tdiff Number of days that the sample was collected.
-\item ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch.
+\item ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since \code{\link[=ecology_usable]{ecology_usable()}} will typically be used to remove unusable wasps before analyses.
 }
 }
 \description{

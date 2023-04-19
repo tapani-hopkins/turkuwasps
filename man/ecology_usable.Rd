@@ -7,7 +7,7 @@
 ecology_usable(x, unusable = "")
 }
 \arguments{
-\item{x}{Data frame with the wasp data. Must contain column "sample", which gives the Malaise sample that each wasp came from.}
+\item{x}{Data frame with the wasp data. Must contain columns "sample" and "trap", which give the Malaise sample and trap that each wasp came from.}
 
 \item{unusable}{Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022").}
 }
@@ -15,9 +15,9 @@ ecology_usable(x, unusable = "")
 List with two elements:
 \itemize{
 \item \code{wasps} The wasp data without wasps that came from unusable samples.
-\item \code{samples} The sample data (\link{malaise_sample}) without unusable samples.
+\item \code{samples} The sample data (i.e. data frame \link{malaise_sample}) without unusable samples.
 }
 }
 \description{
-Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from the unusable samples.
+Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from.
 }

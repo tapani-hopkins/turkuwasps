@@ -18,7 +18,7 @@
 #' * start Date and time when the wasp's sample started to be collected.
 #' * end Date and time when the wasp's sample stopped being collected.
 #' * tdiff Number of days that the sample was collected.
-#' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch.
+#' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since [ecology_usable()] will typically be used to remove unusable wasps before analyses.
 #' @export
 read_wasps = function(file, simplify=TRUE, ...){
 	

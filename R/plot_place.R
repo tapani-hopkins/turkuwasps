@@ -11,7 +11,7 @@
 #' @return x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
 #' @export
 plot_place = function(x, taxon=NULL, weights=1, defaults=TRUE, ...){
-
+	
 	# store various default arguments for the barplot
 	barplot_args = list(
 		cex.names = 0.7, 

@@ -24,11 +24,27 @@ devtools::install_github("tapani-hopkins/turkuwasps")
 ### Short version
 
 ``` r
-# usage examples to come, 
+# more usage examples to come, 
 # package is still under construction
 
 # load the package
 library(turkuwasps)
+
+# get example wasp data
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+wasps = read_wasps(f)
+
+# get wasps and samples which can be used in ecological analyses
+# (e.g. damaged samples and their wasps removed)
+tmp = ecology_usable(wasps)
+x = tmp$wasps
+m = tmp$samples
+
+# show wasps (per trap day) caught by each trap
+plot_place(x$trap, m)
+
+# show wasps (per trap day) caught in each forest type
+plot_place(x$forest_type, m)
 
 ```
 

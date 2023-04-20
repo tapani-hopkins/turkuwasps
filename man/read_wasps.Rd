@@ -31,5 +31,5 @@ Data frame with the wasp data. If simplified, has the following columns:
 }
 }
 \description{
-Read a csv file downloaded from Kotka (Kotka Collection Managemen System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Reads the column names ok (read.csv often corrupts them), removes extra header rows, and (optionally) simplifies the data. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
+Read a csv file downloaded from Kotka (Kotka Collection Management System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Reads the column names ok (read.csv often corrupts them), removes extra header rows, and (optionally) simplifies the data. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
 }

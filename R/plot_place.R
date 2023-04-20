@@ -3,14 +3,28 @@
 #' Barplot the number of wasps caught in each trap, forest type, or other location. This is basically a wrapper for two base R functions: [table()] for counting how many wasps belong to each bar, and [barplot()] to draw the plot.
 #'
 #' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and `defaults`=FALSE, one bar is plotted for each factor level, in the same order as the levels)
+#' @param m Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.
 #' @param taxon Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.
-#' @param weight How much to scale the bars by. Named vector, with each name telling which bar to scale. (e.g. if plotting traps, names should be trap names) Should include weights for all the bars. Weights which do not correspond to any bar will be ignored. Typically got from [get_weights()], and used to scale down bars by sampling effort.
 #' @param defaults If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if `x` contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.
 #' @param ...  Graphical parameters and other arguments passed to [barplot()]. These will override any default values (e.g. colours). Colours (argument `col`) are for each taxon if `taxon` was given, or for each bar if it was not. 
 #'
 #' @return x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
+#' 
+#' @examples
+#' # get example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' wasps = read_wasps(f)
+#' 
+#' # remove damaged samples and their wasps
+#' tmp = ecology_usable(wasps)
+#' x = tmp$wasps
+#' m = tmp$samples
+#' 
+#' #
+#' plot_place(x$trap, m)
+#' 
 #' @export
-plot_place = function(x, taxon=NULL, weight=1, defaults=TRUE, ...){
+plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	
 	# store various default arguments for the barplot
 	barplot_args = list(
@@ -39,17 +53,31 @@ plot_place = function(x, taxon=NULL, weight=1, defaults=TRUE, ...){
 	user_args = list(...)
 	barplot_args[names(user_args)] = user_args
 		
-	# if no taxa were given, get bar heights, by counting the wasps then scaling by `weight`..
+	# if no taxa were given, get bar heights
 	if(is.null(taxon)){
+		
+		# get bar heights by counting the wasps
 		height = table(x)
-		i = match(names(height), names(weight))
-		height = height * weight[i]
+		
+		# scale by sampling effort if asked to do so
+		if(! is.null(m)){
+			barnames = names(height)
+			weight = get_weights(barnames, m)
+			height = height * weight
+		}
 	
-	# ..if taxa were given, get bar heights split by taxon, by counting the wasps then scaling by `weight`
+	# ..if taxa were given, get bar heights split by taxon
 	} else {
+		
+		# get bar heights by counting the wasps, split by taxon
 		height = table(x, taxon)
-		i = match(rownames(height), names(weight))
-		height = t(height * weight[i])
+		
+		# scale by sampling effort if asked to do so
+		if(! is.null(m)){
+			barnames = rownames(height)
+			weight = get_weights(barnames, m)
+			height = t(height * weight)
+		}
 	}
 		
 	# add the bar heights to the barplot arguments

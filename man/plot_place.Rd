@@ -4,14 +4,14 @@
 \alias{plot_place}
 \title{Plot wasps per place}
 \usage{
-plot_place(x, taxon = NULL, weight = 1, defaults = TRUE, ...)
+plot_place(x, m = NULL, taxon = NULL, defaults = TRUE, ...)
 }
 \arguments{
 \item{x}{Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and \code{defaults}=FALSE, one bar is plotted for each factor level, in the same order as the levels)}
 
-\item{taxon}{Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.}
+\item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
 
-\item{weight}{How much to scale the bars by. Named vector, with each name telling which bar to scale. (e.g. if plotting traps, names should be trap names) Should include weights for all the bars. Weights which do not correspond to any bar will be ignored. Typically got from \code{\link[=get_weights]{get_weights()}}, and used to scale down bars by sampling effort.}
+\item{taxon}{Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.}
 
 \item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
 
@@ -22,4 +22,18 @@ x-coordinates of the bars, returned silently (save these to variable to continue
 }
 \description{
 Barplot the number of wasps caught in each trap, forest type, or other location. This is basically a wrapper for two base R functions: \code{\link[=table]{table()}} for counting how many wasps belong to each bar, and \code{\link[=barplot]{barplot()}} to draw the plot.
+}
+\examples{
+# get example wasp data
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+wasps = read_wasps(f)
+
+# remove damaged samples and their wasps
+tmp = ecology_usable(wasps)
+x = tmp$wasps
+m = tmp$samples
+
+#
+plot_place(x$trap, m)
+
 }

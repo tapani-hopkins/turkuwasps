@@ -12,7 +12,7 @@ get_defaults = function(x){
 	location = get_locationtype(x)	
 	
 	# get defaults from "forest_type" if the locations are forest types..
-	if(location == "forest_type"){	
+	if (location == "forest_type"){	
 		d = turkuwasps::forest_type	
 			
 	# ..get defaults from "trap" if the locations are traps	
@@ -48,7 +48,7 @@ get_defaults = function(x){
 get_locationtype = function(x){
 	
 	# check if the locations are forest types..
-	if(all(x %in% turkuwasps::forest_type$name)){	
+	if (all(x %in% turkuwasps::forest_type$name)){	
 		loc = "forest_type"
 				
 	# .. or check if the locations are traps..		

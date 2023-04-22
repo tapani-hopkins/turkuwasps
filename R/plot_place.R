@@ -45,7 +45,7 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		}
 	
 	# .. if not using default bars, make sure 'x' is a factor
-	} else if(! is.factor(x)){
+	} else if (! is.factor(x)){
 		x = factor(x)
 	}
 	
@@ -54,13 +54,13 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	barplot_args[names(user_args)] = user_args
 		
 	# if no taxa were given, get bar heights
-	if(is.null(taxon)){
+	if (is.null(taxon)){
 		
 		# get bar heights by counting the wasps
 		height = table(x)
 		
 		# scale by sampling effort if asked to do so
-		if(! is.null(m)){
+		if (! is.null(m)){
 			barnames = names(height)
 			weight = get_weights(barnames, m)
 			height = height * weight
@@ -73,7 +73,7 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		height = table(x, taxon)
 		
 		# scale by sampling effort if asked to do so
-		if(! is.null(m)){
+		if (! is.null(m)){
 			barnames = rownames(height)
 			weight = get_weights(barnames, m)
 			height = t(height * weight)

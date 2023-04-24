@@ -28,7 +28,7 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	
 	# store various default arguments for the barplot
 	barplot_args = list(
-		cex.names = 0.7, 
+		cex.names = 0.6, 
 		las = 2
 	)
 	
@@ -70,13 +70,13 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	} else {
 		
 		# get bar heights by counting the wasps, split by taxon
-		height = table(x, taxon)
+		height = table(taxon, x)
 		
 		# scale by sampling effort if asked to do so
 		if (! is.null(m)){
-			barnames = rownames(height)
+			barnames = colnames(height)
 			weight = get_weights(barnames, m)
-			height = t(height * weight)
+			height = t(t(height) * weight)
 		}
 	}
 		

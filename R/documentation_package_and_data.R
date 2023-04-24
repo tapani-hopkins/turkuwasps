@@ -37,6 +37,21 @@
 "malaise_sample"
 
 
+#' Sites
+#'
+#' Ugandan and Peruvian sites. Used by some functions to get all the sites, what order to plot them in by default, and what colours to use.
+#'
+#' @format A data frame with 4 variables. The variables are:
+#' * name Name of the site, e.g. "CCT1". Mainly relevant for Uganda. For Peru, largely tells the soil type.
+#' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
+#' * forest_type Name of forest type, e.g. "primary". 
+#' * colour Colour to use by default when plotting. Different colour for each forest type.
+#' 
+#' Sites are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda CC to FARM).
+#'
+"site"
+
+
 #' Traps
 #'
 #' Ugandan and Peruvian Malaise trap sites. Used by some functions to get all the traps, what order to plot them in by default, and what colours to use.

@@ -7,12 +7,12 @@
 get_weights(barnames, m)
 }
 \arguments{
-\item{barnames}{Vector of bar names for which the weights are desired. Used to find out if the bars are forest types or traps, and to give the correct weights in the correct order for each bar. Must be valid forest type or trap names. Either as strings or factor.}
+\item{barnames}{Vector of bar names for which the weights are desired. Used to find out if the bars are forest types, sites or traps, and to give the correct weights in the correct order for each bar. Must be valid forest type, site or trap names. Either as strings or factor.}
 
-\item{m}{Data frame with the Malaise sample data. Used to get the sampling effort of each location. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted).}
+\item{m}{Data frame with the Malaise sample data. Used to get the sampling effort of each location. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted).}
 }
 \value{
-Name of the location type as string. Currently one of "forest_type" or trap".
+Vector of weights with which to multiply the bar heights. Named vector, in same order as the bars.
 }
 \description{
 Helper function for scaling the bars of \code{\link[=plot_place]{plot_place()}}. Counts the total sampling effort of each bar (e.g. each trap), and tells how to scale the bars by sampling effort.

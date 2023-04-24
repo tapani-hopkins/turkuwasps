@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{get_locationtype}
 \alias{get_locationtype}
-\title{Find out if locations are forest types or traps}
+\title{Find out if locations are forest types, sites or traps}
 \usage{
 get_locationtype(x)
 }
@@ -10,8 +10,8 @@ get_locationtype(x)
 \item{x}{Vector of traps, forest types or other locations. Either as strings or factor.}
 }
 \value{
-Name of the location type as string. Currently one of "forest_type" or trap".
+Name of the location type as string. Currently one of "forest_type", "site" or trap".
 }
 \description{
-Helper function used by e.g. \code{\link[=get_defaults]{get_defaults()}}. Checks what kind of locations a vector contains. Currently recognises forest types and traps. Gives an error if some of the locations were not recognised, or forest types and traps are mixed.
+Helper function used by e.g. \code{\link[=get_defaults]{get_defaults()}}. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
 }

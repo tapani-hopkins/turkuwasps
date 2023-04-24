@@ -15,6 +15,10 @@ get_defaults = function(x){
 	if (location == "forest_type"){	
 		d = turkuwasps::forest_type	
 			
+	# ..get defaults from "site" if the locations are sites	
+	} else if (location == "site") {
+		d = turkuwasps::site
+
 	# ..get defaults from "trap" if the locations are traps	
 	} else if (location == "trap") {
 		d = turkuwasps::trap
@@ -37,20 +41,24 @@ get_defaults = function(x){
 }
 
 
-#' Find out if locations are forest types or traps
+#' Find out if locations are forest types, sites or traps
 #'
-#' Helper function used by e.g. [get_defaults()]. Checks what kind of locations a vector contains. Currently recognises forest types and traps. Gives an error if some of the locations were not recognised, or forest types and traps are mixed.
+#' Helper function used by e.g. [get_defaults()]. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
 #'
 #' @param x Vector of traps, forest types or other locations. Either as strings or factor.
 #'
-#' @return Name of the location type as string. Currently one of "forest_type" or trap". 
+#' @return Name of the location type as string. Currently one of "forest_type", "site" or trap". 
 #'
 get_locationtype = function(x){
 	
 	# check if the locations are forest types..
 	if (all(x %in% turkuwasps::forest_type$name)){	
 		loc = "forest_type"
-				
+	
+	# .. or check if the locations are sites..		
+	} else if (all(x %in% turkuwasps::site$name)) {
+		loc = "site"
+					
 	# .. or check if the locations are traps..		
 	} else if (all(x %in% turkuwasps::trap$name)) {
 		loc = "trap"
@@ -70,10 +78,10 @@ get_locationtype = function(x){
 #'
 #' Helper function for scaling the bars of [plot_place()]. Counts the total sampling effort of each bar (e.g. each trap), and tells how to scale the bars by sampling effort.
 #'
-#' @param barnames Vector of bar names for which the weights are desired. Used to find out if the bars are forest types or traps, and to give the correct weights in the correct order for each bar. Must be valid forest type or trap names. Either as strings or factor.
-#' @param m Data frame with the Malaise sample data. Used to get the sampling effort of each location. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted).
+#' @param barnames Vector of bar names for which the weights are desired. Used to find out if the bars are forest types, sites or traps, and to give the correct weights in the correct order for each bar. Must be valid forest type, site or trap names. Either as strings or factor.
+#' @param m Data frame with the Malaise sample data. Used to get the sampling effort of each location. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted).
 #'
-#' @return Name of the location type as string. Currently one of "forest_type" or trap". 
+#' @return Vector of weights with which to multiply the bar heights. Named vector, in same order as the bars.
 #'
 get_weights = function(barnames, m){
 	

@@ -49,6 +49,9 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		x = factor(x)
 	}
 	
+	# get bar names
+	barnames = levels(x)
+	
 	# add the barplot arguments given by the user (overwrite any defaults with the same name)
 	user_args = list(...)
 	barplot_args[names(user_args)] = user_args
@@ -61,7 +64,6 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		
 		# scale by sampling effort if asked to do so
 		if (! is.null(m)){
-			barnames = names(height)
 			weight = get_weights(barnames, m)
 			height = height * weight
 		}
@@ -74,7 +76,6 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		
 		# scale by sampling effort if asked to do so
 		if (! is.null(m)){
-			barnames = colnames(height)
 			weight = get_weights(barnames, m)
 			height = t(t(height) * weight)
 		}
@@ -85,6 +86,17 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	
 	# barplot the wasps
 	xcoords = do.call(graphics::barplot, args=barplot_args)
+	
+	# add the bar names to the x coordinates
+	xcoords = as.vector(xcoords)
+	names(xcoords) = barnames
+	
+	# check for special case where bar names must be repeated
+	# (if beside=TRUE and there are taxa, causes multiple bars per location)
+	mult = length(xcoords) / length(barnames)
+	if (mult != 1){
+		names(xcoords) = rep(barnames, each=mult)
+	}
 	
 	# return the x coordinates of the bars invisibly
 	invisible(xcoords)

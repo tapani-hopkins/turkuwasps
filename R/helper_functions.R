@@ -8,7 +8,7 @@
 #'
 get_defaults = function(x){
 	
-	# find out if the locations are forest types or traps
+	# find out if the locations are forest types, sites or traps
 	location = get_locationtype(x)	
 	
 	# get defaults from "forest_type" if the locations are forest types..

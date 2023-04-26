@@ -11,18 +11,8 @@ get_defaults = function(x){
 	# find out if the locations are forest types, sites or traps
 	location = get_locationtype(x)	
 	
-	# get defaults from "forest_type" if the locations are forest types..
-	if (location == "forest_type"){	
-		d = turkuwasps::forest_type	
-			
-	# ..get defaults from "site" if the locations are sites	
-	} else if (location == "site") {
-		d = turkuwasps::site
-
-	# ..get defaults from "trap" if the locations are traps	
-	} else if (location == "trap") {
-		d = turkuwasps::trap
-	}
+	# get defaults from the appropriate data frame
+	d = get_locationdata(location)
 		
 	# only include collecting events that are in `x`
 	i = match(x, d$name)
@@ -37,6 +27,31 @@ get_defaults = function(x){
 	
 	# return as list
 	return(list(x=x, colour=colour))
+	
+}
+
+
+#' Get data for locations
+#'
+#' Helper function used by e.g. [get_defaults()]. Gets the data for forest types, traps or other locations.
+#'
+#' @param x Name of the location type as string. Currently one of "forest_type", "site", "trap" or "sample".
+#'
+#' @return Data frame with the data of the location. 
+#'
+#' @seealso `data(package="turkuwasps")` for a list of all the datasets in the package.
+#'
+get_locationdata = function(x){
+	
+	# get the appropriate dataset
+	d = switch(x, 
+		"forest_type" = turkuwasps::forest_type,
+		"site" = turkuwasps::site, 
+		"trap" = turkuwasps::trap
+	)
+	
+	# return
+	return(d)
 	
 }
 
@@ -98,6 +113,25 @@ get_weights = function(barnames, m){
 	#return
 	return(weight)	
 	
+}
+
+
+#' Get factor levels
+#'
+#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector, whether or not the vector is factored. Basically a more readable wrapper for [levels()] and [factor()], equivalent to calling `levels(factor(x))`.
+#'
+#' @param x Vector whose factor levels are wanted.
+#' @param ... Other arguments passed to [factor()].
+#'
+#' @return Character vector giving the levels of `x`. 
+#'
+levels0 = function(x, ...){
+	
+	# get factor levels
+	res = levels(factor(x, ...))
+	
+	# return
+	return(res)
 }
 
 

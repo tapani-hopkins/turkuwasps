@@ -19,3 +19,20 @@ List returned by \code{\link[=legend]{legend()}}. Returned invisibly.
 \description{
 Add default legend to plots. Either a legend showing the forest types (in default order with default colours), or taxa (with default colour scheme).
 }
+\examples{
+# get example wasp data
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+wasps = read_wasps(f)
+
+# remove damaged samples and their wasps
+tmp = ecology_usable(wasps)
+x = tmp$wasps
+m = tmp$samples
+
+# plot traps
+tmp = plot_place(x$trap, m)
+
+# add legend
+default_legend("forest_type", event=names(tmp)) 
+
+}

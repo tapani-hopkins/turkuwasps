@@ -8,6 +8,22 @@
 #'
 #' @return List returned by [legend()]. Returned invisibly.
 #'
+#' @examples
+#' # get example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' wasps = read_wasps(f)
+#' 
+#' # remove damaged samples and their wasps
+#' tmp = ecology_usable(wasps)
+#' x = tmp$wasps
+#' m = tmp$samples
+#' 
+#' # plot traps
+#' tmp = plot_place(x$trap, m)
+#' 
+#' # add legend
+#' default_legend("forest_type", event=names(tmp)) 
+#'
 #' @export
 #'
 default_legend = function(what="forest_type", event=NULL, ...){

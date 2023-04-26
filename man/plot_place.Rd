@@ -11,7 +11,7 @@ plot_place(x, m = NULL, taxon = NULL, defaults = TRUE, ...)
 
 \item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
 
-\item{taxon}{Vector giving the taxon of each wasp. If given, splits the bars to show how many wasps of each taxon were caught.}
+\item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if \code{beside} is set to FALSE by the user.)}
 
 \item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
 
@@ -23,6 +23,9 @@ x-coordinates of the bars, returned silently (save these to variable to continue
 \description{
 Barplot the number of wasps caught in each trap, forest type, or other location. This is basically a wrapper for two base R functions: \code{\link[=table]{table()}} for counting how many wasps belong to each bar, and \code{\link[=barplot]{barplot()}} to draw the plot.
 }
+\details{
+The plotting of taxa is different if argument \code{beside} is set to FALSE. One bar will be shown for each location, with the bars split by taxon to show how many wasps of each taxon were caught. Default colours will not be used.
+}
 \examples{
 # get example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
@@ -33,7 +36,7 @@ tmp = ecology_usable(wasps)
 x = tmp$wasps
 m = tmp$samples
 
-#
+# plot
 plot_place(x$trap, m)
 
 }

@@ -43,8 +43,14 @@ m = tmp$samples
 # show wasps (per trap day) caught by each trap
 plot_place(x$trap, m)
 
-# show wasps (per trap day) caught in each forest type
+# show wasps (per trap day) caught in each forest type, with legend
 plot_place(x$forest_type, m)
+default_legend("forest_type", "Uganda 2014-2015")
+
+# show wasps (per trap day), with each species separate
+plot_place(x$forest_type, m, taxon=x$taxon)
+
+
 
 ```
 

@@ -28,7 +28,7 @@ as.character.datetime = function(x){
 #'
 #' Convert strings of the format "2014-10-14 11:04:00 UTC+03:00" to datetime objects. 
 #'
-#' @param x Character vector giving dates, times and time zone offsets. Should ideally be in the format "2014-10-14 11:04:00 UTC+03:00", but may convert OK even if e.g. the time is missing.
+#' @param x Character vector giving dates, times and time zone offsets. Should ideally be in the format "2014-10-14 11:04:00 UTC+03:00", but may convert OK even if e.g. the time is missing. Can also be a datetime object, in which case `x` is returned without changes.
 #'
 #' @return Vector of datetime objects.
 #' 
@@ -60,6 +60,11 @@ as.character.datetime = function(x){
 #'
 #' @export
 as.datetime = function(x){
+	
+	# do nothing if `x`is already a datetime object
+	if (is_datetime(x)){
+		return(x)
+	}
 	
 	# get the time zone text (e.g. "UTC+03:00")
 	i = regexpr("*UTC*", x) + 3
@@ -268,8 +273,8 @@ length.datetime = function(x){
 #'
 #' Define methods for handling basic operations on datetime objects. (e.g. `+`, `-` `<` etc) This is called by R whenever e.g. a datetime is subtracted from another datetime; not meant to be called by the user.
 #'
-#' @param e1 Vector of datetimes.
-#' @param e2 Vector of datetimes.
+#' @param e1 Vector of datetimes (or numbers).
+#' @param e2 Vector of datetimes (or numbers).
 #'
 #' @return Result of operation. Varies by operator, see details.
 #'
@@ -366,6 +371,7 @@ Ops.datetime = function (e1, e2){
 #' @export
 print.datetime = function(x, ...){
 	
+	# convert to character
 	x = as.character(x)
 	
 	# print
@@ -482,7 +488,7 @@ set_tz = function(x, tz="+00:00"){
 #'
 #' @param x Vector of datetimes.
 #' @param i Indexes of items where to save.
-#' @param j Parameter called by R, but I'm not sure what if anything it does. Not used.
+#' @param j Parameter called by R, but I'm not sure what, if anything, it does. Not used.
 #' @param value The datetime(s) to be saved in `x`.
 #'
 #' @return Vector of datetimes.

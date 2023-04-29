@@ -100,7 +100,7 @@ get_locationtype = function(x){
 #'
 get_weights = function(barnames, m){
 	
-	# check if the locations are forest types or traps
+	# check if the locations are forest types, sites or traps
 	loc = get_locationtype(barnames)
 	
 	# get the weights of all the locations

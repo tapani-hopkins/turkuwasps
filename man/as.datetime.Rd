@@ -7,7 +7,7 @@
 as.datetime(x)
 }
 \arguments{
-\item{x}{Character vector giving dates, times and time zone offsets. Should ideally be in the format "2014-10-14 11:04:00 UTC+03:00", but may convert OK even if e.g. the time is missing.}
+\item{x}{Character vector giving dates, times and time zone offsets. Should ideally be in the format "2014-10-14 11:04:00 UTC+03:00", but may convert OK even if e.g. the time is missing. Can also be a datetime object, in which case \code{x} is returned without changes.}
 }
 \value{
 Vector of datetime objects.

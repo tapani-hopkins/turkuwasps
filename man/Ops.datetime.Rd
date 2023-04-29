@@ -7,9 +7,9 @@
 \method{Ops}{datetime}(e1, e2)
 }
 \arguments{
-\item{e1}{Vector of datetimes.}
+\item{e1}{Vector of datetimes (or numbers).}
 
-\item{e2}{Vector of datetimes.}
+\item{e2}{Vector of datetimes (or numbers).}
 }
 \value{
 Result of operation. Varies by operator, see details.

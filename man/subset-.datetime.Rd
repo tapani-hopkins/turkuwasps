@@ -11,7 +11,7 @@
 
 \item{i}{Indexes of items where to save.}
 
-\item{j}{Parameter called by R, but I'm not sure what if anything it does. Not used.}
+\item{j}{Parameter called by R, but I'm not sure what, if anything, it does. Not used.}
 
 \item{value}{The datetime(s) to be saved in \code{x}.}
 }

@@ -9,7 +9,7 @@ plot_place(x, m = NULL, taxon = NULL, defaults = TRUE, ...)
 \arguments{
 \item{x}{Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and \code{defaults}=FALSE, one bar is plotted for each factor level, in the same order as the levels)}
 
-\item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
+\item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
 
 \item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if \code{beside} is set to FALSE by the user.)}
 
@@ -38,5 +38,8 @@ m = tmp$samples
 
 # plot
 plot_place(x$trap, m)
+
+# plot each species separately
+plot_place(x$forest_type, m, taxon=x$taxon)
 
 }

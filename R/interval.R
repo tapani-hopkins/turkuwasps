@@ -260,9 +260,68 @@ print.interval = function(x, ...){
 }
 
 
+#' Get sum of how much intervals overlap
+#'
+#' Find out how much a vector of interval objects overlaps with another. For each interval of the second vector, counts the sum of overlaps with the intervals of the first vector.  
+#'
+#' @param x Vector of intervals. To be overlapped with each interval of `y`.
+#' @param y Vector of intervals that `x` overlap with.
+#' @param proportional If FALSE, return the total overlap with each item of `y` in seconds. If TRUE (the default), return the total overlap as a proportion of the length of the intervals in `x`. (e.g. if half of an interval in `x` overlaps, add 0.5 to the sum)
+#'
+#' @return Numeric vector of same length as `y`. Gives the sum of overlap either in seconds (proportional=FALSE), or as proportion of `x`. 
+#'
+#' @examples
+#' 
+#' # save a one-day interval into `i`
+#' i = as.interval(s="2000-01-01 00:00:00 UTC+00:00", e="2000-01-02 00:00:00 UTC+00:00")
+#' 
+#' # save four identical intervals in `x`
+#' x = c(i, i, i, i)
+#' 
+#' # save the interval, and the interval + 12 hours, in `y`
+#' y = c(i, i+12*3600)
+#'
+#' # proportional overlap of `x` with `y` 
+#' # (gives 4 for y[1] = all four days in `x` overlapped entirely)
+#' # (gives 2 for y[2] = all four days in `x` overlapped by half)
+#' sum_overlap(x, y)
+#' 
+#' # overlap (in seconds) of `x` with `y`
+#' # (gives 4*24 hours for y[1]) 
+#' # (gives 4*12 hours for y[2])
+#' sum_overlap(x, y)
+#' 
+#' @export
+sum_overlap = function(x, y, proportional=TRUE){
+	
+	# initialise `ysum` (for sums of overlaps)
+	ysum = rep(NA, length(y))
+	
+	# get sums, for each interval in `y`
+	for (i in 1:length(y)){
+		
+		# get overlap with this interval
+		over = overlap(x, y[i])
+		
+		# convert to proportional overlaps if asked to do so
+		if (proportional){ 
+			over = over / tdiff(x) 
+		}
+		
+		# save the sum of overlaps in `ysum`
+		ysum[i] = sum(over)
+		
+	}
+	
+	# return
+	return(ysum)
+	
+}
+
+
 #' Select items of an interval vector
 #'
-#' Called by R whenever items are selected by index in an interval of datetime objects (e.g. `x[1]`). Not meant to be called by the user. Interval objects are basically a list with two items (`s`=start datetimes, `e`=end datetimes), not vectors, so the standard square brackets would not work properly.  
+#' Called by R whenever items are selected by index in a vector of interval objects (e.g. `x[1]`). Not meant to be called by the user. Interval objects are basically a list with two items (`s`=start datetimes, `e`=end datetimes), not vectors, so the standard square brackets would not work properly.  
 #'
 #' @param x Vector of intervals.
 #' @param i Indexes of items to select. Default is to select everything.

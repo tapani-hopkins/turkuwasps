@@ -40,7 +40,7 @@ m
 \seealso{
 \code{\link[=get_date]{get_date()}}, \code{\link[=is_datetime]{is_datetime()}} and \code{\link[=set_tz]{set_tz()}}. The following base functions have been modified to work with datetimes:
 \itemize{
-\item \code{\link[=as.character.datetime]{as.character.datetime()}}, \code{\link[=c.datetime]{c.datetime()}}, \code{\link[=ceiling.datetime]{ceiling.datetime()}}, \code{\link[=floor.datetime]{floor.datetime()}}, \code{\link[=length.datetime]{length.datetime()}}, \code{\link[=print.datetime]{print.datetime()}}, \code{\link[=seq.datetime]{seq.datetime()}}
+\item \code{\link[=as.character.datetime]{as.character.datetime()}}, \code{\link[=c.datetime]{c.datetime()}}, \code{\link[=ceiling.datetime]{ceiling.datetime()}}, \code{\link[=floor.datetime]{floor.datetime()}}, \code{\link[=length.datetime]{length.datetime()}}, \code{\link[=min.datetime]{min.datetime()}}, \code{\link[=max.datetime]{max.datetime()}}, \code{\link[=print.datetime]{print.datetime()}}, \code{\link[=seq.datetime]{seq.datetime()}}
 \item basic operators such as \code{+}, \code{-} (see examples)
 \item data frames accept datetimes (but convert them to character)
 }

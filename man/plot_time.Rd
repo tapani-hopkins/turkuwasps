@@ -8,9 +8,8 @@ plot_time(
   x,
   m = NULL,
   taxon = NULL,
-  xlim = NULL,
+  xlim = as.interval(min(x), max(x)),
   step = 3600 * 24,
-  defaults = TRUE,
   ...
 )
 }
@@ -21,9 +20,9 @@ plot_time(
 
 \item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if \code{beside} is set to FALSE by the user.)}
 
-\item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
-
 \item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}. These will override any default values (e.g. colours). Colours (argument \code{col}) are for each taxon if \code{taxon} was given, or for each bar if it was not.}
+
+\item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
 }
 \value{
 x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).

@@ -29,26 +29,66 @@
 #' plot_place(x$forest_type, m, taxon=x$taxon)
 #' 
 #' @export
-plot_time = function(x, m=NULL, taxon=NULL, xlim=NULL, step=3600*24, defaults=TRUE, ...){
+plot_time = function(x, m=NULL, taxon=NULL, xlim=as.interval(min(x), max(x)), step=3600*24, ...){
 	
-	# if x limits weren't given, set to cover all of `x`
-	if (is.null(xlim)){
-		xlim = c(min(x$s), max(x$e))	
+	# store various default arguments for the barplot
+	barplot_args = list(
+		axisnames = FALSE, 
+		border = FALSE,
+		space = 0, 
+		xaxs = "i",
+		xpd = FALSE,
+		width = 1
+	)
+	
+	# add the barplot arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	barplot_args[names(user_args)] = user_args
+	
+	# if no taxa were given, set all taxa to ""
+	if (is.null(taxon)){
+		taxon = rep("", length(x))
 	}
 	
-	
 	# create a sequence of time intervals that covers `xlim`
-	d = seq(xlim[1], xlim[2], step)
+	d = seq(xlim$s, xlim$e, step)
 	d = as.interval(d[2:length(d)] - step, d[2:length(d)])
 	
-	#
-	height = sum_overlap(x, d)
+	# get the number of taxa and their names
+	ntaxa = length(levels0(taxon))
+	taxa = levels0(taxon)
+
+	# create a blank matrix to store the bar heights in
+	height = matrix(
+		nrow = ntaxa, 
+		ncol = length(d), 
+		dimnames = list(taxa, as.character(means(d)))
+	)
 	
-	# 
-	weight = sum_overlap(as.interval(m$start, m$end), d, proportional=FALSE)
-	weight = weight / step
-	height = height / weight
+	# count the number of wasps in each bar, for each taxon separately
+	for (sp in 1:ntaxa){
+		i = which(taxon == taxa[sp])
+		height[sp, ] = sum_overlap(x[i], d)
+	}
 	
-	# xx
-	graphics::barplot(height, space=0, border=F, width=1, xaxs = "i")
+	# scale bars by number of traps in use if `m` was given
+	if (! is.null(m)){
+		
+		# get the weights for each bar 
+		weight = sum_overlap(as.interval(m$start, m$end), d, proportional=FALSE)
+		weight = weight / step
+		
+		# scale bars by weight
+		height = t(t(height) / weight)
+	}
+	
+	# add the bar heights to the barplot arguments
+	barplot_args$height = height
+	
+	# barplot
+	xcoords = do.call(graphics::barplot, args=barplot_args)
+
+	# return the bar positions and heights invisibly
+	invisible(list(x=xcoords, y=height, d=d))
+	
 }

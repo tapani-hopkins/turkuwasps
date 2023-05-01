@@ -7,8 +7,8 @@
 #'
 #' @return Vector of interval objects.
 #' 
-#' @seealso [as.datetime()], [is_interval()], [overlap()], [overlaps()], [tdiff()]. The following base functions have been modified to work with datetimes:
-#' * [c.interval()], [length.interval()], [print.interval()]
+#' @seealso [as.datetime()], [is_interval()], [means()], [overlap()], [overlaps()], [tdiff()]. The following base functions have been modified to work with datetimes:
+#' * [c.interval()], [length.interval()], [max.interval()], [min.interval()], [print.interval()]
 #' * basic operators such as `+`, `-` (see examples)
 #'
 #' @examples
@@ -92,6 +92,84 @@ is_interval = function(x){
 	
 	# check if `x` is an interval object
 	return(methods::is(x, "interval"))
+	
+}
+
+
+#' Get latest datetime in intervals
+#'
+#' Get the latest datetime in a vector of interval objects. Checks the start and end datetimes, and returns the latest one.
+#'
+#' @param ... Vector of datetimes.
+#' @param na.rm If TRUE, NA values are removed. Passed to [max()].
+#'
+#' @return Datetime object.
+#'
+#' @note Unlike in base [max()], only one vector can be given as an argument. Any others will be ignored.
+#'
+#' @method max interval
+#' @export
+max.interval = function(..., na.rm=FALSE){
+	
+	# get first vector in arguments
+	x = list(...)[[1]]
+	
+	# get latest datetime in start or end dates
+	s = max(x$s, na.rm=na.rm)
+	e = max(x$e, na.rm=na.rm)
+	x = max(c(s, e), na.rm=na.rm)
+		
+	# return
+	return(x)
+	
+}
+
+
+#' Get means of intervals
+#'
+#' Get the averages in between the start and end datetimes of a vector of interval objects. 
+#'
+#' @param x Vector of intervals.
+#'
+#' @return Vector of datetimes.
+#' 
+#' @export
+means = function(x){
+	
+	# get averages of start and end dates
+	x = x$s + 0.5 * (x$e - x$s)
+	
+	# return
+	return(x)
+	
+}
+
+
+#' Get earliest datetime in intervals
+#'
+#' Get the earliest datetime in a vector of interval objects. Checks the start and end datetimes, and returns the earliest one.
+#'
+#' @param ... Vector of datetimes.
+#' @param na.rm If TRUE, NA values are removed. Passed to [min()].
+#'
+#' @return Datetime object.
+#'
+#' @note Unlike in base [min()], only one vector can be given as an argument. Any others will be ignored.
+#'
+#' @method min interval
+#' @export
+min.interval = function(..., na.rm=FALSE){
+	
+	# get first vector in arguments
+	x = list(...)[[1]]
+	
+	# get latest datetime in start or end dates
+	s = min(x$s, na.rm=na.rm)
+	e = min(x$e, na.rm=na.rm)
+	x = min(c(s, e), na.rm=na.rm)
+		
+	# return
+	return(x)
 	
 }
 

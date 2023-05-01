@@ -33,7 +33,7 @@ as.character.datetime = function(x){
 #' @return Vector of datetime objects.
 #' 
 #' @seealso [get_date()], [is_datetime()] and [set_tz()]. The following base functions have been modified to work with datetimes:
-#' * [as.character.datetime()], [c.datetime()], [ceiling.datetime()], [floor.datetime()], [length.datetime()], [min.datetime()], [max.datetime()], [print.datetime()], [seq.datetime()]
+#' * [as.character.datetime()], [c.datetime()], [ceiling.datetime()], [floor.datetime()], [length.datetime()], [max.datetime()], [mean.datetime()], [min.datetime()], [print.datetime()], [seq.datetime()]
 #' * basic operators such as `+`, `-` (see examples)
 #' * data frames accept datetimes (but convert them to character)
 #'
@@ -269,34 +269,6 @@ length.datetime = function(x){
 }
 
 
-#' Get earliest datetime
-#'
-#' Get the earliest item in a vector of datetime objects. 
-#'
-#' @param ... Vector of datetimes.
-#' @param na.rm If TRUE, NA values are removed. Passed to [min()].
-#'
-#' @return Datetime object.
-#'
-#' @note Unlike in base [min()], only one vector can be given as an argument. Any others will be ignored.
-#' 
-#' @method min datetime
-#' @export
-min.datetime = function(..., na.rm=FALSE){
-	
-	# get first vector in arguments
-	x = list(...)[[1]]
-	
-	# get earliest datetime
-	i = which(x$d == min(x$d))
-	x = x[i][1]
-	
-	# return
-	return(x)
-	
-}
-
-
 #' Get latest datetime
 #'
 #' Get the latest item in a vector of datetime objects. 
@@ -317,6 +289,58 @@ max.datetime = function(..., na.rm=FALSE){
 	
 	# get latest datetime
 	i = which(x$d == max(x$d))
+	x = x[i][1]
+	
+	# return
+	return(x)
+	
+}
+
+
+#' Get mean datetime
+#'
+#' Get the average of a vector of datetime objects. 
+#'
+#' @param x Vector of datetimes.
+#' @param ... Other arguments passed to [mean()].
+#'
+#' @return Datetime object (in timezone offset UTC+00:00).
+#'
+#' @method mean datetime
+#' @export
+mean.datetime = function(x, ...){
+	
+	s = as.datetime("2000-01-01 00:00:00 UTC+00:00")	
+	
+	m = mean(x - s)
+	x = s + m
+
+	# return
+	return(x)
+	
+}
+
+
+#' Get earliest datetime
+#'
+#' Get the earliest item in a vector of datetime objects. 
+#'
+#' @param ... Vector of datetimes.
+#' @param na.rm If TRUE, NA values are removed. Passed to [min()].
+#'
+#' @return Datetime object.
+#'
+#' @note Unlike in base [min()], only one vector can be given as an argument. Any others will be ignored.
+#' 
+#' @method min datetime
+#' @export
+min.datetime = function(..., na.rm=FALSE){
+	
+	# get first vector in arguments
+	x = list(...)[[1]]
+	
+	# get earliest datetime
+	i = which(x$d == min(x$d))
 	x = x[i][1]
 	
 	# return
@@ -363,7 +387,7 @@ Ops.datetime = function (e1, e2){
 			return(e1)
 		} else {
 			e2$d = e2$d + e1
-			e1$tz = rep(e2$tz, length(e2$d) / length(e2$tz))
+			e2$tz = rep(e2$tz, length(e2$d) / length(e2$tz))
 			return(e2)
 		}		
 	} 

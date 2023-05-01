@@ -64,7 +64,7 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	# get bar names
 	barnames = levels(x)
 	
-	# if no taxa were given, get bar heights
+	# if no taxa were given, get simple bar heights
 	if (is.null(taxon)){
 		
 		# get bar heights by counting the wasps

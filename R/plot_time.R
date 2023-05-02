@@ -1,16 +1,20 @@
 #' Plot wasps over time
 #'
-#' Plot the number of wasps caught each day (or other time period). XXXXX
+#' Plot the number of wasps caught each day (or other time period). This is at heart function [barplot()], with one bar for each time period.
 #'
-#' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and `defaults`=FALSE, one bar is plotted for each factor level, in the same order as the levels)
-#' @param m Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.
-#' @param taxon Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if `beside` is set to FALSE by the user.)
-#' @param defaults If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if `x` contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.
-#' @param ...  Graphical parameters and other arguments passed to [barplot()]. These will override any default values (e.g. colours). Colours (argument `col`) are for each taxon if `taxon` was given, or for each bar if it was not. 
+#' @param x Vector of interval objects, telling when each wasp was collected.
+#' @param m Data frame with the Malaise sample data, if wanting to scale by sampling effort (= number of traps in use at any given time). Must contain columns "start" and "end", giving start and end datetime of when each sample was collected. If NULL, the plot shows the total number of wasps collected per unit time, without taking into account how many traps were in use.
+#' @param taxon Vector giving the taxon of each wasp. If given, shows each taxon in a different colour.
+#' @param xlim Interval object (see [as.interval()]) giving the desired left and right limits of the plot. If not given, default limits given by [default_xlims()] are used.
+#' @param step Length in seconds of the time periods for which to count the number of wasps. Default is to plot wasps at a resolution of 86400 seconds = one day.
+#' @param xlabel If TRUE, the x axis is labelled (using default settings) by [label_plot_time()]. If FALSE, the x axis is left blank.
+#' @param ...  Graphical parameters and other arguments passed to [barplot()], which handles the actual drawing. These will override any default values (e.g. colours, which by default come from [default_colours()]). Colours (argument `col`) are for each taxon, or if taxa were not given then just one colour should be given. Argument `xlim` is handled differently to standard [barplot()].
 #'
-#' @details The plotting of taxa is different if argument `beside` is set to FALSE. One bar will be shown for each location, with the bars split by taxon to show how many wasps of each taxon were caught. Default colours will not be used.  
-#' 
-#' @return x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
+#' @return A list giving the x and y coordinates of each bar (= time period `step` seconds long), returned silently. The list has three items:
+#' * `x` The x coordinates of the centre of each bar, in plot coordinates. Use these to draw e.g. lines and further labels on the plot.
+#' * `y` The height of each bar, in plot coordinates.
+#' * `d` The start and end datetimes of each bar. 
+#' * `xlim` The left and right limits of the plot as an interval object.
 #' 
 #' @examples
 #' # get example wasp data
@@ -22,19 +26,33 @@
 #' x = tmp$wasps
 #' m = tmp$samples
 #' 
+#' # get the start and end of when each wasp was collected
+#' waspdates = as.interval(x$start, x$end)
+#'
 #' # plot
-#' plot_place(x$trap, m)
+#' plot_time(waspdates, m, x$taxon, ylab="wasps / trap day")
 #' 
-#' # plot each species separately
-#' plot_place(x$forest_type, m, taxon=x$taxon)
+#' # plot with modified x axis
+#' tmp = plot_time(waspdates, m, x$taxon, xlabel=FALSE)
+#' label_plot_time(tmp$xlim, step=3600*24, srt=270, format="%d %b %Y")
 #' 
 #' @export
-plot_time = function(x, m=NULL, taxon=NULL, xlim=as.interval(min(x), max(x)), step=3600*24, ...){
+plot_time = function(x, m=NULL, taxon=NULL, xlim=default_xlims(x), step=3600*24, xlabel=TRUE, ...){
+	
+	# if no taxa were given, set taxon of all wasps to ""
+	if (is.null(taxon)){
+		taxon = rep("", length(x))
+	}
+	
+	# get the number of taxa and their names
+	ntaxa = length(levels0(taxon))
+	taxa = levels0(taxon)
 	
 	# store various default arguments for the barplot
 	barplot_args = list(
 		axisnames = FALSE, 
 		border = FALSE,
+		col = default_colours(ntaxa),
 		space = 0, 
 		xaxs = "i",
 		xpd = FALSE,
@@ -45,18 +63,9 @@ plot_time = function(x, m=NULL, taxon=NULL, xlim=as.interval(min(x), max(x)), st
 	user_args = list(...)
 	barplot_args[names(user_args)] = user_args
 	
-	# if no taxa were given, set all taxa to ""
-	if (is.null(taxon)){
-		taxon = rep("", length(x))
-	}
-	
 	# create a sequence of time intervals that covers `xlim`
 	d = seq(xlim$s, xlim$e, step)
 	d = as.interval(d[2:length(d)] - step, d[2:length(d)])
-	
-	# get the number of taxa and their names
-	ntaxa = length(levels0(taxon))
-	taxa = levels0(taxon)
 
 	# create a blank matrix to store the bar heights in
 	height = matrix(
@@ -87,8 +96,13 @@ plot_time = function(x, m=NULL, taxon=NULL, xlim=as.interval(min(x), max(x)), st
 	
 	# barplot
 	xcoords = do.call(graphics::barplot, args=barplot_args)
-
+	
+	# add default x labels if asked to do so
+	if (xlabel){
+		label_plot_time(xlim, step)
+	}
+	
 	# return the bar positions and heights invisibly
-	invisible(list(x=xcoords, y=height, d=d))
+	invisible(list(x=xcoords, y=height, d=d, xlim=xlim))
 	
 }

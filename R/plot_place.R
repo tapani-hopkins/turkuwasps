@@ -46,7 +46,7 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	if (defaults){
 		
 		# get default bars and add them as factor levels to `x`
-		d = get_defaults(x)
+		d = default_bars(x)
 		x = d$x
 		
 		# add default colours to arguments, unless the user gave colours (or bars are split by taxon)

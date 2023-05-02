@@ -1,3 +1,29 @@
+#' Get default breaks for label_plot_time()
+#'
+#' Helper function used by [label_plot_time()]. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
+#'
+#' @return Vector of datetime objects. 
+#'
+default_breaks = function(){
+	
+	# store default breaks
+	breaks = as.datetime(c(
+		"1998-08-01 00:00:00 UTC-05:00", "1998-11-01 00:00:00 UTC-05:00", "1999-02-01 00:00:00 UTC-05:00",
+		"2000-01-01 00:00:00 UTC-05:00", "2000-04-01 00:00:00 UTC-05:00", "2000-07-01 00:00:00 UTC-05:00",
+		"2000-10-01 00:00:00 UTC-05:00", "2001-01-01 00:00:00 UTC-05:00", 
+		"2008-06-01 00:00:00 UTC-05:00", "2008-09-01 00:00:00 UTC-05:00",
+		"2011-04-01 00:00:00 UTC-05:00", "2011-07-01 00:00:00 UTC-05:00", "2011-10-01 00:00:00 UTC-05:00",
+		"2012-01-01 00:00:00 UTC-05:00", 
+		"2014-09-01 00:00:00 UTC+03:00", "2014-12-01 00:00:00 UTC+03:00", "2015-03-01 00:00:00 UTC+03:00", 
+		"2015-06-01 00:00:00 UTC+03:00", "2015-09-01 00:00:00 UTC+03:00"
+	))
+	
+	# return
+	return(breaks)
+	
+}
+
+
 #' Get default bar order and bar colours for barplots
 #'
 #' Helper function used by [plot_place()]. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
@@ -6,7 +32,7 @@
 #'
 #' @return List with items `x` (locations converted to factor, with the factor levels telling what bars to plot) and `colour` (the colours to give each bar). 
 #'
-get_defaults = function(x){
+default_bars = function(x){
 	
 	# find out if the locations are forest types, sites or traps
 	location = get_locationtype(x)	
@@ -31,9 +57,66 @@ get_defaults = function(x){
 }
 
 
+#' Get default colours for taxa
+#'
+#' Helper function used by e.g. [plot_time()]. Gets the default colours used to plot different species. Gets the colours from a sequence of 30 colours (15 unique), which is recycled if more than 30 colours are needed.
+#' 
+#' @param n Number of colours needed. 
+#'
+#' @return Vector of colours in hexadecimal (e.g. "#00FFFF"), of length `n`. 
+#'
+default_colours = function(n){
+	
+	# use three colour gradients, 5 colours in each
+	g1 = grDevices::colorRampPalette(c("darkgreen", "wheat1"))(5)
+	g2 = grDevices::colorRampPalette(c("darkred", "yellow"))(5)
+	g3 = grDevices::colorRampPalette(c("darkorchid4", "cyan"))(5)
+	
+	# place gradients in a sequence which cycles smoothly between dark and bright colours
+	col = c(g1, rev(g2), g3, rev(g1), g2, rev(g3))
+	
+	# pick the desired number of colours
+	col = rep(col, length.out=n)
+	
+	# return
+	return(col)
+	
+}
+
+
+#' Get default x limits for plot_time()
+#'
+#' Helper function used by [plot_time()]. Gets the default x limits to use for the plot.
+#'
+#' @param x Vector of interval objects, telling when each wasp was collected.
+#'
+#' @return Interval object. 
+#'
+default_xlims = function(x){
+	
+	# store default breaks in the x axis (≈ the start and end of each collecting event)
+	xlims = as.datetime(c("1998-07-01 00:00:00 UTC-05:00", "1999-03-01 00:00:00 UTC-05:00", "2000-01-01 00:00:00 UTC-05:00", "2001-02-01 00:00:00 UTC-05:00", "2008-05-01 00:00:00 UTC-05:00", "2008-09-01 00:00:00 UTC-05:00", "2011-03-01 00:00:00 UTC-05:00", "2012-01-01 00:00:00 UTC-05:00", "2014-08-01 00:00:00 UTC+03:00", "2015-10-01 00:00:00 UTC+03:00"))
+	
+	# get last breakpoint before the wasps were collected
+	s = xlims[xlims <= min(x)]
+	s = s[length(s)]
+
+	# get first breakpoint after the wasps were collected
+	e = xlims[xlims >= max(x)]
+	e = e[1]
+
+	# save as interval
+	xlim = as.interval(s, e)
+	
+	# return
+	return(xlim)
+	
+}
+
+
 #' Get data for locations
 #'
-#' Helper function used by e.g. [get_defaults()]. Gets the data for forest types, traps or other locations.
+#' Helper function used by e.g. [default_bars()]. Gets the data for forest types, traps or other locations.
 #'
 #' @param x Name of the location type as string. Currently one of "forest_type", "site", "trap" or "sample".
 #'
@@ -58,7 +141,7 @@ get_locationdata = function(x){
 
 #' Find out if locations are forest types, sites or traps
 #'
-#' Helper function used by e.g. [get_defaults()]. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
+#' Helper function used by e.g. [default_bars()]. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
 #'
 #' @param x Vector of traps, forest types or other locations. Either as strings or factor.
 #'
@@ -118,7 +201,7 @@ get_weights = function(barnames, m){
 
 #' Get factor levels
 #'
-#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector, whether or not the vector is factored. Basically a more readable wrapper for [levels()] and [factor()], equivalent to calling `levels(factor(x))`.
+#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector, even if the vector is not a factor. Basically a more readable wrapper for [levels()] and [factor()], equivalent to calling `levels(factor(x))`.
 #'
 #' @param x Vector whose factor levels are wanted.
 #' @param ... Other arguments passed to [factor()].

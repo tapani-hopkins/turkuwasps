@@ -13,7 +13,7 @@ get_locationdata(x)
 Data frame with the data of the location.
 }
 \description{
-Helper function used by e.g. \code{\link[=get_defaults]{get_defaults()}}. Gets the data for forest types, traps or other locations.
+Helper function used by e.g. \code{\link[=default_bars]{default_bars()}}. Gets the data for forest types, traps or other locations.
 }
 \seealso{
 \code{data(package="turkuwasps")} for a list of all the datasets in the package.

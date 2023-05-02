@@ -37,9 +37,9 @@ overlap(x, x[1])
 
 }
 \seealso{
-\code{\link[=as.datetime]{as.datetime()}}, \code{\link[=is_interval]{is_interval()}}, \code{\link[=overlap]{overlap()}}, \code{\link[=overlaps]{overlaps()}}, \code{\link[=tdiff]{tdiff()}}. The following base functions have been modified to work with datetimes:
+\code{\link[=as.datetime]{as.datetime()}}, \code{\link[=is_interval]{is_interval()}}, \code{\link[=means]{means()}}, \code{\link[=overlap]{overlap()}}, \code{\link[=overlaps]{overlaps()}}, \code{\link[=tdiff]{tdiff()}}. The following base functions have been modified to work with datetimes:
 \itemize{
-\item \code{\link[=c.interval]{c.interval()}}, \code{\link[=length.interval]{length.interval()}}, \code{\link[=print.interval]{print.interval()}}
+\item \code{\link[=c.interval]{c.interval()}}, \code{\link[=length.interval]{length.interval()}}, \code{\link[=max.interval]{max.interval()}}, \code{\link[=min.interval]{min.interval()}}, \code{\link[=print.interval]{print.interval()}}
 \item basic operators such as \code{+}, \code{-} (see examples)
 }
 }

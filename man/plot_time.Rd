@@ -8,30 +8,38 @@ plot_time(
   x,
   m = NULL,
   taxon = NULL,
-  xlim = as.interval(min(x), max(x)),
+  xlim = default_xlims(x),
   step = 3600 * 24,
+  xlabel = TRUE,
   ...
 )
 }
 \arguments{
-\item{x}{Vector of which trap, forest type or other location each wasp came from. Either as strings or factor. (If factor, and \code{defaults}=FALSE, one bar is plotted for each factor level, in the same order as the levels)}
+\item{x}{Vector of interval objects, telling when each wasp was collected.}
 
-\item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
+\item{m}{Data frame with the Malaise sample data, if wanting to scale by sampling effort (= number of traps in use at any given time). Must contain columns "start" and "end", giving start and end datetime of when each sample was collected. If NULL, the plot shows the total number of wasps collected per unit time, without taking into account how many traps were in use.}
 
-\item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if \code{beside} is set to FALSE by the user.)}
+\item{taxon}{Vector giving the taxon of each wasp. If given, shows each taxon in a different colour.}
 
-\item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}. These will override any default values (e.g. colours). Colours (argument \code{col}) are for each taxon if \code{taxon} was given, or for each bar if it was not.}
+\item{xlim}{Interval object (see \code{\link[=as.interval]{as.interval()}}) giving the desired left and right limits of the plot. If not given, default limits given by \code{\link[=default_xlims]{default_xlims()}} are used.}
 
-\item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
+\item{step}{Length in seconds of the time periods for which to count the number of wasps. Default is to plot wasps at a resolution of 86400 seconds = one day.}
+
+\item{xlabel}{If TRUE, the x axis is labelled (using default settings) by \code{\link[=label_plot_time]{label_plot_time()}}. If FALSE, the x axis is left blank.}
+
+\item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}, which handles the actual drawing. These will override any default values (e.g. colours, which by default come from \code{\link[=default_colours]{default_colours()}}). Colours (argument \code{col}) are for each taxon, or if taxa were not given then just one colour should be given. Argument \code{xlim} is handled differently to standard \code{\link[=barplot]{barplot()}}.}
 }
 \value{
-x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
+A list giving the x and y coordinates of each bar (= time period \code{step} seconds long), returned silently. The list has three items:
+\itemize{
+\item \code{x} The x coordinates of the centre of each bar, in plot coordinates. Use these to draw e.g. lines and further labels on the plot.
+\item \code{y} The height of each bar, in plot coordinates.
+\item \code{d} The start and end datetimes of each bar.
+\item \code{xlim} The left and right limits of the plot as an interval object.
+}
 }
 \description{
-Plot the number of wasps caught each day (or other time period). XXXXX
-}
-\details{
-The plotting of taxa is different if argument \code{beside} is set to FALSE. One bar will be shown for each location, with the bars split by taxon to show how many wasps of each taxon were caught. Default colours will not be used.
+Plot the number of wasps caught each day (or other time period). This is at heart function \code{\link[=barplot]{barplot()}}, with one bar for each time period.
 }
 \examples{
 # get example wasp data
@@ -43,10 +51,14 @@ tmp = ecology_usable(wasps)
 x = tmp$wasps
 m = tmp$samples
 
-# plot
-plot_place(x$trap, m)
+# get the start and end of when each wasp was collected
+waspdates = as.interval(x$start, x$end)
 
-# plot each species separately
-plot_place(x$forest_type, m, taxon=x$taxon)
+# plot
+plot_time(waspdates, m, x$taxon, ylab="wasps / trap day")
+
+# plot with modified x axis
+tmp = plot_time(waspdates, m, x$taxon, xlabel=FALSE)
+label_plot_time(tmp$xlim, step=3600*24, srt=270, format="\%d \%b \%Y")
 
 }

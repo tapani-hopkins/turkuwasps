@@ -13,5 +13,5 @@ get_locationtype(x)
 Name of the location type as string. Currently one of "forest_type", "site" or trap".
 }
 \description{
-Helper function used by e.g. \code{\link[=get_defaults]{get_defaults()}}. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
+Helper function used by e.g. \code{\link[=default_bars]{default_bars()}}. Checks what kind of locations a vector contains. Currently recognises forest types, sites and traps. Gives an error if some of the locations were not recognised, or different types of location are mixed.
 }

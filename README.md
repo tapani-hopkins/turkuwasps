@@ -58,7 +58,7 @@ plot_place(x$forest_type, m, taxon=x$taxon)
 
 ### Show when wasps were caught
 
-![Example image drawn by plot_time()](inst/example_images/plot_time.png | height=100)
+<img src="inst/example_images/plot_time.png" height="80">
 
 ``` r
 # store when each wasp was caught

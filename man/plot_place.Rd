@@ -43,3 +43,6 @@ plot_place(x$trap, m)
 plot_place(x$forest_type, m, taxon=x$taxon)
 
 }
+\seealso{
+\code{\link[=default_legend]{default_legend()}} for placing a default legend on this plot.
+}

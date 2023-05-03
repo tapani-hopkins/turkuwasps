@@ -58,6 +58,8 @@ plot_place(x$forest_type, m, taxon=x$taxon)
 
 ### Show when wasps were caught
 
+![  ](inst/example_images/plot_time.png)
+
 ``` r
 # store when each wasp was caught
 xdate = as.interval(x$start, x$end)

@@ -38,4 +38,10 @@ tmp = plot_place(x$trap, m)
 # add legend
 default_legend("forest_type", event=names(tmp)) 
 
+# plot over time
+plot_time(as.interval(x$start, x$end), taxon=x$taxon)
+
+# add legend
+default_legend(x$taxon, x="topleft")
+
 }

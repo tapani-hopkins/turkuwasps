@@ -42,6 +42,8 @@ m = tmp$samples
 
 ### Show where wasps were caught
 
+<img src="inst/example_images/plot_place.png" height="140">
+
 ``` r
 # show wasps caught in each forest type
 plot_place(x$forest_type)

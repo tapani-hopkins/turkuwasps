@@ -6,6 +6,8 @@
 #' @param event Character vector of what collecting events to include if making a forest type legend. Accepted events are "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". *Alternatively*, can be a character vector of locations (e.g. traps), in which case all collecting events involving those locations will be included. If NULL, all events are included. 
 #' @param ... Other arguments passed to [legend()]. Typically `x`, which gives the position of the legend (default is "topright"). Arguments `legend` and `fill` have no effect.
 #'
+#' @note Taxon names are automatically italicised by [as_italic()], on the assumption they are species names. If wanting non-italics, the legend will have to be drawn manually.
+#'
 #' @return List returned by [legend()]. Returned invisibly.
 #'
 #' @examples
@@ -24,12 +26,19 @@
 #' # add legend
 #' default_legend("forest_type", event=names(tmp)) 
 #'
+#' # plot over time
+#' plot_time(as.interval(x$start, x$end), taxon=x$taxon)
+#' 
+#' # add legend
+#' default_legend(x$taxon, x="topleft")
+#' 
 #' @export
 #'
 default_legend = function(what="forest_type", event=NULL, ...){
 	
 	# store various default arguments for the legend
 	legend_args = list(
+		cex = 0.8, 
 		x = "topright"
 	)
 	
@@ -52,18 +61,28 @@ default_legend = function(what="forest_type", event=NULL, ...){
 	}
 	
 	# create forest type legend if asked to do so..
-	if (what == "forest_type"){
+	if (what[1] == "forest_type"){
 		
 		# get forest type data of the selected collecting events
 		d = turkuwasps::forest_type
 		d = d[d$event %in% event, ] 
 		
 		# save forest types and their colours in the legend arguments
-		legend_args["legend"] = list(d$name)
-		legend_args["fill"] = list(d$colour)
+		legend_args$legend = d$name
+		legend_args$fill = d$colour
 		
+	# .. otherwise, create taxon legend
 	} else {
-		# show species (xxx to be added)
+		
+		# save the taxa and their colours in the legend arguments
+		taxa = levels0(what)
+		legend_args$legend = as_italic(taxa)
+		legend_args$fill = default_colours(length(taxa))
+		
+		# reverse the taxa and colours (taxa are stacked bottom to top in the plot)
+		legend_args$legend = rev(legend_args$legend)
+		legend_args$fill = rev(legend_args$fill)
+		
 	}
 	
 	# show the legend

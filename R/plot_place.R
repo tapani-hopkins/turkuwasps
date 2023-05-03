@@ -12,6 +12,8 @@
 #' 
 #' @return x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
 #' 
+#' @seealso [default_legend()] for placing a default legend on this plot.
+#'
 #' @examples
 #' # get example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)

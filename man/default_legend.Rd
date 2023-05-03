@@ -19,6 +19,9 @@ List returned by \code{\link[=legend]{legend()}}. Returned invisibly.
 \description{
 Add default legend to plots. Either a legend showing the forest types (in default order with default colours), or taxa (with default colour scheme).
 }
+\note{
+Taxon names are automatically italicised by \code{\link[=as_italic]{as_italic()}}, on the assumption they are species names. If wanting non-italics, the legend will have to be drawn manually.
+}
 \examples{
 # get example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)

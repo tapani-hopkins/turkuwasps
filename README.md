@@ -20,16 +20,15 @@ devtools::install_github("tapani-hopkins/turkuwasps")
 ```
 
 ## Usage
+More usage examples to come, package is still under construction.
 
-### Short version
+### Load package and read data
 
 ``` r
-# more usage examples to come, 
-# package is still under construction
-
 # load the package
 library(turkuwasps)
-
+```
+``` r
 # get example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
 wasps = read_wasps(f)
@@ -39,20 +38,38 @@ wasps = read_wasps(f)
 tmp = ecology_usable(wasps)
 x = tmp$wasps
 m = tmp$samples
-
-# show wasps (per trap day) caught by each trap
-plot_place(x$trap, m)
-
-# show wasps (per trap day) caught in each forest type, with legend
-plot_place(x$forest_type, m)
-default_legend("forest_type", "Uganda 2014-2015")
-
-# show wasps (per trap day), with each species separate
-plot_place(x$forest_type, m, taxon=x$taxon)
-
-
-
 ```
 
+### Show where wasps were caught
+
+``` r
+# show wasps caught in each forest type
+plot_place(x$forest_type)
+
+# show wasps caught by each trap, scaled by sampling effort
+plot_place(x$trap, m, ylab="Wasps / trap day")
+
+# add legend
+default_legend("forest_type", "Uganda 2014-2015")
+
+# you can also show each species separately
+plot_place(x$forest_type, m, taxon=x$taxon)
+```
+
+### Show when wasps were caught
+
+``` r
+# store when each wasp was caught
+xdate = as.interval(x$start, x$end)
+
+# show when wasps were caught
+plot_time(xdate)
+
+# show when wasps were caught, split by species and scaled by sampling effort
+plot_time(xdate, m, taxon=x$taxon, ylab="wasps / trap day")
+
+# add legend
+default_legend(x$taxon, x="topleft")
+```
 
 

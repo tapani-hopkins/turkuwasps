@@ -8,6 +8,16 @@
 #' @examples
 #' \dontrun{
 #'
+#' # save plot commands..
+#' figure = expression( {
+#' 	barplot(1:10, space=0, col=1:10)
+#' 	legend("topleft", legend=1:10, fill=1:10)
+#' } )
+#'
+#' # .. then save to file
+#' save_png("example.png", figure)
+#' 
+#' # alternatively, you can write the commands in the function
 #' save_png("example.png", {
 #' 	barplot(1:10, space=0, col=1:10)
 #' 	legend("topleft", legend=1:10, fill=1:10)
@@ -22,7 +32,7 @@ save_png = function(f="turkuwasp_image.png", what){
 	grDevices::png(filename=f, width=164, height=140, units="mm", bg="transparent", res=300)
 	
 	# do plotting commands
-	what
+	eval(what)
 	
 	# save png
 	grDevices::dev.off()

@@ -17,6 +17,16 @@ Save plots to file as a PNG image. This is a wrapper for \code{\link[=png]{png()
 \examples{
 \dontrun{
 
+# save plot commands..
+figure = expression( {
+	barplot(1:10, space=0, col=1:10)
+	legend("topleft", legend=1:10, fill=1:10)
+} )
+
+# .. then save to file
+save_png("example.png", figure)
+
+# alternatively, you can write the commands in the function
 save_png("example.png", {
 	barplot(1:10, space=0, col=1:10)
 	legend("topleft", legend=1:10, fill=1:10)

@@ -11,20 +11,22 @@ plot_place(x, m = NULL, taxon = NULL, defaults = TRUE, ...)
 
 \item{m}{Data frame with the Malaise sample data, if wanting to scale the bars by sampling effort. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted). If NULL, bars show the number of  wasps without taking sampling effort into account.}
 
-\item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately. (but see "Details" for what happens if \code{beside} is set to FALSE by the user.)}
+\item{taxon}{Vector giving the taxon of each wasp. If given, plots each taxon separately.}
 
 \item{defaults}{If TRUE, uses default settings for what bars to show, and for the order and colour of the bars. For example, if \code{x} contains Ugandan traps, draws one bar for each Ugandan trap, in successional order (primary forest to farm), with primary forest in dark green, swamp in blue etc.}
 
-\item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}. These will override any default values (e.g. colours). Colours (argument \code{col}) are for each taxon if \code{taxon} was given, or for each bar if it was not.}
+\item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}. These will override any default values such as colours. Colours (argument \code{col}) are for each bar (but see "Details" for what happens if \code{beside} is set to FALSE by the user.).}
 }
 \value{
-x-coordinates of the bars, returned silently (save these to variable to continue drawing on the barplot).
+List with items \code{x} (x coordinates of the bars) and \code{y} (heights of the bars), returned silently. Save these to variable to continue drawing on the barplot. Both \code{x} and \code{y} are taxon * location tables, with as many rows as there are taxa, and  as many columns as there are locations.
 }
 \description{
 Barplot the number of wasps caught in each trap, forest type, or other location. This is basically a wrapper for two base R functions: \code{\link[=table]{table()}} for counting how many wasps belong to each bar, and \code{\link[=barplot]{barplot()}} to draw the plot.
 }
 \details{
-The plotting of taxa is different if argument \code{beside} is set to FALSE. One bar will be shown for each location, with the bars split by taxon to show how many wasps of each taxon were caught. Default colours will not be used.
+The plot will look different depending on whether taxa (argument \code{taxon}) were given or not. If they were not, a fairly standard barplot is drawn, with one bar for each location (trap, forest type, site..). If taxa are given, one set of such bars will be drawn for each taxon: i.e. first draw the bars of taxon 1, then to the right of that the bars of taxon 2, etc.
+
+Argument \code{beside} can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Any colours given by argument \code{col} will be for each taxon, not for each bar. Normally it is best to leave argument \code{beside} alone.
 }
 \examples{
 # get example wasp data

@@ -225,7 +225,7 @@ get_weights = function(barnames, m){
 
 #' Get factor levels
 #'
-#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector, even if the vector is not a factor. Basically a more readable wrapper for [levels()] and [factor()], equivalent to calling `levels(factor(x))`.
+#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling `levels(factor(x))`). Basically a more readable wrapper for [levels()] and [factor()].
 #'
 #' @param x Vector whose factor levels are wanted.
 #' @param ... Other arguments passed to [factor()].
@@ -235,7 +235,12 @@ get_weights = function(barnames, m){
 levels0 = function(x, ...){
 	
 	# get factor levels
-	res = levels(factor(x, ...))
+	res = levels(x)
+	
+	# if there are no factor levels, factor `x` first
+	if (is.null(res)){
+		res = levels(factor(x, ...))
+	}
 	
 	# return
 	return(res)

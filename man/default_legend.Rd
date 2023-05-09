@@ -36,7 +36,7 @@ m = tmp$samples
 tmp = plot_place(x$trap, m)
 
 # add legend
-default_legend("forest_type", event=names(tmp)) 
+default_legend("forest_type", event=colnames(tmp$x)) 
 
 # plot over time
 plot_time(as.interval(x$start, x$end), taxon=x$taxon)

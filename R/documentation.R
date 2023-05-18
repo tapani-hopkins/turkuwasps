@@ -19,18 +19,20 @@
 #'
 #' Ugandan and Peruvian Malaise samples. Used by e.g. [read_wasps()] to get forest type etc for each wasp, and by other functions to find out when and how long each sample was collected. Could also be used to get all the samples, what order to plot them in by default, and what colours to use.
 #'
-#' @format A data frame with 10 variables. The variables are:
+#' @format A data frame with 13 variables. The variables are:
 #' * name Name of the sample, e.g. "CCT1-141022".
 #' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
 #' * forest_type Name of forest type, e.g. "primary". 
 #' * site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
 #' * trap Name of trap, e.g. "CCT1". 
 #' * colour Colour to use by default when plotting. Different colour for each forest type.
-#' * latitude Latitude of trap, in decimal degrees. 
 #' * start Datetime when sample started to be collected by the Malaise trap, e.g. "2014-10-14 11:04:00 UTC+03:00".
 #' * end Datetime when sample stopped being collected by the Malaise trap, e.g. "2014-10-22 11:34:00 UTC+03:00".
 #' * tdiff Length of time the sample was collected, in days.
 #' * damaged TRUE if the sample was damaged in some way (e.g. trampled by elephant), or doesn't have a complete catch for some other reason. FALSE if all is ok. Damaged samples and wasps from them should not be included in ecological analyses.
+#' * deadwood Amount of dead wood near trap. Clearly decaying wood, sum of diameter squared per distance from trap.
+#' * livewood Amount of live trees near trap. Sum of diameter (dbh) squared per distance from trap. 
+#' * canopy_open Percentage of the sky visible from the trap. (0% = closed canopy, 100% = open sky)
 #' 
 #' Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
 #'
@@ -73,6 +75,26 @@
 #'
 #' @seealso Zenodo has more details on the trap data, e.g. on how the amount of dead and live wood was calculated: https://doi.org/10.5281/zenodo.2225643
 "trap"
+
+
+#' Weather
+#'
+#' Weather data from Uganda and Peru. Used e.g. to plot rainfall or temperature.
+#'
+#' @format A data frame with 8 variables. The variables are:
+#' * event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". 
+#' * start Datetime when weather started to be measured, e.g. "2014-10-14 09:00:00 UTC+03:00". There is some guesswork involved in these: I believe that Ugandan rain, min and max temperature were collected mornings about 9 AM, and are for the previous 24h; and that in Peru they are for the period 8 AM to next day 8 AM. 
+#' * end Datetime when weather stopped being measured, e.g. "2014-10-15 09:00:00 UTC+03:00". There is some guesswork involved in these: I believe that Ugandan rain, min and max temperature were collected mornings about 9 AM, and are for the previous 24h; and that in Peru they are for the period 8 AM to next day 8 AM. 
+#' * rain Amount of rain in millimetres during the (24 hour) measurement interval.
+#' * t_min Minimum temperature in Celsius during the (24 hour) measurement interval. For the Ugandan data, this is from the forest thermometer.
+#' * t_max Maximum temperature in Celsius during the (24 hour) measurement interval. For the Ugandana data, this si from the forest thermometer.
+#' * t_avg Average temperature in Celsius during the (24 hour) measurement interval. Only for Peruvian weather data.
+#' * season One of "dry" or "wet", giving an approximate estimate of whether the measurement occurred during the dry or wet season. Only for Ugandan weather data.
+#' 
+#' @seealso Zenodo has more details on the Ugandan and Peruvian weather data:
+#' https://doi.org/10.5281/zenodo.2225643
+#' https://doi.org/10.5281/zenodo.4030168
+"weather"
 
 
 #' Example wasp data

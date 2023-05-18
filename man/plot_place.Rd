@@ -26,7 +26,7 @@ Barplot the number of wasps caught in each trap, forest type, or other location.
 \details{
 The plot will look different depending on whether taxa (argument \code{taxon}) were given or not. If they were not, a fairly standard barplot is drawn, with one bar for each location (trap, forest type, site..). If taxa are given, one set of such bars will be drawn for each taxon: i.e. first draw the bars of taxon 1, then to the right of that the bars of taxon 2, etc.
 
-Argument \code{beside} can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Any colours given by argument \code{col} will be for each taxon, not for each bar. Normally it is best to leave argument \code{beside} alone.
+Argument \code{beside} can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Colours will be for each taxon, not for each bar. (Default taxon colours will be used if \code{defaults} is TRUE) Normally it is best to leave argument \code{beside} alone.
 }
 \examples{
 # get example wasp data

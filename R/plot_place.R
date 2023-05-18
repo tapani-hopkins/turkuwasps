@@ -10,7 +10,7 @@
 #'
 #' @details The plot will look different depending on whether taxa (argument `taxon`) were given or not. If they were not, a fairly standard barplot is drawn, with one bar for each location (trap, forest type, site..). If taxa are given, one set of such bars will be drawn for each taxon: i.e. first draw the bars of taxon 1, then to the right of that the bars of taxon 2, etc.
 #' 
-#' Argument `beside` can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Any colours given by argument `col` will be for each taxon, not for each bar. Normally it is best to leave argument `beside` alone. 
+#' Argument `beside` can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Colours will be for each taxon, not for each bar. (Default taxon colours will be used if `defaults` is TRUE) Normally it is best to leave argument `beside` alone. 
 #' 
 #' @return List with items `x` (x coordinates of the bars) and `y` (heights of the bars), returned silently. Save these to variable to continue drawing on the barplot. Both `x` and `y` are taxon * location tables, with as many rows as there are taxa, and  as many columns as there are locations. 
 #' 
@@ -69,9 +69,18 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 		d = default_bars(x)
 		x = d$x
 		
-		# add default colours to arguments if `beside`is TRUE (and user did not give colours)
-		if (barplot_args$beside & is.null(barplot_args$col)){
-			barplot_args$col = d$colour	
+		# add default colours to arguments (unless user gave colours)
+		if (is.null(barplot_args$col)){
+			
+			# add default colours for locations..
+			if (barplot_args$beside){
+				barplot_args$col = d$colour	
+				
+			# .. or default colours for taxa
+			} else {
+				barplot_args$col = default_colours(nlevels0(taxon))
+			}
+			
 		}
 		
 	}

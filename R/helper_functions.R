@@ -228,9 +228,11 @@ get_weights = function(barnames, m){
 #' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling `levels(factor(x))`). Basically a more readable wrapper for [levels()] and [factor()].
 #'
 #' @param x Vector whose factor levels are wanted.
-#' @param ... Other arguments passed to [factor()].
+#' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
 #'
 #' @return Character vector giving the levels of `x`. 
+#'
+#' seealso [nlevels0()]
 #'
 levels0 = function(x, ...){
 	
@@ -242,6 +244,27 @@ levels0 = function(x, ...){
 		res = levels(factor(x, ...))
 	}
 	
+	# return
+	return(res)
+}
+
+
+#' Get number of factor levels
+#'
+#' Helper function used e.g. by [plot_place()]. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to [nlevels()], except handles vectors which are not a factor.
+#'
+#' @param x Vector whose number of factor levels is wanted.
+#' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
+#'
+#' @return Number of levels of `x`. 
+#'
+#' seealso [levels0()]
+#'
+nlevels0 = function(x, ...){
+	
+	# get number of factor levels
+	res = length(levels0(x, ...))
+
 	# return
 	return(res)
 }

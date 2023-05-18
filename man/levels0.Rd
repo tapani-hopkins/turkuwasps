@@ -9,10 +9,12 @@ levels0(x, ...)
 \arguments{
 \item{x}{Vector whose factor levels are wanted.}
 
-\item{...}{Other arguments passed to \code{\link[=factor]{factor()}}.}
+\item{...}{Other arguments passed to \code{\link[=factor]{factor()}} if \code{x} is not already a factor.}
 }
 \value{
 Character vector giving the levels of \code{x}.
+
+seealso \code{\link[=nlevels0]{nlevels0()}}
 }
 \description{
 Helper function used e.g. by \code{\link[=default_legend]{default_legend()}}. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling \code{levels(factor(x))}). Basically a more readable wrapper for \code{\link[=levels]{levels()}} and \code{\link[=factor]{factor()}}.

@@ -15,7 +15,16 @@ A data frame with 13 variables. The variables are:
 \item colour Colour to use by default when plotting. Different colour for each forest type.
 \item start Datetime when sample started to be collected by the Malaise trap, e.g. "2014-10-14 11:04:00 UTC+03:00".
 \item end Datetime when sample stopped being collected by the Malaise trap, e.g. "2014-10-22 11:34:00 UTC+03:00".
+\item days Number of days from from the start of the sampling event to the middle of when the sample was collected. The start of each sampling event is (somewhat arbitrarily):
+\itemize{
+\item "Amazon 1998" : "1998-08-01 00:00:00 UTC-05:00"
+\item "Amazon 2000" : "2000-01-01 00:00:00 UTC-05:00"
+\item "Amazon 2008" : "2008-05-01 00:00:00 UTC-05:00"
+\item "Amazon 2011" : "2011-04-01 00:00:00 UTC-05:00"
+\item "Uganda 2014-2015" : "2014-09-01 00:00:00 UTC+03:00" .
+}
 \item tdiff Length of time the sample was collected, in days.
+\item tdiff_log Logarithm of the length of time (in days) the sample was collected. Base \code{e}.
 \item damaged TRUE if the sample was damaged in some way (e.g. trampled by elephant), or doesn't have a complete catch for some other reason. FALSE if all is ok. Damaged samples and wasps from them should not be included in ecological analyses.
 \item deadwood Amount of dead wood near trap. Clearly decaying wood, sum of diameter squared per distance from trap.
 \item livewood Amount of live trees near trap. Sum of diameter (dbh) squared per distance from trap.

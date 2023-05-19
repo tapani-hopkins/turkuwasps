@@ -1,0 +1,13 @@
+citHeader("To cite turkuwasps in publications you can use:")
+
+citEntry(
+  entry    = "Manual",
+  title    = "turkuwasps: Analyse the ecology and taxonomy of tropical wasps",
+  author   = "Tapani Hopkins",
+  year     = "2023",
+  note     = "R package version 0.0.0.9000",
+  url      = "https://github.com/tapani-hopkins/turkuwasps",
+  textVersion = paste(
+"Hopkins T 2023. turkuwasps: Analyse the ecology and taxonomy of tropical wasps. R package version 0.0.0.9000, https://github.com/tapani-hopkins/turkuwasps"
+  )
+)

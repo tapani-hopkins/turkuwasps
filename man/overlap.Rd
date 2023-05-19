@@ -9,7 +9,7 @@ overlap(x, with)
 \arguments{
 \item{x}{Vector of intervals to check for overlap.}
 
-\item{with}{Interval objects that \code{x} overlap with.}
+\item{with}{Interval object that the intervals in \code{x} overlap with.}
 }
 \value{
 Vector of numbers, giving the number of seconds that each interval in \code{x} overlaps the interval with.

@@ -258,7 +258,7 @@ Ops.interval = function (e1, e2){
 #' Get the number of seconds that interval objects overlap with an interval. 
 #'
 #' @param x Vector of intervals to check for overlap.
-#' @param with Interval objects that `x` overlap with.
+#' @param with Interval object that the intervals in `x` overlap with.
 #'
 #' @return Vector of numbers, giving the number of seconds that each interval in `x` overlaps the interval with.
 #'

@@ -33,6 +33,8 @@
 #' * deadwood Amount of dead wood near trap. Clearly decaying wood, sum of diameter squared per distance from trap.
 #' * livewood Amount of live trees near trap. Sum of diameter (dbh) squared per distance from trap. 
 #' * canopy_open Percentage of the sky visible from the trap. (0% = closed canopy, 100% = open sky)
+#' * rain Average daily rainfall (mm) when the sample was collected. Weighted average: weather measurements that occurred entirely during the sampling period are weighted by 1, other measurements are weighted by how much they overlap in time (e.g. half of weather measurement overlaps with sampling period = weighted by 0.5).
+#' * t_max Average daily maximum temperature (Celsius) when the sample was collected. Weighted average: weather measurements that occurred entirely during the sampling period are weighted by 1, other measurements are weighted by how much they overlap in time (e.g. half of weather measurement overlaps with sampling period = weighted by 0.5).
 #' 
 #' Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
 #'

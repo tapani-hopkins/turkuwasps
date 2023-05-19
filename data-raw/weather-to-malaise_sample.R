@@ -1,4 +1,4 @@
-## code which was used to add weather data to `malaise_sample`
+## code which was used to add weather data to dataset `malaise_sample`
 ## can be used to update the data, or add more of it
 
 # save sample and weather data in shorter variables

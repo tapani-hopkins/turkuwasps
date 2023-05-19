@@ -38,6 +38,7 @@
 #' 
 #' Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
 #'
+#' @seealso [weather], which variables "rain" and "t_max" are based on. The code used to add the variables is in folder "data-raw" at https://github.com/tapani-hopkins/turkuwasps; this folder is not included in the loaded package.
 "malaise_sample"
 
 

@@ -32,4 +32,7 @@ malaise_sample
 \description{
 Ugandan and Peruvian Malaise samples. Used by e.g. \code{\link[=read_wasps]{read_wasps()}} to get forest type etc for each wasp, and by other functions to find out when and how long each sample was collected. Could also be used to get all the samples, what order to plot them in by default, and what colours to use.
 }
+\seealso{
+\link{weather}, which variables "rain" and "t_max" are based on. The code used to add the variables is in folder "data-raw" at https://github.com/tapani-hopkins/turkuwasps; this folder is not included in the loaded package.
+}
 \keyword{datasets}

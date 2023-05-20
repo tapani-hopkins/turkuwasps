@@ -138,6 +138,31 @@ default_xlims = function(x){
 }
 
 
+#' Filter samples by collecting event of wasps
+#'
+#' Helper function used by [resample()]. Filters samples based on the caught wasps. Only samples from the same collecting event(s) as the wasps are kept.
+#'
+#' @param x Vector of which sample each wasp came from. Character or factor.
+#' @param m Data frame with the Malaise sample data. Must contain columns "name" and "event".
+#'
+#' @return Data frame with the Malaise sample data. Only contains samples from the same collecting event(s) as the wasps came from.
+#'
+filter_samples = function(x, m){
+		
+	# find out what event(s) these wasps come from
+	i = match(x, m$name)
+	events = levels0(m$event[i])
+		
+	# get samples from those events
+	i = which(m$event %in% events)
+	m = m[i, ]
+	
+	# return
+	return(m)
+	
+}
+
+
 #' Get data for locations
 #'
 #' Helper function used by e.g. [default_bars()]. Gets the data for forest types, traps or other locations.

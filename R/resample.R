@@ -52,12 +52,40 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 	# add the fitted model to the analysis arguments
 	analysis_args$object = fit
 	
-	# 
-	if (is.null(pairwise)){
-		a = do.call(mvabund::anova.manyglm, args=analysis_args)
-	
 	#
-	} else {
+	a = do.call(mvabund::anova.manyglm, args=analysis_args)
+	
+	# xxx works if pairwise is one variable, not vector. Move to helper function!
+	if (! is.null(pairwise)){
+		
+		# make a copy of the sample data and analysis arguments
+		M = m
+		args2 = analysis_args
+		
+		# create empty list to save analysis results in
+		summaries = list()
+		
+		# get the levels of the variable (e.g. forest types, sites..)
+		levs = levels0(m[, pairwise])
+		
+		# run analyses several times, each time comparing a different level to the others
+		# (ignore last level, since that will already have been comapred to the others)
+		for (i in levs[-length(levs)]){
+			
+			# compare level `i` to the others (by making it the first factor level)
+			M[, pairwise] = relevel0(m[, pairwise], i)
+			
+			# fit the model to the data and save in arguments
+			args2$object = mvabund::manyglm(model, data=M, family=family)
+			
+			# analyse and add analysis results to list
+			s = do.call(mvabund::summary.manyglm, args=args2)
+			summaries = c(summaries, list(s))
+			
+		}
+		
+			
+		# xxx extract p values and perhaps fitted values from summaries
 		
 	}
 	

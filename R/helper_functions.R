@@ -295,6 +295,31 @@ nlevels0 = function(x, ...){
 }
 
 
+#' Relevel levels of a factor or vector
+#'
+#' Helper function used e.g. by [resample()]. Moves one of a vector's factor levels to first place. If the vector is not a factor, factors it first. Equivalent to [relevel()], except handles vectors which are not a factor.
+#'
+#' @param x Vector.
+#' @param ref Which level to move to first place. Usually character string.
+#'
+#' @return Vector `x` with the factor levels placed in a new order. 
+#'
+relevel0 = function(x, ref){
+	
+	# make sure `x` is a factor
+	if (! is.factor(x)){
+		x = factor(x)
+	}
+	
+	# call default relevel
+	res = relevel(x, ref)
+	
+	# return
+	return(res)
+	
+}
+
+
 #' Add together all the numbers that belong to the same category
 #'
 #' Helper function used by [get_weights()]. Used to count the total sampling effort for each forest type, trap or other location. This is basically a wrapper for [aggregate()].

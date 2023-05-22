@@ -231,6 +231,8 @@ get_locationtype = function(x){
 #'
 #' @return Matrix of the p values. Square matrix with row and column names giving the two levels that were compared. (e.g. to get the p value for a difference between forest and clearcut, check row "forest" and column "clearcut") 
 #'
+#' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
 get_p = function(summaries, pairwise, levs){
 
 	# create an empty matrix for overall p values
@@ -284,6 +286,8 @@ get_p = function(summaries, pairwise, levs){
 #' @return List of matrixes of the p values. One list item for each taxon, named with the taxon name. Each matrix is a square matrix with row and column names giving the two levels that were compared. (e.g. to get the p value for a difference between forest and clearcut, check row "forest" and column "clearcut") 
 #' To get the p values from the list, type e.g. `p[["Epirhyssa quagga]]["primary", "clearcut"]`.
 #'
+#' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
 get_p_sp = function(summaries, pairwise, levs){
 
 	# create an empty matrix for p values
@@ -334,6 +338,53 @@ get_p_sp = function(summaries, pairwise, levs){
 	# return
 	return(p)
 	
+}
+
+
+#' Analyse pairwise differences with summary.manyglm
+#'
+#' Helper function used by [resample()]. Runs [summary.manyglm()] multiple times, to test for differences between all the levels of a categorical variable. E.g. if forest type is being analysed, analyses the differences between primary and disturbed forest, primary and clearcut, disturbed and clearcut, etc.. 
+#'
+#' @param m Data frame with the Malaise sample data. Must contain the columns given in `model`.
+#' @param pairwise Name of the variable to get pairwise p values for. Character string. E.g. "forest_type". Must be in `model`.
+#' @param model Character string or formula (see [as.formula()]) giving the model to fit. Generally something like "mv ~ offset(tdiff_log) + days + rain + forest_type + deadwood". The variables should be found as column names in `m`.
+#' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
+#' @param analysis_args List of arguments to pass to [summary.manyglm()]. 
+#'
+#' @return List of results given by [summary.manyglm()]. Each result will be otherwise identical, except a different level of `pairwise` will be compared to. E.g. first result will compare primary forest to other forest types, second result disturbed forest to other forest types, etc. One list item for each level of `pairwise`, except the last (since that has already been compared to all the others).
+#'
+#' @seealso [get_p()] and [get_p_sp()] to convert the results to something more readable.
+#'
+get_summaries = function(m, pairwise, model, family, analysis_args){
+	
+		# make a copy of the sample data
+		M = m
+		
+		# create empty list to save analysis results in
+		summaries = list()
+		
+		# get the levels of the variable (e.g. forest types, sites..)
+		levs = levels0(m[, pairwise])
+		
+		# run analyses several times, each time comparing a different level to the others
+		# (ignore last level, since that will already have been compared to the others)
+		for (i in levs[-length(levs)]){
+			
+			# compare level `i` to the others (by making it the first factor level)
+			M[, pairwise] = relevel0(m[, pairwise], i)
+			
+			# fit the model to the data and save in arguments
+			analysis_args$object = mvabund::manyglm(model, data=M, family=family)
+			
+			# analyse and add analysis results to list
+			s = do.call(mvabund::summary.manyglm, args=analysis_args)
+			summaries = c(summaries, list(s))
+			
+		}
+		
+		# return
+		return(summaries)
+		
 }
 
 

@@ -69,7 +69,7 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 		levs = levels0(m[, pairwise])
 		
 		# run analyses several times, each time comparing a different level to the others
-		# (ignore last level, since that will already have been comapred to the others)
+		# (ignore last level, since that will already have been compared to the others)
 		for (i in levs[-length(levs)]){
 			
 			# compare level `i` to the others (by making it the first factor level)

@@ -9,7 +9,7 @@
 #' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
 #' @param ...  Other parameters passed to [anova.manyglm()], and [summary.manyglm()]. These will override any default parameters. In general, there will be little need to adjust anything except `nBoot` (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. `nBoot=499`, which can take several hours to finish.  
 #' 
-#' @return List with items:
+#' @return List with items (xxx to be updated):
 #' * anova Results of [anova.manyglm()]
 #' * fit Fitted values for each sample and taxon.
 #' 
@@ -55,19 +55,24 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 	# test which variables had a significant effect on wasp catches
 	a = do.call(mvabund::anova.manyglm, args=analysis_args)
 	
-	# get p values between the levels of the variable given by `pairwise`
+	# extract the p values (both overall and for each taxon)
+	p = a$table[, 4, drop=F]
+	p_sp = a$uni.p
+	attributes(p_sp)$title = NULL
+	
+	# if `pairwise` was given, test for differences between the levels of that variable
 	if (! is.null(pairwise)){
 		
 		# test which levels (e.g. forest types) differed significantly from each other
 		summaries = get_summaries(m, pairwise, model, family, analysis_args)	
 		
 		# extract the p values (both overall and for each taxon)
-		p_pairwise = get_p(summaries, pairwise, levs)
-		p_pairwise_sp = get_p_sp(summaries, pairwise, levs)
+		p_pairwise = get_p(summaries, pairwise, levels0(m[, pairwise]))
+		p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
 		
 	}
 	
-	# xxx modify these!!
-	return(list(fit=fit$fitted.values, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, anova=a, summaries=summaries))
+	# return
+	return(list(fit=fit$fitted.values, coefficients=fit$coefficients, p=p, p_sp=p_sp, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, mg=fit, anova=a, summaries=summaries))
 	
 }

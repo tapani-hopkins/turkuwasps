@@ -20,3 +20,6 @@ To get the p values from the list, type e.g. \verb{p[["Epirhyssa quagga]]["prima
 \description{
 Helper function used by \code{\link[=resample]{resample()}}. Extracts the p values from the results given by \code{\link[=summary.manyglm]{summary.manyglm()}}, and saves in a more convenient format. This extracts the p values between levels of a variable for each taxon separately: e.g. if forest type has been analysed, gets the p values for differences between primary and disturbed forest, primary and clearcut etc, for species 1, species 2 etc..
 }
+\seealso{
+\code{\link[=get_summaries]{get_summaries()}} which will typically be used to get the list given as parameter \code{summaries}.
+}

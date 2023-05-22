@@ -19,3 +19,6 @@ Matrix of the p values. Square matrix with row and column names giving the two l
 \description{
 Helper function used by \code{\link[=resample]{resample()}}. Extracts the p values from the results given by \code{\link[=summary.manyglm]{summary.manyglm()}}, and saves in a more convenient format. This extracts the p values between levels of a variable: e.g. if forest type has been analysed, gets the p values for differences between primary and disturbed forest, primary and clearcut etc.
 }
+\seealso{
+\code{\link[=get_summaries]{get_summaries()}} which will typically be used to get the list given as parameter \code{summaries}.
+}

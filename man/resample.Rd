@@ -13,14 +13,14 @@ resample(model, x, m, pairwise = NULL, family = "negative.binomial", ...)
 
 \item{m}{Data frame with the Malaise sample data. Must contain columns "name" and "event".}
 
-\item{pairwise}{Character vector of the columns in \code{m} for which pairwise p values should be calculated. E.g. \code{pairwise = "forest_type"} will check what forest types differ significantly from each other, not just if significant differences exist between forest types. Should only be used for categorical variables such as forest type, trap etc; not numeric such as rainfall. If NULL, only checks if significant differences exist.}
+\item{pairwise}{Character string giving the column in \code{m} for which pairwise p values should be calculated. E.g. \code{pairwise = "forest_type"} will check what forest types differ significantly from each other, not just if significant differences exist between forest types. Should only be used for categorical variables such as forest type, trap etc; not numeric such as rainfall. If NULL, only checks if significant differences exist.}
 
 \item{family}{Probability distribution used to fit the model. Passed to \code{\link[=manyglm]{manyglm()}}. In general, this will be "negative.binomial" or "poisson".}
 
 \item{...}{Other parameters passed to \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. These will override any default parameters. In general, there will be little need to adjust anything except \code{nBoot} (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. \code{nBoot=499}, which can take several hours to finish.}
 }
 \value{
-List with items:
+List with items (xxx to be updated):
 \itemize{
 \item anova Results of \code{\link[=anova.manyglm]{anova.manyglm()}}
 \item fit Fitted values for each sample and taxon.

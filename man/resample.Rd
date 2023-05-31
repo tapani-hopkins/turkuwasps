@@ -17,7 +17,7 @@ resample(model, x, m, pairwise = NULL, family = "negative.binomial", ...)
 
 \item{family}{Probability distribution used to fit the model. Passed to \code{\link[=manyglm]{manyglm()}}. In general, this will be "negative.binomial" or "poisson".}
 
-\item{...}{Other parameters passed to \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. These will override any default parameters. In general, there will be little need to adjust anything except \code{nBoot} (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. \code{nBoot=499}, which can take hours or days to finish.}
+\item{...}{Other parameters passed to \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. These will override any default parameters. In general, there will be little need to adjust anything except \code{nBoot} (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. \code{nBoot=499}, which can take hours to finish.}
 }
 \value{
 List with items:
@@ -34,7 +34,7 @@ List with items:
 }
 }
 \description{
-Fit generalised linear models to the wasp catches, and get the p values for whether forest type, rain etc affect the catch of each species. This is basically a wrapper for the package \link{mvabund}, functions \code{\link[=manyglm]{manyglm()}}, \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. The analyses take a long time to finish, anything from some minutes (\code{nBoot=9}) to hours or days (\code{nBoot=499})!
+Fit generalised linear models to the wasp catches, and get the p values for whether forest type, rain etc affect the catch of each species. This is basically a wrapper for the package \link{mvabund}, functions \code{\link[=manyglm]{manyglm()}}, \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. The analyses take a long time to finish, anything from some minutes (\code{nBoot=9}) to hours (\code{nBoot=499})!
 }
 \details{
 This function is in effect a translator for the \link{mvabund} package: it converts the wasp data to the format mvabund expects, does the analyses, then extracts the relevant results in a readable format. Although much easier to use than standard mvabund, the returned results are still a bit on the complex side.

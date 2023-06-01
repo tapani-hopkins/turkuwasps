@@ -19,13 +19,23 @@ for (i in 1:length(dm)){
 	# find out how much each weather measurement overlaps in time with the sample
 	over = overlap(dw, dm[i])
 	
-	# get weights for a weighted average
-	weight = over / sum(over, na.rm=TRUE)
+	# if there are no weather measurements for this sample, set rain and temp to NA..
+	if (sum(over) == 0){
+		m$rain[i] = NA
+		m$t_max[i] = NA
+		
+	# .. if there are weather measurements, get average rain and temp
+	} else {
+		
+		# get weights for a weighted average
+		weight = over / sum(over, na.rm=TRUE)
 	
-	# get average rain and temp, 
-	# weighted by how much each weather measurement overlapped with the sample collection
-	m$rain[i] = sum(weight * w$rain , na.rm=TRUE)
-	m$t_max[i] = sum(weight * w$t_max , na.rm=TRUE)
+		# get average rain and temp, 
+		# weighted by how much each weather measurement overlapped with the sample collection
+		m$rain[i] = sum(weight * w$rain , na.rm=TRUE)
+		m$t_max[i] = sum(weight * w$t_max , na.rm=TRUE)
+	
+	}
 	
 }
 

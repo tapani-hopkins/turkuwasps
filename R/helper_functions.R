@@ -497,7 +497,7 @@ nlevels0 = function(x, ...){
 #'
 #' Helper function used by [explore()]. Plots a scatterplot of e.g. rain on the x axis and number of wasps caught in each sample on the y axis. But also adds:
 #' * A fitted line showing trends (e.g. decreasing catch the more rain there is).
-#' * A grid coloured in according to how many points there are in each grid cell (i.e. a 2D histogram). The counts are scaled, see "Notes". 
+#' * A grid coloured in according to how many points there are in each grid cell (i.e. a 2D histogram). The counts are scaled, see "Note". 
 #'
 #' @param x Numeric vector of the x positions of each point. E.g. the amount of rain of each sample.
 #' @param y Numeric vector of the y positions of each point. Typically the number of wasps caught in each sample, or the number of wasps caught per day.

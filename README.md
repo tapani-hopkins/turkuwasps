@@ -76,4 +76,35 @@ plot_time(xdate, m, taxon=x$taxon, ylab="wasps / trap day")
 default_legend(x$taxon, x="topleft")
 ```
 
+### Explore how wasp catches varied with rain etc
+
+<img src="inst/example_images/explore.png" height="140">
+
+``` r
+# show how catches varied with rain and amount of wood 
+explore(x$sample, m, what=c("rain", "deadwood", "livewood"))
+
+# show how catches varied with pretty much everything
+explore(x$sample, m)
+```
+
+### Analyse how wasp catches depend on rain, forest type etc 
+
+``` r
+# store model (GLM) which will be fitted to wasp catches
+model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+
+# fit model and get p values (only do three resamples to save time)
+a = resample(model, x, m, pairwise="forest_type", nBoot=3)
+
+# show coefficients of the fitted model
+a$coefficients
+
+# show which variables affected wasp catches
+a$p
+
+# show which forest types differed from each other in number of wasps caught
+a$p_pairwise
+```
+
 

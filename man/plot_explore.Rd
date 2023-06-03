@@ -19,7 +19,7 @@ plot_explore(x, y, res = 15, ...)
 Helper function used by \code{\link[=explore]{explore()}}. Plots a scatterplot of e.g. rain on the x axis and number of wasps caught in each sample on the y axis. But also adds:
 \itemize{
 \item A fitted line showing trends (e.g. decreasing catch the more rain there is).
-\item A grid coloured in according to how many points there are in each grid cell (i.e. a 2D histogram). The counts are scaled, see "Notes".
+\item A grid coloured in according to how many points there are in each grid cell (i.e. a 2D histogram). The counts are scaled, see "Note".
 }
 }
 \note{

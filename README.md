@@ -29,7 +29,7 @@ More usage examples to come, package is still under construction.
 library(turkuwasps)
 ```
 ``` r
-# get example wasp data
+# get example wasp data (csv file from Kotka)
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
 wasps = read_wasps(f)
 

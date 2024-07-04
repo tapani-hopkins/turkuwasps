@@ -1,21 +1,40 @@
 #' Plot rarefaction curves
 #'
-#' No documentation yet, needs to be added
-#'
+#' No documentation yet, needs to be added, x must have columns taxon and sample
+#' ... passed to plot and lines
 #' 
 #' @export
-plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, col="black", pch=NULL, ...){
+plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, pch=NULL, ...){
+	
+	# store various default arguments for the plot
+	plot_args = list(
+		col = "black",
+		lty = 1,
+		lwd = 1.5,
+		xlab = "wasps",
+		ylab = "species"
+	)
+		
+	# add the plot arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	plot_args[names(user_args)] = user_args
 	
 	# get the rarefaction curve and its upper and lower limits
 	r = get_rarefaction(x, n, p)
 	
+	# add the curve's coordinates to the plot arguments
+	plot_args["x"] = list(r$x)
+	plot_args["y"] = list(r$y)
+	
 	# create a new blank plot unless adding to an existing plot
 	if (!add){
-		plot(r$x, r$y, type="n", ...)
+		plot_args2 = plot_args
+		plot_args2["type"] = list("n")
+		do.call(plot, plot_args2)
 	}
 	
 	# draw the rarefaction curve
-	graphics::lines(r$x, r$y, col=col, lty=1, lwd=1.5)
+	do.call(graphics::lines, args=plot_args)
 	
 	# add symbols to the curve if 'pch' was given by the user
 	if (!is.null(pch)){
@@ -27,12 +46,13 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, col="black", p
 	if (ci){
 		
 		# make a transparent colour (9% opacity) for the upper and lower limits
-		oldcol = grDevices::col2rgb(col, T)
+		oldcol = grDevices::col2rgb(plot_args$col, T)
 		nc = oldcol * c(1, 1, 1, 0.09)  # 9% opacity
 		nc = grDevices::rgb(nc[1], nc[2], nc[3], nc[4], maxColorValue=oldcol[4])
 	
 		# draw as a polygon
 		graphics::polygon( c(r$x, rev(r$x)) , c(r$y_min, rev(r$y_max)), border=NA, col=nc)
+		
 	}
 
 }
@@ -66,7 +86,7 @@ get_rarefaction = function(x, n=10, p=0.84){
 		# X0 <- Y0 <- rep(NA, length(samples))
 		for (i in 1:length(samples)){
 			
-			# get the taxon of the individuals accumulated up to this point
+			# get the taxon of each of the individuals accumulated up to this point
 			taxon = x[x$sample %in% samples[1:i], "taxon"]
 			
 			# count how many individuals and how many taxa have accumulated

@@ -8,13 +8,14 @@ plot_rarefaction(
   x,
   n = 10,
   p = 0.84,
+  by = NULL,
   ci = FALSE,
   add = FALSE,
-  col = "black",
   pch = NULL,
   ...
 )
 }
 \description{
-No documentation yet, needs to be added
+No documentation yet, needs to be added, x must have columns taxon and sample
+... passed to plot and lines
 }

@@ -70,6 +70,11 @@ default_legend = function(what="forest_type", event=NULL, ...){
 		# save forest types and their colours in the legend arguments
 		legend_args$legend = d$name
 		legend_args$fill = d$colour
+	
+	# .. or create rarefaction curve legend if asked to do so..
+	} else if (what[1] == "rarefaction"){
+		
+		# xxxx
 		
 	# .. otherwise, create taxon legend
 	} else {

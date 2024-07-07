@@ -18,6 +18,7 @@
 #' * start Date and time when the wasp's sample started to be collected.
 #' * end Date and time when the wasp's sample stopped being collected.
 #' * tdiff Number of days that the sample was collected.
+#' * tdiff Season when the sample was collected.
 #' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since [ecology_usable()] will typically be used to remove unusable wasps before analyses.
 #' @export
 read_wasps = function(file, simplify=TRUE, ...){
@@ -55,7 +56,7 @@ read_wasps = function(file, simplify=TRUE, ...){
 		i = match(samp, m$name)
 		
 		# overwrite `x` with more readable columns (or column names) + columns from the sample data
-		x = data.frame(list(id=id, sex=sex, taxon=taxon, event=m$event[i], forest_type=m$forest_type[i], site=m$site[i], trap=m$trap[i], sample=m$name[i], start=m$start[i], end=m$end[i], tdiff=m$tdiff[i], ecology_use=!m$damaged[i]))	
+		x = data.frame(list(id=id, sex=sex, taxon=taxon, event=m$event[i], forest_type=m$forest_type[i], site=m$site[i], trap=m$trap[i], sample=m$name[i], start=m$start[i], end=m$end[i], tdiff=m$tdiff[i], season=m$season[i], ecology_use=!m$damaged[i]))	
 		
 		# mark NA values in "ecology_use" as not usable for ecological analyses (typically hand-netted wasps)
 		x$ecology_use[is.na(x$ecology_use)] = FALSE

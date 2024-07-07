@@ -5,7 +5,7 @@
 \alias{malaise_sample}
 \title{Samples}
 \format{
-A data frame with 13 variables. The variables are:
+A data frame with 18 variables. The variables are:
 \itemize{
 \item name Name of the sample, e.g. "CCT1-141022".
 \item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011".
@@ -31,6 +31,14 @@ A data frame with 13 variables. The variables are:
 \item canopy_open Percentage of the sky visible from the trap. (0\% = closed canopy, 100\% = open sky)
 \item rain Average daily rainfall (mm) when the sample was collected. Weighted average: weather measurements that occurred entirely during the sampling period are weighted by 1, other measurements are weighted by how much they overlap in time (e.g. half of weather measurement overlaps with sampling period = weighted by 0.5).
 \item t_max Average daily maximum temperature (Celsius) when the sample was collected. Weighted average: weather measurements that occurred entirely during the sampling period are weighted by 1, other measurements are weighted by how much they overlap in time (e.g. half of weather measurement overlaps with sampling period = weighted by 0.5).
+\item season The season when the sample was collected. One of "wet" or "dry" for Ugandan samples. NA for Peruvian samples. Samples which were partly in wet season, and partly in dry, are in dry season if more than half of the sample was collected during dry season, otherwise in wet season. Seasons start (somewhat arbitrarily) on the following datetimes:
+\itemize{
+\item "wet" : "2014-09-01 00:00:00 UTC+03:00"
+\item "dry" : "2014-12-01 00:00:00 UTC+03:00"
+\item "wet" : "2015-03-01 00:00:00 UTC+03:00"
+\item "dry" : "2015-06-01 00:00:00 UTC+03:00"
+\item "wet" : "2015-09-01 00:00:00 UTC+03:00"
+}
 }
 
 Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).

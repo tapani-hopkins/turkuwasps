@@ -54,7 +54,7 @@ legend_rarefaction = function(rownames, colnames=NULL, col="black", pch=NA, titl
 		y_colnames = res$text$y[1] + 0.3 * (res$rect$top - res$text$y[1])
 		
 		# add column names
-		text(x_colnames, y_colnames, levels0(colnames), cex=legend_args$cex)
+		graphics::text(x_colnames, y_colnames, levels0(colnames), cex=legend_args$cex)
 		
 	}
 	

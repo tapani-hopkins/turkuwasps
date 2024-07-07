@@ -18,4 +18,5 @@ plot_rarefaction(
 \description{
 No documentation yet, needs to be added, x must have columns taxon and sample
 ... passed to plot and lines
+Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
 }

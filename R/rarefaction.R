@@ -3,7 +3,7 @@
 #' No documentation yet, needs to be added, helper function
 #' ... passed to plot and lines
 #' 
-draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, ...){
+draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...){
 	
 	# store various default arguments for the plot
 	plot_args = list(
@@ -13,10 +13,15 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, ...){
 		xlab = "wasps",
 		ylab = "species"
 	)
-		
+	
 	# add the plot arguments given by the user (overwrite any defaults with the same name)
 	user_args = list(...)
 	plot_args[names(user_args)] = user_args
+	
+	# draw the points in the same colour as the curves, unless the user gave a colour
+	if (is.null(pch_col)){
+		pch_col = plot_args$col
+	}
 	
 	# add the curve's coordinates to the plot arguments
 	plot_args["x"] = list(r$x)
@@ -35,7 +40,7 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, ...){
 	# add symbols to the curve if 'pch' was given by the user
 	if (!is.null(pch)){
 		i = floor(seq(1, length(r$x), length.out=10))
-		graphics::points(r$x[i], r$y[i], pch=pch, cex=0.6)
+		graphics::points(r$x[i], r$y[i], pch=pch, cex=0.6, col=pch_col)
 	}
 	
 	# draw the upper and lower limits of the curve
@@ -61,8 +66,8 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, ...){
 #' Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
 #' 
 #' @export
-plot_rarefaction = function(x, n=10, p=0.84, by=NULL, ci=FALSE, add=FALSE, pch=NULL, ...){
-	
+plot_rarefaction = function(x, n=10, p=0.84, by=NULL, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...){
+
 	#
 	if(! is.null(by)){
 		
@@ -85,7 +90,7 @@ plot_rarefaction = function(x, n=10, p=0.84, by=NULL, ci=FALSE, add=FALSE, pch=N
 			
 			# save this rarefaction curve and draw it
 			R[[i]] = get_rarefaction(X[[i]], n, p)
-			draw_rarefaction(R[[i]], ci, add, pch, ...)
+			draw_rarefaction(R[[i]], ci=ci, add=add, pch=pch, pch_col=pch_col, ...)
 			
 			# see to it all the other curves are added to the same plot
 			add = TRUE
@@ -98,7 +103,7 @@ plot_rarefaction = function(x, n=10, p=0.84, by=NULL, ci=FALSE, add=FALSE, pch=N
 		r = get_rarefaction(x, n, p)
 	
 		# draw the rarefaction curve
-		draw_rarefaction(r, ci, add, pch, ...)
+		draw_rarefaction(r, ci=ci, add=add, pch=pch, pch_col=pch_col, ...)
 	
 		# return the curve coordinates but don't display them
 		invisible(r)

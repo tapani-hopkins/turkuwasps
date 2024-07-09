@@ -4,7 +4,7 @@
 \alias{draw_rarefaction}
 \title{Draw rarefaction curves}
 \usage{
-draw_rarefaction(r, ci = FALSE, add = FALSE, pch = NULL, ...)
+draw_rarefaction(r, ci = FALSE, add = FALSE, pch = NULL, pch_col = NULL, ...)
 }
 \description{
 No documentation yet, needs to be added, helper function

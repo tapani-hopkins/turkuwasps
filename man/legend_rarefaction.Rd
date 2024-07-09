@@ -9,6 +9,8 @@ legend_rarefaction(
   colnames = NULL,
   col = "black",
   pch = NA,
+  pch_col = col,
+  pch_cex = 0.5,
   title = NULL,
   ...
 )

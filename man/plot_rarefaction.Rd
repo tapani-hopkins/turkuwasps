@@ -12,6 +12,7 @@ plot_rarefaction(
   ci = FALSE,
   add = FALSE,
   pch = NULL,
+  pch_col = NULL,
   ...
 )
 }

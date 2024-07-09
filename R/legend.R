@@ -6,14 +6,13 @@
 #' No documentation yet, needs to be added.
 #' 
 #' @export
-legend_rarefaction = function(rownames, colnames=NULL, col="black", pch=NA, title=NULL, ...){
+legend_rarefaction = function(rownames, colnames=NULL, col="black", pch=NA, pch_col=col, pch_cex=0.5, title=NULL, ...){
 	
 	# store various default arguments for the legend
 	legend_args = list(
 		cex = 0.7,
 		col = col, 
 		lwd = 2,
-		pch = pch,
 		pt.cex = 0.5,
 		title = title,
 		x = "bottomright"
@@ -48,7 +47,13 @@ legend_rarefaction = function(rownames, colnames=NULL, col="black", pch=NA, titl
 		
 		# show the legend
 		res = do.call(graphics::legend, args=legend_args)
-	
+		
+		# get midpoints of the lines in the legend
+		res_x = res$text$x - (res$text$x[1] - res$rect$left) / 2
+		
+		# add points to the lines of the legend
+		graphics::points(res_x, res$text$y, pch=pch, col=pch_col, cex=pch_cex)
+		
 		# get suitable places for the column names
 		x_colnames = res$text$x[c(1, length(res$text$x))]
 		y_colnames = res$text$y[1] + 0.3 * (res$rect$top - res$text$y[1])

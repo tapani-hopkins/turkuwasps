@@ -33,6 +33,12 @@ legend_rarefaction = function(rownames, colnames=NULL, col="black", pch=NA, pch_
 		# show the legend
 		res = do.call(graphics::legend, args=legend_args)
 	
+		# get midpoints of the lines in the legend
+		res_x = res$text$x - (res$text$x[1] - res$rect$left) / 2
+		
+		# add points to the lines of the legend
+		graphics::points(res_x, res$text$y, pch=pch, col=pch_col, cex=pch_cex)
+	
 	# 	
 	} else {
 		

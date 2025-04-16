@@ -16,8 +16,29 @@ plot_rarefaction(
   ...
 )
 }
+\arguments{
+\item{x}{Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.}
+
+\item{n}{Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.}
+
+\item{p}{How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84\% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).}
+
+\item{by}{Name of column in 'x' to split the data by. E.g. if by="forest_type", draws separate rarefaction curves for each forest type.}
+
+\item{ci}{If TRUE, confidemce intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
+
+\item{add}{If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.}
+
+\item{pch}{What symbols to use on the curve. Typically an integer between 0:18. See \code{\link[=points]{points()}} for accepted values. Default is for the curve to be drawn without symbols.}
+
+\item{pch_col}{}
+
+\item{...}{Graphical parameters passed to the two functions which draw the curves, \code{\link[=plot]{plot()}} and \code{\link[=lines]{lines()}}. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.}
+}
 \description{
-No documentation yet, needs to be added, x must have columns taxon and sample
-... passed to plot and lines
-Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
+Plot rarefaction curves showing how quickly species accumulated. Draws "sample-based" curves (see Details), and displays the number of wasps caught on the x axis and number of species on the y axis.
+}
+\details{
+XXX
+xxx Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
 }

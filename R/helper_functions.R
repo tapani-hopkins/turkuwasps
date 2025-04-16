@@ -448,7 +448,7 @@ legend_explore = function(breaks, col){
 
 #' Get factor levels
 #'
-#' Helper function used e.g. by [default_legend()]. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling `levels(factor(x))`). Basically a more readable wrapper for [levels()] and [factor()].
+#' Helper function used e.g. by [default_legend()], but can also be useful otherwise. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling `levels(factor(x))`). Basically a more readable wrapper for [levels()] and [factor()].
 #'
 #' @param x Vector whose factor levels are wanted.
 #' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
@@ -456,6 +456,8 @@ legend_explore = function(breaks, col){
 #' @return Character vector giving the levels of `x`. 
 #'
 #' seealso [nlevels0()]
+#'
+#' @export
 #'
 levels0 = function(x, ...){
 	
@@ -474,7 +476,7 @@ levels0 = function(x, ...){
 
 #' Get number of factor levels
 #'
-#' Helper function used e.g. by [plot_place()]. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to [nlevels()], except handles vectors which are not a factor.
+#' Helper function used e.g. by [plot_place()], but can also be useful otherwise. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to [nlevels()], except handles vectors which are not a factor.
 #'
 #' @param x Vector whose number of factor levels is wanted.
 #' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
@@ -482,6 +484,8 @@ levels0 = function(x, ...){
 #' @return Number of levels of `x`. 
 #'
 #' seealso [levels0()]
+#'
+#' @export
 #'
 nlevels0 = function(x, ...){
 	

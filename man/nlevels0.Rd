@@ -17,5 +17,5 @@ Number of levels of \code{x}.
 seealso \code{\link[=levels0]{levels0()}}
 }
 \description{
-Helper function used e.g. by \code{\link[=plot_place]{plot_place()}}. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to \code{\link[=nlevels]{nlevels()}}, except handles vectors which are not a factor.
+Helper function used e.g. by \code{\link[=plot_place]{plot_place()}}, but can also be useful otherwise. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to \code{\link[=nlevels]{nlevels()}}, except handles vectors which are not a factor.
 }

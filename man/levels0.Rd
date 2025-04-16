@@ -17,5 +17,5 @@ Character vector giving the levels of \code{x}.
 seealso \code{\link[=nlevels0]{nlevels0()}}
 }
 \description{
-Helper function used e.g. by \code{\link[=default_legend]{default_legend()}}. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling \code{levels(factor(x))}). Basically a more readable wrapper for \code{\link[=levels]{levels()}} and \code{\link[=factor]{factor()}}.
+Helper function used e.g. by \code{\link[=default_legend]{default_legend()}}, but can also be useful otherwise. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling \code{levels(factor(x))}). Basically a more readable wrapper for \code{\link[=levels]{levels()}} and \code{\link[=factor]{factor()}}.
 }

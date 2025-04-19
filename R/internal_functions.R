@@ -6,6 +6,8 @@
 #'
 #' @return Vector which when displayed in a plot, is in italics. 
 #'
+#' @keywords internal
+#'
 as_italic = function(x){
 	
 	# create temporary function which makes *one* vector item italic
@@ -27,6 +29,8 @@ as_italic = function(x){
 #' Helper function used by [label_plot_time()]. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
 #'
 #' @return Vector of datetime objects. 
+#'
+#' @keywords internal
 #'
 default_breaks = function(){
 	
@@ -55,6 +59,8 @@ default_breaks = function(){
 #' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor.
 #'
 #' @return List with items `x` (locations converted to factor, with the factor levels telling what bars to plot) and `colour` (the colours to give each bar). 
+#'
+#' @keywords internal
 #'
 default_bars = function(x){
 	
@@ -89,6 +95,8 @@ default_bars = function(x){
 #'
 #' @return Vector of colours in hexadecimal (e.g. "#00FFFF"), of length `n`. 
 #'
+#' @keywords internal
+#'
 default_colours = function(n){
 	
 	# use three colour gradients, 5 colours in each
@@ -115,6 +123,8 @@ default_colours = function(n){
 #' @param x Vector of interval objects, telling when each wasp was collected.
 #'
 #' @return Interval object. 
+#'
+#' @keywords internal
 #'
 default_xlims = function(x){
 	
@@ -147,6 +157,8 @@ default_xlims = function(x){
 #'
 #' @return Data frame with the Malaise sample data. Only contains samples from the same collecting event(s) as the wasps came from.
 #'
+#' @keywords internal
+#'
 filter_samples = function(x, m){
 		
 	# find out what event(s) these wasps come from
@@ -173,6 +185,8 @@ filter_samples = function(x, m){
 #'
 #' @seealso `data(package="turkuwasps")` for a list of all the datasets in the package.
 #'
+#' @keywords internal
+#'
 get_locationdata = function(x){
 	
 	# get the appropriate dataset
@@ -195,6 +209,8 @@ get_locationdata = function(x){
 #' @param x Vector of traps, forest types or other locations. Either as strings or factor.
 #'
 #' @return Name of the location type as string. Currently one of "forest_type", "site" or trap". 
+#'
+#' @keywords internal
 #'
 get_locationtype = function(x){
 	
@@ -232,6 +248,8 @@ get_locationtype = function(x){
 #' @return Matrix of the p values. Square matrix with row and column names giving the two levels that were compared. (e.g. to get the p value for a difference between forest and clearcut, check row "forest" and column "clearcut") 
 #'
 #' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
+#' @keywords internal
 #'
 get_p = function(summaries, pairwise, levs){
 
@@ -287,6 +305,8 @@ get_p = function(summaries, pairwise, levs){
 #' To get the p values from the list, type e.g. `p[["Epirhyssa quagga]]["primary", "clearcut"]`.
 #'
 #' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
+#' @keywords internal
 #'
 get_p_sp = function(summaries, pairwise, levs){
 
@@ -355,6 +375,8 @@ get_p_sp = function(summaries, pairwise, levs){
 #'
 #' @seealso [get_p()] and [get_p_sp()] to convert the results to something more readable.
 #'
+#' @keywords internal
+#'
 get_summaries = function(m, pairwise, model, family, analysis_args){
 	
 		# make a copy of the sample data
@@ -397,6 +419,8 @@ get_summaries = function(m, pairwise, model, family, analysis_args){
 #'
 #' @return Vector of weights with which to multiply the bar heights. Named vector, in same order as the bars.
 #'
+#' @keywords internal
+#'
 get_weights = function(barnames, m){
 	
 	# check if the locations are forest types, sites or traps
@@ -417,10 +441,12 @@ get_weights = function(barnames, m){
 
 #' Add legend to extended scatterplot
 #'
-#' Helper function used by [plot_explore()]. Adds a legend showing the colours used in th egrid cells.
+#' Helper function used by [plot_explore()]. Adds a legend showing the colours used in the grid cells.
 #'
 #' @param breaks Numeric vector giving the breakpoints between colours. (between 0 and 1)
 #' @param col Vector of colours, of length length(breaks)-1.
+#'
+#' @keywords internal
 #'
 legend_explore = function(breaks, col){
 
@@ -446,57 +472,6 @@ legend_explore = function(breaks, col){
 }
 
 
-#' Get factor levels
-#'
-#' Helper function used e.g. by [default_legend()], but can also be useful otherwise. Gets the factor levels of a vector. If the vector is not a factor, factors it first (i.e. equivalent to calling `levels(factor(x))`). Basically a more readable wrapper for [levels()] and [factor()].
-#'
-#' @param x Vector whose factor levels are wanted.
-#' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
-#'
-#' @return Character vector giving the levels of `x`. 
-#'
-#' seealso [nlevels0()]
-#'
-#' @export
-#'
-levels0 = function(x, ...){
-	
-	# get factor levels
-	res = levels(x)
-	
-	# if there are no factor levels, factor `x` first
-	if (is.null(res)){
-		res = levels(factor(x, ...))
-	}
-	
-	# return
-	return(res)
-}
-
-
-#' Get number of factor levels
-#'
-#' Helper function used e.g. by [plot_place()], but can also be useful otherwise. Gets the number of factor levels of a vector. If the vector is not a factor, factors it first. Equivalent to [nlevels()], except handles vectors which are not a factor.
-#'
-#' @param x Vector whose number of factor levels is wanted.
-#' @param ... Other arguments passed to [factor()] if `x` is not already a factor.
-#'
-#' @return Number of levels of `x`. 
-#'
-#' seealso [levels0()]
-#'
-#' @export
-#'
-nlevels0 = function(x, ...){
-	
-	# get number of factor levels
-	res = length(levels0(x, ...))
-
-	# return
-	return(res)
-}
-
-
 #' Plot extended scatterplot
 #'
 #' Helper function used by [explore()]. Plots a scatterplot of e.g. rain on the x axis and number of wasps caught in each sample on the y axis. But also adds:
@@ -509,6 +484,8 @@ nlevels0 = function(x, ...){
 #' @param ... Other arguments passed to [image()], which draws the grid cell colours. Will overwrite any default arguments such as `col`. (Argument `x` cannot be overwritten)
 #'
 #' @note The number of points in each grid cell is scaled before plotting, so that the colour of each grid cell shows the portion of points (of the column of cells) that are in the cell. E.g. if rain is on the x axis, then the cells of column 5 mm - 10 mm do not show how many points are in each cell; they show what portion of the points that are between rain=5mm and rain=10mm are in each cell. This makes it easier to compare different rainfall classes, even if some rainfalls have a much larger sample size (more points) than others.
+#'
+#' @keywords internal
 #'
 plot_explore = function(x, y, res=15, ...){
 	
@@ -572,31 +549,6 @@ plot_explore = function(x, y, res=15, ...){
 }
 
 
-#' Relevel levels of a factor or vector
-#'
-#' Helper function used e.g. by [resample()]. Moves one of a vector's factor levels to first place. If the vector is not a factor, factors it first. Equivalent to [relevel()], except handles vectors which are not a factor.
-#'
-#' @param x Vector.
-#' @param ref Which level to move to first place. Usually character string.
-#'
-#' @return Vector `x` with the factor levels placed in a new order. 
-#'
-relevel0 = function(x, ref){
-	
-	# make sure `x` is a factor
-	if (! is.factor(x)){
-		x = factor(x)
-	}
-	
-	# call default relevel
-	res = stats::relevel(x, ref)
-	
-	# return
-	return(res)
-	
-}
-
-
 #' Add together all the numbers that belong to the same category
 #'
 #' Helper function used by [get_weights()]. Used to count the total sampling effort for each forest type, trap or other location. This is basically a wrapper for [aggregate()].
@@ -606,6 +558,8 @@ relevel0 = function(x, ref){
 #' @param ... Other arguments passed to [aggregate()], which mostly passes them on to [sum()].
 #'
 #' @return Vector of the sums for each category. Named vector, categories are used as names. 
+#'
+#' @keywords internal
 #'
 sum_by = function(x, by, ...){
 	

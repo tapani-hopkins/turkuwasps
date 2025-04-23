@@ -1,7 +1,15 @@
 #' Draw rarefaction curves
 #'
-#' No documentation yet, needs to be added, helper function
-#' ... passed to plot and lines
+#' Helper function used by [plot_rarefaction()]. Draws rarefaction curves created by [get_rarefaction()].
+#' 
+#' @param r List of coordinates for the curves returned by [get_rarefaction()]. Should have the X coordinates of the curve, and the average, max and min Y coordinates of the curve.
+#' @param ci If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
+#' @param add If TRUE, the rarefaction curve is added to an existing plot. Default is to create a new plot.
+#' @param pch What symbols to use on the curve. Typically an integer between 0:18. See [points()] for accepted values. Default is for the curve to be drawn without symbols.
+#' @param pch_col Colour to be used for the symbols.
+#' @param ...  Graphical parameters passed to the two functions which draw the curves, [plot()] and [lines()]. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.
+#' 
+#' @keywords internal
 #' 
 draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...){
 	
@@ -18,7 +26,7 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...)
 	user_args = list(...)
 	plot_args[names(user_args)] = user_args
 	
-	# draw the points in the same colour as the curves, unless the user gave a colour
+	# draw the points in the same colour as the curve, unless the user gave a colour
 	if (is.null(pch_col)){
 		pch_col = plot_args$col
 	}
@@ -47,7 +55,7 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...)
 	if (ci){
 		
 		# make a transparent colour (9% opacity) for the upper and lower limits
-		oldcol = grDevices::col2rgb(plot_args$col, T)
+		oldcol = grDevices::col2rgb(plot_args$col, alpha=TRUE)
 		nc = oldcol * c(1, 1, 1, 0.09)  # 9% opacity
 		nc = grDevices::rgb(nc[1], nc[2], nc[3], nc[4], maxColorValue=oldcol[4])
 	
@@ -59,78 +67,19 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...)
 }
 
 
-#' Plot rarefaction curves
+
+#' Get rarefaction curves
 #'
-#' Plot rarefaction curves showing how quickly species accumulated. Draws "sample-based" curves (see Details), and displays the number of wasps caught on the x axis and number of species on the y axis.
+#' Helper function used by [plot_rarefaction()]. Randomly resamples wasp data to create rarefaction curves, and takes the average, minimum and maximum of the curves.
 #'
 #' @param x Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.
 #' @param n Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.
 #' @param  p How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).
-#' @param by Name of column in 'x' to split the data by. E.g. if by="forest_type", draws separate rarefaction curves for each forest type.
-#' @param ci If TRUE, confidemce intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
-#' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
-#' @param pch What symbols to use on the curve. Typically an integer between 0:18. See [points()] for accepted values. Default is for the curve to be drawn without symbols.
-#' @param pch_col 
-#' @param ...  Graphical parameters passed to the two functions which draw the curves, [plot()] and [lines()]. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected. 
-#' 
-#' 
-#' @details XXX
-#' xxx Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
-#' 
-#' @export
-plot_rarefaction = function(x, n=10, p=0.84, by=NULL, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...){
-
-	#
-	if(! is.null(by)){
-		
-		# create list for wasp data
-		levs = levels0(x[, by])
-		X = vector("list", length(levs))
-		
-		# split wasp data into one data frame per rarefaction curve
-		for (i in 1:length(levs)){
-			X[[i]] = x[x[, by]==levs[i], ]
-			names(X)[i] = levs[i]
-		}
-		
-		#  create a list for the rarefaction curves
-		R = vector("list", length(X))
-		names(R) = names(X)
-		
-		# get and draw the rarefaction curves
-		for (i in 1:length(X)){
-			
-			# save this rarefaction curve and draw it
-			R[[i]] = get_rarefaction(X[[i]], n, p)
-			draw_rarefaction(R[[i]], ci=ci, add=add, pch=pch, pch_col=pch_col, ...)
-			
-			# see to it all the other curves are added to the same plot
-			add = TRUE
-			
-		}
-		
-	} else {
-	
-		# get the rarefaction curve and its upper and lower limits
-		r = get_rarefaction(x, n, p)
-	
-		# draw the rarefaction curve
-		draw_rarefaction(r, ci=ci, add=add, pch=pch, pch_col=pch_col, ...)
-	
-		# return the curve coordinates but don't display them
-		invisible(r)
-	
-	}
-	
-}
-
-
-#' Get rarefaction curves
 #'
-#' No documentation yet, needs to be added
+#' @return List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`.
 #'
-#' 
-#' @export
+#' @keywords internal 
+#'
 get_rarefaction = function(x, n=10, p=0.84){
 	
 	# save x coordinates of the rarefied curves
@@ -201,3 +150,171 @@ get_rarefaction = function(x, n=10, p=0.84){
 	return(list(x=X, y=Y_mean, y_min=Y_min, y_max=Y_max))	
 	
 }
+
+
+#' Match colour etc parameters to the right rarefaction curve
+#'
+#' Helper function used by [plot_rarefaction()]. Checks the length and names of parameters such as `col` and `pch`. If they are named vectors, makes sure they are in the same order as the curves that are being drawn. If not, checks the length. Only used if several curves are drawn.
+#' 
+#' @param x Parameter to check. Usually a vector, e.g. for the colour of the curves: 'c(primary="darkgreen", disturbed="green", swamp="blue", clearcut="red")'.
+#' @param xname Character string telling what parameter is being checked. E.g. "col". Used for error messages.
+#' @param levs Character vector giving the levels of the column that is being used to split the data into separate curves. The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.
+#' @param column_name Character string telling what columnis being used to split the data into separate curves. Used for error messages.
+#' 
+#' @return Named vector of parameter values. The names tell which level each paramater value corresponds to. The vector is the same length and is in the same order as `levs`.
+#' 
+#' @keywords internal
+#' 
+match_names = function(x, xname, levs, column_name){
+	
+	# don't do anything if `x` is null
+	if (is.null(x)){ return(NULL) }
+	
+	# get the names of `x`
+	nms = names(x)
+	
+	# save some error messages
+	stopmessages = c(
+		paste0("Couldn't match the following to ",  xname, ": ", paste(levs[! levs %in% nms], collapse=", "), ". Check that the names of ", xname, " contain all the values found in column ", column_name, "."), 
+		paste0(xname, " is the wrong length. It should be either length 1, or the same length as the number of different kinds of values in column ", column_name, " (i.e. ", length(levs), ").")
+	)
+	
+	# if `x` is a named vector with any of the levels as a name, put it into the same order as the levels..
+	if (any(levs %in% nms)){
+		
+		# reorder `x` into the same order as the levels..
+		if (all(levs %in% nms)){
+			x = x[match(levs, nms)]
+		
+		# .. except if `x` is missing some of the levels, give an error message
+		} else {
+			stop(stopmessages[1], call.=FALSE)
+		}
+			
+	# .. if `x` isn't a named vector, keep the order but check its length and name it
+	} else {
+		
+		# recycle `x` if it's only length 1..
+		if (length(x) == 1){
+			x = rep(x, length(levs))
+			
+		# .. and if it's the wrong length, give an error message
+		} else if (length(x) != length(levs)){
+			stop(stopmessages[2], call.=FALSE)
+		}
+		
+		# name the parameter values
+		names(x) = levs
+		
+	}
+	
+	# return `x`
+	return(x)
+	
+}		
+
+
+#' Plot rarefaction curves
+#'
+#' Plot rarefaction curves showing how quickly species accumulated. Draws "sample-based" curves (see Details), and displays the number of wasps caught on the x axis and number of species on the y axis.
+#'
+#' @param x Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.
+#' @param n Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.
+#' @param p How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).
+#' @param ci If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
+#' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
+#' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Default is to draw one curve containing all the wasps.
+#' @param col Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.
+#' @param pch What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see [points()] for accepted values. If several curves are drawn (`by` is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.
+#' @param pch_col Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is to use the same colours as for the curves.
+#' @param ...  Graphical parameters passed to the two functions which draw the curves, [plot()] and [lines()]. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected. 
+#' 
+#' @details
+#' ## Named vectors for graphical parameters
+#' If drawing several curves, parameters such as the colour (`col`) should preferably be given as named vectors. The function will use the names to match the colours to the corresponding curve.
+#' @details For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: `col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")`. These will automatically be matched to the correct forest type, whatever order the colours were given in.
+#' @details Unnamed vectors work too: `col = c("darkgreen", "blue", "green", "yellow")`. But then you have to be *completely sure* that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with `levels0(x[, by])`.
+#' @details A single value for the colours and other parameters works but gives the same value to all curves.
+#' ## Sample-based curves 
+#' The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
+#' @details Several randomly drawn curves are made (default is 10). The returned curve is an averaged out version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if `p=0.84`, drops the topmost and lowermost resampled curves until 84% of the curves are in the limits).
+#' @details There are good reasons to prefer randomly drawing the wasps one *sample* at a time, instead of one *wasp* at a time. (see e.g. Gotelli & Colwell 2011: Estimating species richness.) For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? If we did that, we'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+#'
+#' @seealso Function [combine_columns()], which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
+#' 
+#' @return List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to [legend_rarefaction()] to draw a legend with the right colours etc. The list has 5 items:
+#' * `r` The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`. If several curves are drawn, returns a list of each curves's coordinates.
+#' * `nwasps` Number of wasps in the curve. If several curves are drawn, returns a named vector of the number of wasps of each curve.
+#' * `col` Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
+#' * `pch` Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
+#' * `pch_col` Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
+#'
+#' @export
+#' 
+plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", pch=NULL, pch_col=col, ...){
+
+	# draw a separate rarefaction curve for each level in column `by`
+	if(! is.null(by)){
+		
+		# warn if there are missing values in the column
+		if(any(is.na(x[, by]))){
+			message("Note: ", sum(is.na(x[, by])), " wasps lack data in column ", by, " and are not included in the plot.")
+			x = x[! is.na(x[, by]), ]
+		}
+		
+		# get the levels of the column
+		levs = levels0(x[, by])
+		
+		# create a vector for the number of wasps in each curve
+		nwasps = rep(NA, length(levs))
+		names(nwasps) = levs
+		
+		# save the colours and points as named vectors, which are in the same order as the curves
+		col = match_names(col, "col", levs, by)
+		pch = match_names(pch, "pch", levs, by)
+		pch_col = match_names(pch_col, "pch_col", levs, by)
+		
+		# create a list for the wasp data of each curve
+		X = vector("list", length(levs))
+		names(X) = levs
+		
+		# create a list for the rarefaction curves
+		r = vector("list", length(X))
+		names(r) = levs
+		
+		# split wasp data into separate data frames for each level
+		for (i in 1:length(levs)){
+			X[[i]] = x[x[, by] == levs[i], ]
+			nwasps = nrow(X[[i]])
+		}
+		
+		# get and draw the rarefaction curves
+		for (i in 1:length(X)){
+			
+			# save this rarefaction curve and draw it
+			r[[i]] = get_rarefaction(X[[i]], n, p)
+			draw_rarefaction(r[[i]], ci=ci, add=add, col=col[i], pch=pch[i], pch_col=pch_col[i], ...)
+			
+			# see to it all the other curves are added to the same plot
+			add = TRUE
+			
+		}
+		
+	} else {
+	
+		# get the rarefaction curve and its upper and lower limits
+		r = get_rarefaction(x, n, p)
+	
+		# draw the rarefaction curve
+		draw_rarefaction(r, ci=ci, add=add, col=col, pch=pch, pch_col=pch_col, ...)
+		
+		# get the number of wasps in this curve
+		nwasps=nrow(x)
+	
+	}
+	
+	# return the curve coordinates, number of wasps, and parameters, but don't display them
+	invisible(list(r=r, nwasps=nwasps, col=col, pch=pch, pch_col=pch_col))
+	
+}
+

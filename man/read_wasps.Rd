@@ -18,7 +18,7 @@ Data frame with the wasp data. If simplified, has the following columns:
 \itemize{
 \item id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
 \item sex F for female, M for male, U for unknown.
-\item taxon
+\item taxon Taxon, taken from the first column with an identification. If there are several identifications, this may need overwriting.
 \item event
 \item forest_type
 \item site

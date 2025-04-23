@@ -6,7 +6,20 @@
 \usage{
 draw_rarefaction(r, ci = FALSE, add = FALSE, pch = NULL, pch_col = NULL, ...)
 }
-\description{
-No documentation yet, needs to be added, helper function
-... passed to plot and lines
+\arguments{
+\item{r}{List of coordinates for the curves returned by \code{\link[=get_rarefaction]{get_rarefaction()}}. Should have the X coordinates of the curve, and the average, max and min Y coordinates of the curve.}
+
+\item{ci}{If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
+
+\item{add}{If TRUE, the rarefaction curve is added to an existing plot. Default is to create a new plot.}
+
+\item{pch}{What symbols to use on the curve. Typically an integer between 0:18. See \code{\link[=points]{points()}} for accepted values. Default is for the curve to be drawn without symbols.}
+
+\item{pch_col}{Colour to be used for the symbols.}
+
+\item{...}{Graphical parameters passed to the two functions which draw the curves, \code{\link[=plot]{plot()}} and \code{\link[=lines]{lines()}}. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.}
 }
+\description{
+Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. Draws rarefaction curves created by \code{\link[=get_rarefaction]{get_rarefaction()}}.
+}
+\keyword{internal}

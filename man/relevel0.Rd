@@ -13,8 +13,6 @@ relevel0(x, ref)
 }
 \value{
 Vector \code{x} with the factor levels placed in a new order.
-
-seealso \code{\link[=nlevels0]{nlevels0()}}, \code{\link[=levels0]{levels0()}}
 }
 \description{
 Move one of a vector's factor levels to first place. If the vector is not a factor, factor it first. Equivalent to \code{\link[=relevel]{relevel()}}, except handles vectors which are not a factor.
@@ -28,4 +26,7 @@ levels0(x)
 x = relevel0(x, "primary")
 levels0(x)
 
+}
+\seealso{
+\code{\link[=nlevels0]{nlevels0()}}, \code{\link[=levels0]{levels0()}}
 }

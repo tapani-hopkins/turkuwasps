@@ -13,8 +13,6 @@ levels0(x, ...)
 }
 \value{
 Character vector giving the levels of \code{x}.
-
-seealso \code{\link[=nlevels0]{nlevels0()}}, \code{\link[=relevel0]{relevel0()}}
 }
 \description{
 Get the factor levels of a vector. If the vector is not a factor, factor it first (i.e. equivalent to calling \code{levels(factor(x))}). Basically a more readable wrapper for \code{\link[=levels]{levels()}} and \code{\link[=factor]{factor()}}.
@@ -24,4 +22,7 @@ Get the factor levels of a vector. If the vector is not a factor, factor it firs
 x = c("primary", "disturbed", "primary", "primary", "farm")
 levels0(x)
 
+}
+\seealso{
+\code{\link[=nlevels0]{nlevels0()}}, \code{\link[=relevel0]{relevel0()}}
 }

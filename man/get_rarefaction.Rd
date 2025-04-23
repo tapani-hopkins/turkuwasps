@@ -6,6 +6,17 @@
 \usage{
 get_rarefaction(x, n = 10, p = 0.84)
 }
-\description{
-No documentation yet, needs to be added
+\arguments{
+\item{x}{Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.}
+
+\item{n}{Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.}
+
+\item{p}{How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84\% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).}
 }
+\value{
+List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}.
+}
+\description{
+Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. Randomly resamples wasp data to create rarefaction curves, and takes the average, minimum and maximum of the curves.
+}
+\keyword{internal}

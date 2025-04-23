@@ -9,7 +9,7 @@
 #' @return Data frame with the wasp data. If simplified, has the following columns:
 #' * id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
 #' * sex F for female, M for male, U for unknown.
-#' * taxon
+#' * taxon Taxon, taken from the first column with an identification. If there are several identifications, this may need overwriting.
 #' * event
 #' * forest_type
 #' * site

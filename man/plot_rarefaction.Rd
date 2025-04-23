@@ -8,11 +8,12 @@ plot_rarefaction(
   x,
   n = 10,
   p = 0.84,
-  by = NULL,
   ci = FALSE,
   add = FALSE,
+  by = NULL,
+  col = "black",
   pch = NULL,
-  pch_col = NULL,
+  pch_col = col,
   ...
 )
 }
@@ -23,22 +24,53 @@ plot_rarefaction(
 
 \item{p}{How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84\% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).}
 
-\item{by}{Name of column in 'x' to split the data by. E.g. if by="forest_type", draws separate rarefaction curves for each forest type.}
-
-\item{ci}{If TRUE, confidemce intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
+\item{ci}{If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
 
 \item{add}{If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.}
 
-\item{pch}{What symbols to use on the curve. Typically an integer between 0:18. See \code{\link[=points]{points()}} for accepted values. Default is for the curve to be drawn without symbols.}
+\item{by}{Name of column in 'x' to split the data by. E.g. if \code{by}="forest_type", draws separate rarefaction curves for each forest type. Default is to draw one curve containing all the wasps.}
 
-\item{pch_col}{}
+\item{col}{Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.}
+
+\item{pch}{What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see \code{\link[=points]{points()}} for accepted values. If several curves are drawn (\code{by} is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.}
+
+\item{pch_col}{Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is to use the same colours as for the curves.}
 
 \item{...}{Graphical parameters passed to the two functions which draw the curves, \code{\link[=plot]{plot()}} and \code{\link[=lines]{lines()}}. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.}
+}
+\value{
+List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to \code{\link[=legend_rarefaction]{legend_rarefaction()}} to draw a legend with the right colours etc. The list has 5 items:
+\itemize{
+\item \code{r} The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}. If several curves are drawn, returns a list of each curves's coordinates.
+\item \code{nwasps} Number of wasps in the curve. If several curves are drawn, returns a named vector of the number of wasps of each curve.
+\item \code{col} Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
+\item \code{pch} Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
+\item \code{pch_col} Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
+}
 }
 \description{
 Plot rarefaction curves showing how quickly species accumulated. Draws "sample-based" curves (see Details), and displays the number of wasps caught on the x axis and number of species on the y axis.
 }
 \details{
-XXX
-xxx Currently, 'by' only handles one column at a time (e.g. forest_type). and draws all in same colour. Needs updating.
+\subsection{Named vectors for graphical parameters}{
+
+If drawing several curves, parameters such as the colour (\code{col}) should preferably be given as named vectors. The function will use the names to match the colours to the corresponding curve.
+}
+
+For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: \code{col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")}. These will automatically be matched to the correct forest type, whatever order the colours were given in.
+
+Unnamed vectors work too: \code{col = c("darkgreen", "blue", "green", "yellow")}. But then you have to be \emph{completely sure} that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with \code{levels0(x[, by])}.
+
+A single value for the colours and other parameters works but gives the same value to all curves.
+\subsection{Sample-based curves}{
+
+The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
+}
+
+Several randomly drawn curves are made (default is 10). The returned curve is an averaged out version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if \code{p=0.84}, drops the topmost and lowermost resampled curves until 84\% of the curves are in the limits).
+
+There are good reasons to prefer randomly drawing the wasps one \emph{sample} at a time, instead of one \emph{wasp} at a time. (see e.g. Gotelli & Colwell 2011: Estimating species richness.) For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? If we did that, we'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+}
+\seealso{
+Function \code{\link[=combine_columns]{combine_columns()}}, which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
 }

@@ -13,8 +13,6 @@ nlevels0(x, ...)
 }
 \value{
 Number of levels of \code{x}.
-
-seealso \code{\link[=levels0]{levels0()}}, \code{\link[=relevel0]{relevel0()}}
 }
 \description{
 Get the number of factor levels of a vector. If the vector is not a factor, factor it first. Equivalent to \code{\link[=nlevels]{nlevels()}}, except handles vectors which are not a factor.
@@ -24,4 +22,7 @@ Get the number of factor levels of a vector. If the vector is not a factor, fact
 x = c("primary", "disturbed", "primary", "primary", "farm")
 nlevels0(x)
 
+}
+\seealso{
+\code{\link[=levels0]{levels0()}}, \code{\link[=relevel0]{relevel0()}}
 }

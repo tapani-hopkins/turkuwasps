@@ -13,7 +13,7 @@ match_names(x, xname, levs, column_name)
 
 \item{levs}{Character vector giving the levels of the column that is being used to split the data into separate curves. The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.}
 
-\item{column_name}{Character string telling what columnis being used to split the data into separate curves. Used for error messages.}
+\item{column_name}{Character string telling what column is being used to split the data into separate curves. Used for error messages.}
 }
 \value{
 Named vector of parameter values. The names tell which level each paramater value corresponds to. The vector is the same length and is in the same order as \code{levs}.

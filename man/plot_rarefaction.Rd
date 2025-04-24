@@ -42,7 +42,7 @@ plot_rarefaction(
 List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to \code{\link[=legend_rarefaction]{legend_rarefaction()}} to draw a legend with the right colours etc. The list has 5 items:
 \itemize{
 \item \code{r} The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}. If several curves are drawn, returns a list of each curves's coordinates.
-\item \code{nwasps} Number of wasps in the curve. If several curves are drawn, returns a named vector of the number of wasps of each curve.
+\item \code{nwasps} Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 \item \code{col} Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
 \item \code{pch} Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
 \item \code{pch_col} Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
@@ -55,21 +55,40 @@ Plot rarefaction curves showing how quickly species accumulated. Draws "sample-b
 \subsection{Named vectors for graphical parameters}{
 
 If drawing several curves, parameters such as the colour (\code{col}) should preferably be given as named vectors. The function will use the names to match the colours to the corresponding curve.
-}
 
 For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: \code{col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")}. These will automatically be matched to the correct forest type, whatever order the colours were given in.
 
 Unnamed vectors work too: \code{col = c("darkgreen", "blue", "green", "yellow")}. But then you have to be \emph{completely sure} that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with \code{levels0(x[, by])}.
 
 A single value for the colours and other parameters works but gives the same value to all curves.
+}
+
 \subsection{Sample-based curves}{
 
 The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
+
+Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if \code{p=0.84}, drops the topmost and lowermost resampled curves until 84\% of the curves are in the limits).
+
+There are good reasons to prefer randomly drawing the wasps one \emph{sample} at a time, instead of one \emph{wasp} at a time (see e.g. Gotelli & Colwell 2011: Estimating species richness). For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? We'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
 }
+}
+\examples{
 
-Several randomly drawn curves are made (default is 10). The returned curve is an averaged out version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if \code{p=0.84}, drops the topmost and lowermost resampled curves until 84\% of the curves are in the limits).
+# get example wasp data
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+wasps = read_wasps(f)
 
-There are good reasons to prefer randomly drawing the wasps one \emph{sample} at a time, instead of one \emph{wasp} at a time. (see e.g. Gotelli & Colwell 2011: Estimating species richness.) For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? If we did that, we'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+# plot a rarefaction curve with all wasps
+plot_rarefaction(x, n=5)
+
+# plot separate curves for each forest type
+col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+r = plot_rarefaction(x, by="forest_type", col=col, pch=1:4)
+
+# add a legend (to be updated here)
+
+
+
 }
 \seealso{
 Function \code{\link[=combine_columns]{combine_columns()}}, which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.

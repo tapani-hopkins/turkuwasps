@@ -159,7 +159,7 @@ get_rarefaction = function(x, n=10, p=0.84){
 #' @param x Parameter to check. Usually a vector, e.g. for the colour of the curves: 'c(primary="darkgreen", disturbed="green", swamp="blue", clearcut="red")'.
 #' @param xname Character string telling what parameter is being checked. E.g. "col". Used for error messages.
 #' @param levs Character vector giving the levels of the column that is being used to split the data into separate curves. The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.
-#' @param column_name Character string telling what columnis being used to split the data into separate curves. Used for error messages.
+#' @param column_name Character string telling what column is being used to split the data into separate curves. Used for error messages.
 #' 
 #' @return Named vector of parameter values. The names tell which level each paramater value corresponds to. The vector is the same length and is in the same order as `levs`.
 #' 
@@ -232,28 +232,51 @@ match_names = function(x, xname, levs, column_name){
 #' @details
 #' ## Named vectors for graphical parameters
 #' If drawing several curves, parameters such as the colour (`col`) should preferably be given as named vectors. The function will use the names to match the colours to the corresponding curve.
-#' @details For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: `col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")`. These will automatically be matched to the correct forest type, whatever order the colours were given in.
-#' @details Unnamed vectors work too: `col = c("darkgreen", "blue", "green", "yellow")`. But then you have to be *completely sure* that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with `levels0(x[, by])`.
-#' @details A single value for the colours and other parameters works but gives the same value to all curves.
+#'
+#' For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: `col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")`. These will automatically be matched to the correct forest type, whatever order the colours were given in.
+#' 
+#' Unnamed vectors work too: `col = c("darkgreen", "blue", "green", "yellow")`. But then you have to be *completely sure* that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with `levels0(x[, by])`.
+#' 
+#' A single value for the colours and other parameters works but gives the same value to all curves.
+#' 
 #' ## Sample-based curves 
 #' The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
-#' @details Several randomly drawn curves are made (default is 10). The returned curve is an averaged out version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if `p=0.84`, drops the topmost and lowermost resampled curves until 84% of the curves are in the limits).
-#' @details There are good reasons to prefer randomly drawing the wasps one *sample* at a time, instead of one *wasp* at a time. (see e.g. Gotelli & Colwell 2011: Estimating species richness.) For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? If we did that, we'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+#'
+#'  Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if `p=0.84`, drops the topmost and lowermost resampled curves until 84% of the curves are in the limits).
+#'
+#' There are good reasons to prefer randomly drawing the wasps one *sample* at a time, instead of one *wasp* at a time (see e.g. Gotelli & Colwell 2011: Estimating species richness). For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? We'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
 #'
 #' @seealso Function [combine_columns()], which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
 #' 
 #' @return List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to [legend_rarefaction()] to draw a legend with the right colours etc. The list has 5 items:
 #' * `r` The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`. If several curves are drawn, returns a list of each curves's coordinates.
-#' * `nwasps` Number of wasps in the curve. If several curves are drawn, returns a named vector of the number of wasps of each curve.
+#' * `nwasps` Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 #' * `col` Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
 #' * `pch` Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
 #' * `pch_col` Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
 #'
+#' @examples 
+#'
+#' # get example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' wasps = read_wasps(f)
+#' 
+#' # plot a rarefaction curve with all wasps
+#' plot_rarefaction(x, n=5)
+#' 
+#' # plot separate curves for each forest type
+#' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+#' r = plot_rarefaction(x, by="forest_type", col=col, pch=1:4)
+#' 
+#' # add a legend (to be updated here)
+#' 
+#' 
+#' 
 #' @export
 #' 
 plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", pch=NULL, pch_col=col, ...){
 
-	# draw a separate rarefaction curve for each level in column `by`
+	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){
 		
 		# warn if there are missing values in the column
@@ -262,12 +285,17 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 			x = x[! is.na(x[, by]), ]
 		}
 		
+		# get the x and y limits of the plot
+		xmax = max(table(x[, by]))
+		ymax = max(stats::aggregate(x$taxon, by=list(x[, by]), FUN=nlevels0)$x)
+		xlim = c(0, xmax*1.05)
+		ylim = c(0, ymax*1.05)
+		
 		# get the levels of the column
 		levs = levels0(x[, by])
 		
-		# create a vector for the number of wasps in each curve
-		nwasps = rep(NA, length(levs))
-		names(nwasps) = levs
+		# get the number of wasps in each curve
+		nwasps = table(x[, by])
 		
 		# save the colours and points as named vectors, which are in the same order as the curves
 		col = match_names(col, "col", levs, by)
@@ -285,21 +313,28 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		# split wasp data into separate data frames for each level
 		for (i in 1:length(levs)){
 			X[[i]] = x[x[, by] == levs[i], ]
-			nwasps = nrow(X[[i]])
 		}
 		
-		# get and draw the rarefaction curves
+		#  get the rarefaction curves and draw them
 		for (i in 1:length(X)){
 			
-			# save this rarefaction curve and draw it
+			# get this rarefaction curve
 			r[[i]] = get_rarefaction(X[[i]], n, p)
-			draw_rarefaction(r[[i]], ci=ci, add=add, col=col[i], pch=pch[i], pch_col=pch_col[i], ...)
+			
+			# save all the arguments, including the x and y limits if not given by the user
+			plot_args = c(list(r=r[[i]], ci=ci, add=add, col=col[i], pch=pch[i], pch_col=pch_col[i]), list(...))
+			if (! "xlim" %in% names(list(...))){ plot_args$xlim = xlim }
+			if (! "ylim" %in% names(list(...))){ plot_args$ylim = ylim }
+			
+			# draw this rarefaction curve
+			do.call(draw_rarefaction, args=plot_args)
 			
 			# see to it all the other curves are added to the same plot
 			add = TRUE
 			
 		}
-		
+
+	# .. if `by`was not given, just draw one curve
 	} else {
 	
 		# get the rarefaction curve and its upper and lower limits
@@ -308,7 +343,7 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		# draw the rarefaction curve
 		draw_rarefaction(r, ci=ci, add=add, col=col, pch=pch, pch_col=pch_col, ...)
 		
-		# get the number of wasps in this curve
+		# get the number of wasps in the curve
 		nwasps=nrow(x)
 	
 	}

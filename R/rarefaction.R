@@ -163,6 +163,7 @@ get_rarefaction = function(x, n=10, p=0.84){
 #' @param pch The symbols to add on top of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically an integer between 0:18, see [points()] for accepted values. NA values can be used if you don't want to draw a symbol, e.g. `c(1, 2, NA, NA)` only draws the first two symbols. If not given, no symbols are drawn.
 #' @param pch_col The colour of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. NA values can be used if you don't want to draw a symbol, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two symbols. If not given, symbols will be black.
 #' @param pch_cex The size of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically will be 0.5, i.e. 50% of the normal size for symbols in the plot. This is also the default.
+#' @param nwasps The number of wasps (i.e. sample size). Vector of same length as `txt`. Should be in the same order as `txt`. Typically got from `r`. These will be added to the legend texts in `txt`, e.g. if `nwasps=186` is added to `txt="primary"` the result will be "primary (n=186)". NA values can be used if you don't want to add a sample size. If not given, sample sizes won't be added.
 #' @param title Overall title for the plot. Character string. Default is to not have a title.
 #' @param colnames The subtitles to place over each column. Character vector with one subtitle for each column. Default is to not have subtitles.
 #' @param ... Other arguments passed to [legend()]. Typically `x`, which gives the position of the legend (default is "bottomright"). Also, `fill` may sometimes be used to display confidence intervals. Graphical parameters such as `fill` should be vectors of length 1, or of same length as `txt`, in the same order as `txt`. Argument `legend` has no effect, and some rarely used graphical parameters may not work as intended if drawing several columns.
@@ -174,24 +175,25 @@ get_rarefaction = function(x, n=10, p=0.84){
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
 #' wasps = read_wasps(f)
 #' 
+#' # see to it the curves will be drawn in successional order from primary to farm
+#' levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
+#' wasps$forest_type = factor(wasps$forest_type, levels=levs)
+#'
 #' # plot rarefaction curves with separate curves for each forest type
 #' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
-#' r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
+#' r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:5)
 #' 
 #' # add a basic legend with the same colours etc as in the plot
 #' legend_rarefaction(r=r)
 #' 
 #' # add another, more complex, legend
-#' cnames = c("undisturbed", "disturbed or cut")
-#' legend_rarefaction(r=r, column=c(2, 2, 1, 1), colnames=cnames, title="Uganda", x="right")
+#' cnames = c("disturbed or farm", "undisturbed")
+#' legend_rarefaction(r=r, column=c(2, 2, 1, 1, 1), colnames=cnames, title="Uganda", x="right")
 #'
 #'  
 #' ## Separate dry and wet season
 #'
 #' # prepare a new column in the wasp data, for drawing separate curves for dry and wet season
-#' # also see to it the curves will be drawn in successional order primary -> farm
-#' levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
-#' wasps$forest_type = factor(wasps$forest_type, levels=levs)
 #' wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRUE)
 #'
 #' # plot rarefaction curves with separate curves for each forest type and season

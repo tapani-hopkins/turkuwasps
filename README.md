@@ -124,10 +124,11 @@ legend_rarefaction(r=r)
 
 ## Complex
 
-# prepare a new column in the wasp data, for drawing separate curves for dry and wet season
-# also see to it the curves will be drawn in successional order primary -> farm
+# see to it the curves will be drawn in successional order from primary to farm
 levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
 wasps$forest_type = factor(wasps$forest_type, levels=levs)
+
+# prepare a new column in the wasp data, for drawing separate curves for dry and wet season
 wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRUE)
 
 # plot rarefaction curves with separate curves for each forest type and season

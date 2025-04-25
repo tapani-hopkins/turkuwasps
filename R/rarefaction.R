@@ -205,7 +205,7 @@ get_rarefaction = function(x, n=10, p=0.84){
 #'
 #' @export
 #' 
-legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL, pch_col=NULL, pch_cex=0.5, title=NULL, colnames=NULL, ...){
+legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL, pch_col=NULL, pch_cex=0.5, nwasps=NULL, title=NULL, colnames=NULL, ...){
 	
 	# get the legend texts from 'r' if they weren't given by the user
 	if (is.null(txt)){
@@ -230,7 +230,7 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL,
 	user_args = list(...)
 	legend_args[names(user_args)] = user_args
 	
-	# if graphical parameters weren't given by the user, get them from 'r' or use defaults
+	# if graphical and other parameters weren't given by the user, get them from 'r' or use defaults
 	if (is.null(col)){
 		if (is.null(r)) { col = "black" } else { col = r$col }
 	}
@@ -239,6 +239,15 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL,
 	}
 	if (is.null(pch_col)){
 		if (is.null(r)) { pch_col = "black" } else { pch_col = r$pch_col }
+	}
+	if (is.null(nwasps)){
+		if (is.null(r)) { nwasps = NULL } else { nwasps = r$nwasps }
+	}
+	
+	# add the sample size (number of wasps) to the legend texts if it was given
+	if (! is.null(nwasps)){
+		ii = which(! is.na(nwasps))
+		txt[ii] = paste0(txt[ii], " (n=", nwasps[ii], ")")
 	}
 	
 	# add the line colour and legend texts to the legend arguments

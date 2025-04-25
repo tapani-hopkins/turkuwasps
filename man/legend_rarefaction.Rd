@@ -12,6 +12,7 @@ legend_rarefaction(
   pch = NULL,
   pch_col = NULL,
   pch_cex = 0.5,
+  nwasps = NULL,
   title = NULL,
   colnames = NULL,
   ...

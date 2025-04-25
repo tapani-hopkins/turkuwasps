@@ -13,7 +13,7 @@ plot_rarefaction(
   by = NULL,
   col = "black",
   pch = NULL,
-  pch_col = col,
+  pch_col = "black",
   ...
 )
 }
@@ -34,7 +34,7 @@ plot_rarefaction(
 
 \item{pch}{What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see \code{\link[=points]{points()}} for accepted values. If several curves are drawn (\code{by} is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.}
 
-\item{pch_col}{Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is to use the same colours as for the curves.}
+\item{pch_col}{Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is black.}
 
 \item{...}{Graphical parameters passed to the two functions which draw the curves, \code{\link[=plot]{plot()}} and \code{\link[=lines]{lines()}}. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.}
 }
@@ -85,9 +85,8 @@ plot_rarefaction(wasps, n=5)
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
 r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
 
-# add a legend (to be updated here)
-
-
+# add a legend
+legend_rarefaction(r=r)
 
 }
 \seealso{

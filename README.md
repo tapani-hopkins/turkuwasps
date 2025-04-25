@@ -107,4 +107,35 @@ a$p
 a$p_pairwise
 ```
 
+### Show how quickly species accumulated
 
+<img src="inst/example_images/plot_rarefaction.png" height="140">
+
+``` r
+## Simple
+
+# plot separate curves for each forest type
+col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
+
+# add a legend
+legend_rarefaction(r=r)
+
+
+## Complex
+
+# prepare a new column in the wasp data, for drawing separate curves for dry and wet season
+# also see to it the curves will be drawn in successional order primary -> farm
+levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
+wasps$forest_type = factor(wasps$forest_type, levels=levs)
+wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRUE)
+
+# plot rarefaction curves with separate curves for each forest type and season
+col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+col = rep(col, each=2)
+r = plot_rarefaction(wasps, by="forest_season", col=col, pch=rep(1:2, 5), xlim=c(0, 100))
+
+# add a legend with dry and wet season in separate columns
+txt = rep(levels0(wasps$forest_type), each=2)
+legend_rarefaction(txt=txt, r=r, column=rep(1:2, 5), colnames=c("dry", "wet"), title="Uganda")
+```

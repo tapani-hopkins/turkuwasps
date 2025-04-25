@@ -28,7 +28,7 @@ plot_rarefaction(
 
 \item{add}{If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.}
 
-\item{by}{Name of column in 'x' to split the data by. E.g. if \code{by}="forest_type", draws separate rarefaction curves for each forest type. Default is to draw one curve containing all the wasps.}
+\item{by}{Name of column in 'x' to split the data by. E.g. if \code{by}="forest_type", draws separate rarefaction curves for each forest type. Curves are drawn in the same order as the order of the factor levels of the column (change the levels with \code{\link[=factor]{factor()}} if you e.g. want the curves in different order in the legend drawn by \code{\link[=legend_rarefaction]{legend_rarefaction()}}). Default is to draw one curve containing all the wasps.}
 
 \item{col}{Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.}
 
@@ -79,11 +79,11 @@ f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork
 wasps = read_wasps(f)
 
 # plot a rarefaction curve with all wasps
-plot_rarefaction(x, n=5)
+plot_rarefaction(wasps, n=5)
 
 # plot separate curves for each forest type
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
-r = plot_rarefaction(x, by="forest_type", col=col, pch=1:4)
+r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
 
 # add a legend (to be updated here)
 

@@ -5,16 +5,71 @@
 \title{Add legend to rarefaction plot}
 \usage{
 legend_rarefaction(
-  rownames,
-  colnames = NULL,
-  col = "black",
-  pch = NA,
-  pch_col = col,
+  txt = NULL,
+  r = NULL,
+  column = NULL,
+  col = NULL,
+  pch = NULL,
+  pch_col = NULL,
   pch_cex = 0.5,
   title = NULL,
+  colnames = NULL,
   ...
 )
 }
+\arguments{
+\item{txt}{The legend text. Character vector, e.g. \verb{c("primary", "swamp", ""disturbed", "clearcut")}. Legend texts will be in the same order as given here (though see \code{column}). Passed to \code{\link[=legend]{legend()}} as parameter \code{legend}, so will also accept e.g. NA values. Either this or \code{r} must be given. If only \code{r} is given, \code{txt} will is got from it.}
+
+\item{r}{List of curve coordinates and graphical parameters returned by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. If given, most parameters (e.g. \code{txt}, \code{col}, \code{pch}) will be taken from here. If you also give the same parameters separately, your parameters will be the ones used. Either this or \code{txt} must be given. If you give both \code{r} and \code{txt}, do make sure that they are in the same order!}
+
+\item{column}{What column each legend text should be placed in. Integer vector of same length as \code{txt}. E.g. \code{c(1, 2, 2, 2)} puts the first text in the first column, and the three others in a second column. It is OK to give these in a weird order (e.g. \code{c(2, 3, 2, 1)}), but trying to leave empty columns won't work (e.g. \code{c(1, 1, 3, 3)} which lacks column 2). Default is to not split the legend texts into several columns.}
+
+\item{col}{The colour of the lines. Vector of length 1 or same length as \code{txt}. Should in the same order as \code{txt}. NA values can be used if you don't want to draw a line, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two lines. If not given, all lines will be black.}
+
+\item{pch}{The symbols to add on top of the lines. Vector of length 1 or same length as \code{txt}. Should in the same order as \code{txt}. Typically an integer between 0:18, see \code{\link[=points]{points()}} for accepted values. NA values can be used if you don't want to draw a symbol, e.g. \code{c(1, 2, NA, NA)} only draws the first two symbols. If not given, no symbols are drawn.}
+
+\item{pch_col}{The colour of the symbols. Vector of length 1 or same length as \code{txt}. Should in the same order as \code{txt}. NA values can be used if you don't want to draw a symbol, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two symbols. If not given, symbols will be the same colour as the lines.}
+
+\item{pch_cex}{The size of the symbols. Vector of length 1 or same length as \code{txt}. Should in the same order as \code{txt}. Typically will be 0.5, i.e. 50\% of the normal size for symbols in the plot. This is also the default.}
+
+\item{title}{Overall title for the plot. Character string. Default is to not have a title.}
+
+\item{colnames}{The subtitles to place over each column. Character vector with one subtitle for each column. Default is to not have subtitles.}
+
+\item{...}{Other arguments passed to \code{\link[=legend]{legend()}}. Typically \code{x}, which gives the position of the legend (default is "bottomright"). Also, \code{fill} may sometimes be used to display confidence intervals. Graphical parameters such as \code{fill} should be vectors of length 1 or same length as \code{txt}, in the same order as \code{txt}. Argument \code{legend} has no effect, and some rarely used graphical parameters may not work as intended if drawing several columns.}
+}
 \description{
-No documentation yet, needs to be added.
+Add legend to rarefaction plots. Basically a wrapper for \code{\link[=legend]{legend()}}, for easy drawing of the lines, symbols etc of rarefaction curves.
+}
+\examples{
+# get example wasp data
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+wasps = read_wasps(f)
+
+# plot rarefaction curves with separate curves for each forest type
+col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
+
+# add a basic legend with the same colours etc as in the plot
+legend_rarefaction(r=r)
+
+# add another, more complex, legend
+cnames = c("undisturbed forest", "disturbed or cut forest")
+legend_rarefaction(r=r, column=c(2, 2, 1, 1), colnames=cnames, title="Uganda", x="right")
+
+# prepare a new column in the wasp data, for drawing separate curves for dry and wet season
+# also see to it the curves will be drawn in successional order primary -> farm
+levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
+wasps$forest_type = factor(wasps$forest_type, levels=levs)
+wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRUE)
+
+# plot rarefaction curves with separate curves foe each forest type and season
+col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
+col = rep(col, each=2)
+r = plot_rarefaction(wasps, by="forest_season", col=col, pch=rep(1:2, 5))
+
+# add a legend with dry and wet season in separate columns
+txt = rep(levels0(wasps$forest_type), each=2)
+legend_rarefaction(txt=txt, r=r, column=rep(1:2, 5), colnames=c("dry", "wet"), title="Uganda")
+
 }

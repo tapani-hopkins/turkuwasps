@@ -223,7 +223,7 @@ match_names = function(x, xname, levs, column_name){
 #' @param p How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).
 #' @param ci If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
 #' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
-#' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Default is to draw one curve containing all the wasps.
+#' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Curves are drawn in the same order as the order of the factor levels of the column (change the levels with [factor()] if you e.g. want the curves in different order in the legend drawn by [legend_rarefaction()]). Default is to draw one curve containing all the wasps.
 #' @param col Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.
 #' @param pch What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see [points()] for accepted values. If several curves are drawn (`by` is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.
 #' @param pch_col Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is to use the same colours as for the curves.
@@ -262,11 +262,11 @@ match_names = function(x, xname, levs, column_name){
 #' wasps = read_wasps(f)
 #' 
 #' # plot a rarefaction curve with all wasps
-#' plot_rarefaction(x, n=5)
+#' plot_rarefaction(wasps, n=5)
 #' 
 #' # plot separate curves for each forest type
 #' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
-#' r = plot_rarefaction(x, by="forest_type", col=col, pch=1:4)
+#' r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
 #' 
 #' # add a legend (to be updated here)
 #' 

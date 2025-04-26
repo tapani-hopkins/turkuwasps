@@ -9,6 +9,7 @@ legend_rarefaction(
   r = NULL,
   column = NULL,
   col = NULL,
+  lty = NULL,
   pch = NULL,
   pch_col = NULL,
   pch_cex = 0.5,
@@ -26,6 +27,8 @@ legend_rarefaction(
 \item{column}{What column each legend text should be placed in. Integer vector of same length as \code{txt}. E.g. \code{c(1, 2, 2, 2)} puts the first text in the first column, and the three others in a second column. It is OK to give these in a weird order (e.g. \code{c(2, 3, 2, 1)}), but trying to leave empty columns won't work (e.g. \code{c(1, 1, 3, 3)} which lacks column 2). Default is to not split the legend texts into several columns.}
 
 \item{col}{The colour of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. NA values can be used if you don't want to draw a line, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two lines. If not given, all lines will be black.}
+
+\item{lty}{The line type of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. Typically an integer between 0:6, see \code{\link[=par]{par()}} for accepted values. NA values cannot be used. If not given, all lines will be solid.}
 
 \item{pch}{The symbols to add on top of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. Typically an integer between 0:18, see \code{\link[=points]{points()}} for accepted values. NA values can be used if you don't want to draw a symbol, e.g. \code{c(1, 2, NA, NA)} only draws the first two symbols. If not given, no symbols are drawn.}
 
@@ -76,7 +79,9 @@ wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRU
 # plot rarefaction curves with separate curves for each forest type and season
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
 col = rep(col, each=2)
-r = plot_rarefaction(wasps, by="forest_season", col=col, pch=rep(1:2, 5), xlim=c(0, 100))
+lty = rep(c(1,5), 5)
+pch = rep(1:5, each=2)
+r = plot_rarefaction(wasps, by="forest_season", col=col, lty=lty, pch=pch, xlim=c(0, 100))
 
 # add a legend with dry and wet season in separate columns
 txt = rep(levels0(wasps$forest_type), each=2)

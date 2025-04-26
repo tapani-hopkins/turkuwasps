@@ -134,7 +134,7 @@ wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRU
 # plot rarefaction curves with separate curves for each forest type and season
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
 col = rep(col, each=2)
-r = plot_rarefaction(wasps, by="forest_season", col=col, pch=rep(1:2, 5), xlim=c(0, 100))
+r = plot_rarefaction(wasps, by="forest_season", col=col, lty=rep(1:2, 5), pch=rep(1:5, each=2), xlim=c(0, 100))
 
 # add a legend with dry and wet season in separate columns
 txt = rep(levels0(wasps$forest_type), each=2)

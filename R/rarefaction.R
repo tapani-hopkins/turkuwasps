@@ -160,6 +160,7 @@ get_rarefaction = function(x, n=10, p=0.84){
 #' @param r List of curve coordinates and graphical parameters returned by [plot_rarefaction()]. If given, most parameters (e.g. `txt`, `col`, `pch`) will be taken from here. If you also give the same parameters separately, those will be the ones used. Either this or `txt` must be given. If you give both `r` and `txt`, do make sure that they are in the same order!
 #' @param column What column each legend text should be placed in. Integer vector of same length as `txt`. E.g. `c(1, 2, 2, 2)` puts the first text in the first column, and the three others in a second column. It is OK to give these in a weird order (e.g. `c(2, 3, 2, 1)`), but trying to leave empty columns won't work (e.g. `c(1, 1, 3, 3)` which lacks column 2). Default is to not split the legend texts into several columns. 
 #' @param col The colour of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. NA values can be used if you don't want to draw a line, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two lines. If not given, all lines will be black.
+#' @param lty The line type of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically an integer between 0:6, see [par()] for accepted values. NA values cannot be used. If not given, all lines will be solid.
 #' @param pch The symbols to add on top of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically an integer between 0:18, see [points()] for accepted values. NA values can be used if you don't want to draw a symbol, e.g. `c(1, 2, NA, NA)` only draws the first two symbols. If not given, no symbols are drawn.
 #' @param pch_col The colour of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. NA values can be used if you don't want to draw a symbol, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two symbols. If not given, symbols will be black.
 #' @param pch_cex The size of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically will be 0.5, i.e. 50% of the normal size for symbols in the plot. This is also the default.
@@ -199,15 +200,17 @@ get_rarefaction = function(x, n=10, p=0.84){
 #' # plot rarefaction curves with separate curves for each forest type and season
 #' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
 #' col = rep(col, each=2)
-#' r = plot_rarefaction(wasps, by="forest_season", col=col, pch=rep(1:2, 5), xlim=c(0, 100))
-#'
+#' lty = rep(c(1,5), 5)
+#' pch = rep(1:5, each=2)
+#' r = plot_rarefaction(wasps, by="forest_season", col=col, lty=lty, pch=pch, xlim=c(0, 100))
+#' 
 #' # add a legend with dry and wet season in separate columns
 #' txt = rep(levels0(wasps$forest_type), each=2)
 #' legend_rarefaction(txt=txt, r=r, column=rep(1:2, 5), colnames=c("dry", "wet"), title="Uganda")
 #'
 #' @export
 #' 
-legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL, pch_col=NULL, pch_cex=0.5, nwasps=NULL, title=NULL, colnames=NULL, ...){
+legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, lty=NULL, pch=NULL, pch_col=NULL, pch_cex=0.5, nwasps=NULL, title=NULL, colnames=NULL, ...){
 	
 	# get the legend texts from 'r' if they weren't given by the user
 	if (is.null(txt)){
@@ -236,6 +239,9 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL,
 	if (is.null(col)){
 		if (is.null(r)) { col = "black" } else { col = r$col }
 	}
+	if (is.null(lty)){
+		if (is.null(r)) { lty = 1 } else { lty = r$lty }
+	}
 	if (is.null(pch)){
 		if (is.null(r)) { pch = NA } else { pch = r$pch }
 	}
@@ -252,8 +258,9 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, pch=NULL,
 		txt[ii] = paste0(txt[ii], " (n=", nwasps[ii], ")")
 	}
 	
-	# add the line colour and legend texts to the legend arguments
+	# add the line colour, line type, and legend texts to the legend arguments
 	legend_args$col = col
+	legend_args$lty = lty
 	legend_args$legend = txt
 
 	# if the legend is in one column, draw the legend and add points..
@@ -422,6 +429,7 @@ match_names = function(x, xname, levs, column_name){
 #' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
 #' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Curves are drawn in the same order as the order of the factor levels of the column (change the levels with [factor()] if you e.g. want the curves in different order in the legend drawn by [legend_rarefaction()]). Default is to draw one curve containing all the wasps.
 #' @param col Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.
+#' @param lty Line type to be used for the curves. Typically an integer between 0:6 if only one curve is drawn, see [par()] for accepted values. If several curves are drawn (`by` is not NULL), should preferably be a named vector giving the line type for each curve. But unnamed vectors or an integer work too, see 'Details'.
 #' @param pch What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see [points()] for accepted values. If several curves are drawn (`by` is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.
 #' @param pch_col Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is black.
 #' @param ...  Graphical parameters passed to the two functions which draw the curves, [plot()] and [lines()]. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected. 
@@ -432,7 +440,7 @@ match_names = function(x, xname, levs, column_name){
 #'
 #' For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: `col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")`. These will automatically be matched to the correct forest type, whatever order the colours were given in.
 #' 
-#' Unnamed vectors work too: `col = c("darkgreen", "blue", "green", "yellow")`. But then you have to be *completely sure* that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with `levels0(x[, by])`.
+#' Unnamed vectors work too: `col = c("darkgreen", "blue", "green", "yellow")`. But then you have to be *completely sure* that the colours are in the same order as the curves are drawn. Curves are drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with `levels0(x[, by])`. Unnamed vectors will also need to have the same length as the factor levels of the column.
 #' 
 #' A single value for the colours and other parameters works but gives the same value to all curves.
 #' 
@@ -445,10 +453,11 @@ match_names = function(x, xname, levs, column_name){
 #'
 #' @seealso Function [combine_columns()], which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
 #' 
-#' @return List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to [legend_rarefaction()] to draw a legend with the right colours etc. The list has 5 items:
+#' @return List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to [legend_rarefaction()] to draw a legend with the right colours etc. The list has 6 items:
 #' * `r` The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`. If several curves are drawn, returns a list of each curves's coordinates.
 #' * `nwasps` Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 #' * `col` Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
+#' * `lty` Line type of the curve. If several curves are drawn, returns a named vector of the line types of each curve.
 #' * `pch` Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
 #' * `pch_col` Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
 #'
@@ -470,7 +479,7 @@ match_names = function(x, xname, levs, column_name){
 #' 
 #' @export
 #' 
-plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", pch=NULL, pch_col="black", ...){
+plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", lty=1, pch=NULL, pch_col="black", ...){
 
 	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){
@@ -493,8 +502,9 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		# get the number of wasps in each curve
 		nwasps = table(x[, by])
 		
-		# save the colours and points as named vectors, which are in the same order as the curves
+		# save the colours, lines and points as named vectors, which are in the same order as the curves
 		col = match_names(col, "col", levs, by)
+		lty = match_names(lty, "lty", levs, by)
 		pch = match_names(pch, "pch", levs, by)
 		pch_col = match_names(pch_col, "pch_col", levs, by)
 		
@@ -518,7 +528,7 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 			r[[i]] = get_rarefaction(X[[i]], n, p)
 			
 			# save all the arguments, including the x and y limits if not given by the user
-			plot_args = c(list(r=r[[i]], ci=ci, add=add, col=col[i], pch=pch[i], pch_col=pch_col[i]), list(...))
+			plot_args = c(list(r=r[[i]], ci=ci, add=add, col=col[i], lty=lty[i], pch=pch[i], pch_col=pch_col[i]), list(...))
 			if (! "xlim" %in% names(list(...))){ plot_args$xlim = xlim }
 			if (! "ylim" %in% names(list(...))){ plot_args$ylim = ylim }
 			
@@ -537,7 +547,7 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		r = get_rarefaction(x, n, p)
 	
 		# draw the rarefaction curve
-		draw_rarefaction(r, ci=ci, add=add, col=col, pch=pch, pch_col=pch_col, ...)
+		draw_rarefaction(r, ci=ci, add=add, col=col, lty=lty, pch=pch, pch_col=pch_col, ...)
 		
 		# get the number of wasps in the curve
 		nwasps=nrow(x)
@@ -545,7 +555,7 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 	}
 	
 	# return the curve coordinates, number of wasps, and parameters, but don't display them
-	invisible(list(r=r, nwasps=nwasps, col=col, pch=pch, pch_col=pch_col))
+	invisible(list(r=r, nwasps=nwasps, col=col, lty=lty, pch=pch, pch_col=pch_col))
 	
 }
 

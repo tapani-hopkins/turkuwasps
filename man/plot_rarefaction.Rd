@@ -12,6 +12,7 @@ plot_rarefaction(
   add = FALSE,
   by = NULL,
   col = "black",
+  lty = 1,
   pch = NULL,
   pch_col = "black",
   ...
@@ -32,6 +33,8 @@ plot_rarefaction(
 
 \item{col}{Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.}
 
+\item{lty}{Line type to be used for the curves. Typically an integer between 0:6 if only one curve is drawn, see \code{\link[=par]{par()}} for accepted values. If several curves are drawn (\code{by} is not NULL), should preferably be a named vector giving the line type for each curve. But unnamed vectors or an integer work too, see 'Details'.}
+
 \item{pch}{What symbols to use on the curve. Typically an integer between 0:18 if only one curve is drawn, see \code{\link[=points]{points()}} for accepted values. If several curves are drawn (\code{by} is not NULL), should preferably be a named vector giving the symbol for each curve. But unnamed vectors or a single integer work too, see 'Details'. Default is for the curve to be drawn without symbols.}
 
 \item{pch_col}{Colour to be used for the symbols. Typically a string if only one curve is drawn. If several curves are drawn (\code{by} is not NULL), should preferably be a named character vector giving the colour of the symbols for each curve. But unnamed vectors or a string work too, see 'Details'. Default is black.}
@@ -39,11 +42,12 @@ plot_rarefaction(
 \item{...}{Graphical parameters passed to the two functions which draw the curves, \code{\link[=plot]{plot()}} and \code{\link[=lines]{lines()}}. These will override any default values such as colours. A few parameters (such as 'type' and 'pch') may not work as expected.}
 }
 \value{
-List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to \code{\link[=legend_rarefaction]{legend_rarefaction()}} to draw a legend with the right colours etc. The list has 5 items:
+List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to \code{\link[=legend_rarefaction]{legend_rarefaction()}} to draw a legend with the right colours etc. The list has 6 items:
 \itemize{
 \item \code{r} The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}. If several curves are drawn, returns a list of each curves's coordinates.
 \item \code{nwasps} Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 \item \code{col} Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
+\item \code{lty} Line type of the curve. If several curves are drawn, returns a named vector of the line types of each curve.
 \item \code{pch} Symbols drawn on the curve. If several curves are drawn, returns a named vector of the symbols of each curve.
 \item \code{pch_col} Colour of the symbols drawn on each curve. If several curves are drawn, returns a named vector of the symbol colours of each curve.
 }
@@ -58,7 +62,7 @@ If drawing several curves, parameters such as the colour (\code{col}) should pre
 
 For example if drawing four curves for four forest types ("primary", "swamp", "disturbed", "clearcut"), the colours could be: \code{col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow")}. These will automatically be matched to the correct forest type, whatever order the colours were given in.
 
-Unnamed vectors work too: \code{col = c("darkgreen", "blue", "green", "yellow")}. But then you have to be \emph{completely sure} that the colours are in the same order as the curves are drawn. Curves will be drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with \code{levels0(x[, by])}.
+Unnamed vectors work too: \code{col = c("darkgreen", "blue", "green", "yellow")}. But then you have to be \emph{completely sure} that the colours are in the same order as the curves are drawn. Curves are drawn in the same order as the factor levels of the column that the wasp data is split by. You can check what the order is with \code{levels0(x[, by])}. Unnamed vectors will also need to have the same length as the factor levels of the column.
 
 A single value for the colours and other parameters works but gives the same value to all curves.
 }

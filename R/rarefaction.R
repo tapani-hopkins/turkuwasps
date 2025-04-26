@@ -254,13 +254,11 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, lty=NULL,
 		
 	# sort parameters into same order as 'txt' if vector names were given in 'txt' and the parameters
 	if (! is.null(names(txt))){
-		print(col)
-		col = match_names(col, "col", levs=names(txt), "names of txt")
-		print(col)
-		lty = match_names(lty, "lty", levs=names(txt), "names of txt")
-		pch = match_names(pch, "pch", levs=names(txt), "names of txt")
-		pch_col = match_names(pch_col, "pch_col", levs=names(txt), "names of txt")
-		nwasps = match_names(nwasps, "nwasps", levs=names(txt), "names of txt")
+		col = match_names(col, "col", levs=names(txt), "the names of txt")
+		lty = match_names(lty, "lty", levs=names(txt), "the names of txt")
+		pch = match_names(pch, "pch", levs=names(txt), "the names of txt")
+		pch_col = match_names(pch_col, "pch_col", levs=names(txt), "the names of txt")
+		nwasps = match_names(nwasps, "nwasps", levs=names(txt), "the names of txt")
 	}
 	
 	# add the sample size (number of wasps) to the legend texts if it was given
@@ -369,14 +367,14 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, lty=NULL,
 
 #' Match colour etc parameters to the right rarefaction curve
 #'
-#' Helper function used by [plot_rarefaction()]. Checks the length and names of parameters such as `col` and `pch`. If they are named vectors, makes sure they are in the same order as the curves that are being drawn. If not, checks the length. Only used if several curves are drawn.
+#' Helper function used by [plot_rarefaction()] and [legend_rarefaction()]. Checks the length and names of parameters such as `col` and `pch`. If they are named vectors, makes sure they are in the same order as the curves or legend texts that are being drawn. If not, checks the length. Only used if several curves are drawn.
 #' 
 #' @param x Parameter to check. Usually a vector, e.g. for the colour of the curves: 'c(primary="darkgreen", disturbed="green", swamp="blue", clearcut="red")'.
 #' @param xname Character string telling what parameter is being checked. E.g. "col". Used for error messages.
-#' @param levs Character vector giving the levels of the column that is being used to split the data into separate curves. The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.
+#' @param levs Character vector giving the levels of the column that is being used to split the data into separate curves (curves) or the names of parameter `txt` (legend texts). The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.
 #' @param column_name Character string telling what column is being used to split the data into separate curves. Used for error messages.
 #' 
-#' @return Named vector of parameter values. The names tell which level each paramater value corresponds to. The vector is the same length and is in the same order as `levs`.
+#' @return Named vector of parameter values. The names tell which level each parameter value corresponds to. The vector is the same length and is in the same order as `levs`.
 #' 
 #' @keywords internal
 #' 
@@ -390,8 +388,8 @@ match_names = function(x, xname, levs, column_name){
 	
 	# save some error messages
 	stopmessages = c(
-		paste0("Couldn't match the following to ",  xname, ": ", paste(levs[! levs %in% nms], collapse=", "), ". Check that the names of ", xname, " contain all the values found in column ", column_name, "."), 
-		paste0(xname, " is the wrong length. It should be either length 1, or the same length as the number of different kinds of values in column ", column_name, " (i.e. ", length(levs), ").")
+		paste0("Couldn't match the following to ",  xname, ": ", paste(levs[! levs %in% nms], collapse=", "), ". Check that the names of ", xname, " contain all the values found in ", column_name, "."), 
+		paste0(xname, " is the wrong length. It should be either length 1, or the same length as the number of different kinds of values in ", column_name, " (i.e. ", length(levs), ").")
 	)
 	
 	# if `x` is a named vector with any of the levels as a name, put it into the same order as the levels..

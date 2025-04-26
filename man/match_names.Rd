@@ -11,14 +11,14 @@ match_names(x, xname, levs, column_name)
 
 \item{xname}{Character string telling what parameter is being checked. E.g. "col". Used for error messages.}
 
-\item{levs}{Character vector giving the levels of the column that is being used to split the data into separate curves. The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.}
+\item{levs}{Character vector giving the levels of the column that is being used to split the data into separate curves (curves) or the names of parameter \code{txt} (legend texts). The curves will be drawn in this order, and the parameter's values placed in the same order. E.g. 'c("clearcut", "disturbed", "primary", "swamp")'.}
 
 \item{column_name}{Character string telling what column is being used to split the data into separate curves. Used for error messages.}
 }
 \value{
-Named vector of parameter values. The names tell which level each paramater value corresponds to. The vector is the same length and is in the same order as \code{levs}.
+Named vector of parameter values. The names tell which level each parameter value corresponds to. The vector is the same length and is in the same order as \code{levs}.
 }
 \description{
-Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. Checks the length and names of parameters such as \code{col} and \code{pch}. If they are named vectors, makes sure they are in the same order as the curves that are being drawn. If not, checks the length. Only used if several curves are drawn.
+Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}} and \code{\link[=legend_rarefaction]{legend_rarefaction()}}. Checks the length and names of parameters such as \code{col} and \code{pch}. If they are named vectors, makes sure they are in the same order as the curves or legend texts that are being drawn. If not, checks the length. Only used if several curves are drawn.
 }
 \keyword{internal}

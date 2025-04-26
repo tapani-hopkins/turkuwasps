@@ -156,15 +156,15 @@ get_rarefaction = function(x, n=10, p=0.84){
 #'
 #' Add legend to rarefaction plots. Basically a wrapper for [legend()], adapted to easily draw lines, symbols, several columns, column subtitles etc for rarefaction curve plots.
 #' 
-#' @param txt The legend text. Character vector, e.g. `c("primary", "swamp", ""disturbed", "clearcut")`. Legend texts will be in the same order as given here (though see `column`). NA values can be used if you want to leave some legend text blank. Either this or `r` must be given. If only `r` is given, `txt` will be got from it.
+#' @param txt The legend text. Character vector, e.g. `c("primary", "swamp", ""disturbed", "clearcut")`. Legend texts will be in the order as given here (except `column` may reorder them). Ideally a named vector such as `c(primary="primary", swamp="swamp", disturbed="disturbed", clearcut="clearcut")`, because then the names will be matched to the names of other parameters such as `col` to make sure they are in the same order. NA values can be used if you want to leave some legend text blank. Either this or `r` must be given. If only `r` is given, `txt` will be got from it.
 #' @param r List of curve coordinates and graphical parameters returned by [plot_rarefaction()]. If given, most parameters (e.g. `txt`, `col`, `pch`) will be taken from here. If you also give the same parameters separately, those will be the ones used. Either this or `txt` must be given. If you give both `r` and `txt`, do make sure that they are in the same order!
 #' @param column What column each legend text should be placed in. Integer vector of same length as `txt`. E.g. `c(1, 2, 2, 2)` puts the first text in the first column, and the three others in a second column. It is OK to give these in a weird order (e.g. `c(2, 3, 2, 1)`), but trying to leave empty columns won't work (e.g. `c(1, 1, 3, 3)` which lacks column 2). Default is to not split the legend texts into several columns. 
-#' @param col The colour of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. NA values can be used if you don't want to draw a line, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two lines. If not given, all lines will be black.
-#' @param lty The line type of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically an integer between 0:6, see [par()] for accepted values. NA values cannot be used. If not given, all lines will be solid.
-#' @param pch The symbols to add on top of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically an integer between 0:18, see [points()] for accepted values. NA values can be used if you don't want to draw a symbol, e.g. `c(1, 2, NA, NA)` only draws the first two symbols. If not given, no symbols are drawn.
-#' @param pch_col The colour of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. NA values can be used if you don't want to draw a symbol, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two symbols. If not given, symbols will be black.
+#' @param col The colour of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`, or be a named vector with the same names as `txt`. NA values can be used if you don't want to draw a line, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two lines. If not given, all lines will be black.
+#' @param lty The line type of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`, or be a named vector with the same names as `txt`. Typically an integer between 0:6, see [par()] for accepted values. NA values cannot be used. If not given, all lines will be solid.
+#' @param pch The symbols to add on top of the lines. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`, or be a named vector with the same names as `txt`. Typically an integer between 0:18, see [points()] for accepted values. NA values can be used if you don't want to draw a symbol, e.g. `c(1, 2, NA, NA)` only draws the first two symbols. If not given, no symbols are drawn.
+#' @param pch_col The colour of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`, or be a named vector with the same names as `txt`. NA values can be used if you don't want to draw a symbol, e.g. `c("darkgreen", "blue", NA, NA)` only draws the first two symbols. If not given, symbols will be black.
 #' @param pch_cex The size of the symbols. Vector of length 1, or of same length as `txt`. Should be in the same order as `txt`. Typically will be 0.5, i.e. 50% of the normal size for symbols in the plot. This is also the default.
-#' @param nwasps The number of wasps (i.e. sample size). Vector of same length as `txt`. Should be in the same order as `txt`. Typically got from `r`. These will be added to the legend texts in `txt`, e.g. if `nwasps=186` is added to `txt="primary"` the result will be "primary (n=186)". NA values can be used if you don't want to add a sample size. If not given, sample sizes won't be added.
+#' @param nwasps The number of wasps (i.e. sample size). Vector of same length as `txt`. Should be in the same order as `txt`, or be a named vector with the same names as `txt`. Typically got from `r`. These will be added to the legend texts in `txt`, e.g. if `nwasps=186` is added to `txt="primary"` the result will be "primary (n=186)". NA values can be used if you don't want to add a sample size. If not given, sample sizes won't be added.
 #' @param title Overall title for the plot. Character string. Default is to not have a title.
 #' @param colnames The subtitles to place over each column. Character vector with one subtitle for each column. Default is to not have subtitles.
 #' @param ... Other arguments passed to [legend()]. Typically `x`, which gives the position of the legend (default is "bottomright"). Also, `fill` may sometimes be used to display confidence intervals. Graphical parameters such as `fill` should be vectors of length 1, or of same length as `txt`, in the same order as `txt`. Argument `legend` has no effect, and some rarely used graphical parameters may not work as intended if drawing several columns.
@@ -250,6 +250,17 @@ legend_rarefaction = function(txt=NULL, r=NULL, column=NULL, col=NULL, lty=NULL,
 	}
 	if (is.null(nwasps)){
 		if (is.null(r)) { nwasps = NULL } else { nwasps = r$nwasps }
+	}	
+		
+	# sort parameters into same order as 'txt' if vector names were given in 'txt' and the parameters
+	if (! is.null(names(txt))){
+		print(col)
+		col = match_names(col, "col", levs=names(txt), "names of txt")
+		print(col)
+		lty = match_names(lty, "lty", levs=names(txt), "names of txt")
+		pch = match_names(pch, "pch", levs=names(txt), "names of txt")
+		pch_col = match_names(pch_col, "pch_col", levs=names(txt), "names of txt")
+		nwasps = match_names(nwasps, "nwasps", levs=names(txt), "names of txt")
 	}
 	
 	# add the sample size (number of wasps) to the legend texts if it was given

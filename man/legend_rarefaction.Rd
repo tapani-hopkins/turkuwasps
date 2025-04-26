@@ -20,23 +20,23 @@ legend_rarefaction(
 )
 }
 \arguments{
-\item{txt}{The legend text. Character vector, e.g. \verb{c("primary", "swamp", ""disturbed", "clearcut")}. Legend texts will be in the same order as given here (though see \code{column}). NA values can be used if you want to leave some legend text blank. Either this or \code{r} must be given. If only \code{r} is given, \code{txt} will be got from it.}
+\item{txt}{The legend text. Character vector, e.g. \verb{c("primary", "swamp", ""disturbed", "clearcut")}. Legend texts will be in the order as given here (except \code{column} may reorder them). Ideally a named vector such as \code{c(primary="primary", swamp="swamp", disturbed="disturbed", clearcut="clearcut")}, because then the names will be matched to the names of other parameters such as \code{col} to make sure they are in the same order. NA values can be used if you want to leave some legend text blank. Either this or \code{r} must be given. If only \code{r} is given, \code{txt} will be got from it.}
 
 \item{r}{List of curve coordinates and graphical parameters returned by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. If given, most parameters (e.g. \code{txt}, \code{col}, \code{pch}) will be taken from here. If you also give the same parameters separately, those will be the ones used. Either this or \code{txt} must be given. If you give both \code{r} and \code{txt}, do make sure that they are in the same order!}
 
 \item{column}{What column each legend text should be placed in. Integer vector of same length as \code{txt}. E.g. \code{c(1, 2, 2, 2)} puts the first text in the first column, and the three others in a second column. It is OK to give these in a weird order (e.g. \code{c(2, 3, 2, 1)}), but trying to leave empty columns won't work (e.g. \code{c(1, 1, 3, 3)} which lacks column 2). Default is to not split the legend texts into several columns.}
 
-\item{col}{The colour of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. NA values can be used if you don't want to draw a line, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two lines. If not given, all lines will be black.}
+\item{col}{The colour of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}, or be a named vector with the same names as \code{txt}. NA values can be used if you don't want to draw a line, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two lines. If not given, all lines will be black.}
 
-\item{lty}{The line type of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. Typically an integer between 0:6, see \code{\link[=par]{par()}} for accepted values. NA values cannot be used. If not given, all lines will be solid.}
+\item{lty}{The line type of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}, or be a named vector with the same names as \code{txt}. Typically an integer between 0:6, see \code{\link[=par]{par()}} for accepted values. NA values cannot be used. If not given, all lines will be solid.}
 
-\item{pch}{The symbols to add on top of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. Typically an integer between 0:18, see \code{\link[=points]{points()}} for accepted values. NA values can be used if you don't want to draw a symbol, e.g. \code{c(1, 2, NA, NA)} only draws the first two symbols. If not given, no symbols are drawn.}
+\item{pch}{The symbols to add on top of the lines. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}, or be a named vector with the same names as \code{txt}. Typically an integer between 0:18, see \code{\link[=points]{points()}} for accepted values. NA values can be used if you don't want to draw a symbol, e.g. \code{c(1, 2, NA, NA)} only draws the first two symbols. If not given, no symbols are drawn.}
 
-\item{pch_col}{The colour of the symbols. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. NA values can be used if you don't want to draw a symbol, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two symbols. If not given, symbols will be black.}
+\item{pch_col}{The colour of the symbols. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}, or be a named vector with the same names as \code{txt}. NA values can be used if you don't want to draw a symbol, e.g. \code{c("darkgreen", "blue", NA, NA)} only draws the first two symbols. If not given, symbols will be black.}
 
 \item{pch_cex}{The size of the symbols. Vector of length 1, or of same length as \code{txt}. Should be in the same order as \code{txt}. Typically will be 0.5, i.e. 50\% of the normal size for symbols in the plot. This is also the default.}
 
-\item{nwasps}{The number of wasps (i.e. sample size). Vector of same length as \code{txt}. Should be in the same order as \code{txt}. Typically got from \code{r}. These will be added to the legend texts in \code{txt}, e.g. if \code{nwasps=186} is added to \code{txt="primary"} the result will be "primary (n=186)". NA values can be used if you don't want to add a sample size. If not given, sample sizes won't be added.}
+\item{nwasps}{The number of wasps (i.e. sample size). Vector of same length as \code{txt}. Should be in the same order as \code{txt}, or be a named vector with the same names as \code{txt}. Typically got from \code{r}. These will be added to the legend texts in \code{txt}, e.g. if \code{nwasps=186} is added to \code{txt="primary"} the result will be "primary (n=186)". NA values can be used if you don't want to add a sample size. If not given, sample sizes won't be added.}
 
 \item{title}{Overall title for the plot. Character string. Default is to not have a title.}
 

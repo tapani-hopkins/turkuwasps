@@ -13,7 +13,7 @@ plot_rarefaction(
   by = NULL,
   col = "black",
   lty = 1,
-  pch = NULL,
+  pch = NA,
   pch_col = "black",
   ...
 )

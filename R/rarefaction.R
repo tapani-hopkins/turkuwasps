@@ -488,7 +488,7 @@ match_names = function(x, xname, levs, column_name){
 #' 
 #' @export
 #' 
-plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", lty=1, pch=NULL, pch_col="black", ...){
+plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
 
 	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){
@@ -560,6 +560,9 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		
 		# get the number of wasps in the curve
 		nwasps=nrow(x)
+		
+		# add 'r' to a list of one, so it's returned to the user in consistent format
+		r = list(r)
 	
 	}
 	

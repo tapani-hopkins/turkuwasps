@@ -2,8 +2,8 @@
 #'
 #' Helper function used by [plot_rarefaction()]. Draws rarefaction curves created by [get_rarefaction()].
 #' 
-#' @param r List of coordinates for the curves returned by [get_rarefaction()]. Should have the X coordinates of the curve, and the average, max and min Y coordinates of the curve.
-#' @param ci If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
+#' @param r List of coordinates and standard errors for the curve returned by [get_rarefaction()]. Should have the x and y coordinates of the curve (`x`, `y`), and the standard errors (`se`). If the standard errors are not NULL, confidence intervals are drawn as well as the main curve.
+#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95% curves overlap).
 #' @param add If TRUE, the rarefaction curve is added to an existing plot. Default is to create a new plot.
 #' @param pch What symbols to use on the curve. Typically an integer between 0:18. See [points()] for accepted values. Default is for the curve to be drawn without symbols.
 #' @param pch_col Colour to be used for the symbols.
@@ -11,7 +11,7 @@
 #' 
 #' @keywords internal
 #' 
-draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...){
+draw_rarefaction = function(r, p=0.95, add=FALSE, pch=NULL, pch_col=NULL, ...){
 	
 	# store various default arguments for the plot
 	plot_args = list(
@@ -51,8 +51,13 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...)
 		graphics::points(r$x[i], r$y[i], pch=pch, cex=0.6, col=pch_col)
 	}
 	
-	# draw the upper and lower limits of the curve
-	if (ci){
+	# draw the upper and lower limits of the curve if confidence intervals were asked for
+	if (! is.null(r$se)){
+		
+		# 
+		mult = stats::qnorm(mean(c(p, 1)))
+		y_min = r$y - mult * r$se
+		y_max = r$y + mult * r$se
 		
 		# make a transparent colour (9% opacity) for the upper and lower limits
 		oldcol = grDevices::col2rgb(plot_args$col, alpha=TRUE)
@@ -60,46 +65,49 @@ draw_rarefaction = function(r, ci=FALSE, add=FALSE, pch=NULL, pch_col=NULL, ...)
 		nc = grDevices::rgb(nc[1], nc[2], nc[3], nc[4], maxColorValue=oldcol[4])
 	
 		# draw as a polygon
-		graphics::polygon( c(r$x, rev(r$x)) , c(r$y_min, rev(r$y_max)), border=NA, col=nc)
+		graphics::polygon( c(r$x, rev(r$x)) , c(y_min, rev(y_max)), border=NA, col=nc)
 		
 	}
 	
 }
 
 
-
 #' Get rarefaction curves
 #'
-#' Helper function used by [plot_rarefaction()]. Randomly resamples wasp data to create rarefaction curves, and takes the average, minimum and maximum of the curves.
+#' Helper function used by [plot_rarefaction()]. Randomly resamples wasp data to create rarefaction curves, and takes the average of the curves. Also estimates standard errors.
 #'
 #' @param x Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.
 #' @param n Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.
-#' @param  p How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).
+#' @param  n_ci Number of resamples for estimating standard errors. If NULL, standard errors are not calculated. Default (10) is fast, but gives very jagged estimates. Increase to e.g. 100 to get smoother estimates.
 #'
-#' @return List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`.
+#' @details Standard errors are estimated by bootstrapping. I.e. by randomly picking samples *with replacement* and making a rarefaction curve. This is repeated `n_ci` times, then the standard deviation of the curves is taken at each point of the x axis.
+#' @details Note that this is an underestimate! A proper estimate would randomly pick samples from all possible samples, including those that were not collected (which may include uncollected species). This function only picks from the samples that happened to be collected, so the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e .if coverage is good).
+#'
+#' @return List with the x coordinates (=number of wasps) of the curves, and the corresponding average y coordinates (number of species) and standard errors. If standard errors were not asked for (`n_ci` is NULL), returns NULL for the standard errors.
 #'
 #' @keywords internal 
 #'
-get_rarefaction = function(x, n=10, p=0.84){
+get_rarefaction = function(x, n=10, n_ci=10){
 	
 	# save x coordinates of the rarefied curves
 	X = 0:nrow(x)
 	
-	# create blank matrix for storing the y coordinates of each rarefied curve
+	# create a blank matrix for storing the y coordinates of each rarefied curve
 	Y = matrix(NA, nrow=n, ncol=length(X))
 	
 	# set the start of each curve to 0
 	Y[, 1] = 0
-	
 		
-	# rarefy the curves
+	# set the standard errors to NULL by default (overwritten if standard errors are asked for)
+	se = NULL
+		
+	# rarefy the main curves
 	for (i_n in 1:n){
 		
 		# sort the samples into random order
 		samples = sample(levels0(x$sample))
 	
 		# save the x and y coordinates of this curve
-		# X0 <- Y0 <- rep(NA, length(samples))
 		for (i in 1:length(samples)){
 			
 			# get the taxon of each of the individuals accumulated up to this point
@@ -110,44 +118,127 @@ get_rarefaction = function(x, n=10, p=0.84){
 			Y0 = nlevels0(taxon)
 			
 			# store into Y
-			Y[i_n, which(X==X0)] = Y0
+			Y[i_n, which(X == X0)] = Y0
 			
 		}		
 	
-		# get the indices of missing values in this curve, and of non-missing values
-		na = which(is.na(Y[i_n, ]))
-		nna = which(! is.na(Y[i_n, ]))
+		# replace missing values with interpolated values
+		Y[i_n, ] = interpolate_na(Y[i_n, ])
 		
-		# interpolate the missing values
-		# e.g. if the first sample had three wasps and one species (x=3, y=1), 
-		# and the origin is (x=0, y=0), 
-		# then interpolate the points in between them (x=1, y=0.33) (x=2, y=0.66)
-		for (i_na in na){
-			
-			# get the index of the previous and next non-missing point
-			i0 = i_na - 1
-			i1 = min(nna[nna > i_na])
-			
-			# save the interpolated value
-			Y[i_n, i_na] = Y[i_n, i0] + (Y[i_n, i1] - Y[i_n, i0]) / (i1 - i0)	
+		# get the average of the main curves
+		Y_mean = colMeans(Y)
+					
+	}
+	
+	# get standard errors if asked for them 
+	if (! is.null(n_ci)){
+	
+		# create a blank matrix for storing the y coordinates of each rarefied curve
+		Y_ci = matrix(NA, nrow=n_ci, ncol=length(X))
+		Y_ci[, 1] = 0
+	
+		# rarefy the confidence interval curves
+		for (i_n in 1:n_ci){
 		
+			# get a random pick of samples (with replacement)
+			samples = sample(levels0(x$sample), size=nrow(x), replace=TRUE)
+		
+			# create blank vector for saving the taxon of each accumulated individual
+			taxon = NULL
+		
+			# save the x and y coordinates of this curve
+			for (i in 1:length(samples)){
+			
+				# get the taxon of each of the individuals accumulated up to this point
+				taxon = c(taxon, x$taxon[x$sample == samples[i]])
+			
+				# count how many individuals and how many taxa have accumulated
+				X0 = length(taxon)
+				Y0 = nlevels0(taxon)
+			
+				# if we haven't reached the end of the curve, store into Y_ci
+				if (X0 < max(X)){
+					Y_ci[i_n, which(X == X0)] = Y0
+			
+				# .. if we've reached the end of the curve, store into Y_ci and break the loop..
+				} else if (X0 == max(X)){
+					Y_ci[i_n, which(X == X0)] = Y0
+					break
+			
+				# ..if we've gone past the end of the curve, store an interpolated value into Y_ci and break the loop
+				} else if (X0 > max(X)){
+				
+					# interpolate the last value
+					# e.g. if the previous point had 444 wasps and 5 species (x=444, y=5),
+					# .. and we are now at (x=446, y=6),
+					# then interpolate the end of the curve at x=445 as (x=445, y=5.5)
+					i0 = max(which(! is.na(Y_ci[i_n, ])))
+					dx = X0 - X[i0]
+					dy = Y0 - Y_ci[i_n, i0]
+					Y_ci[i_n, which(X == max(X))] = Y_ci[i_n, i0] + dy / dx * (max(X) - X[i0])
+				
+					# break the loop
+					break
+				}
+			
+			}		
+	
+			# replace missing values with interpolated values
+			Y_ci[i_n, ] = interpolate_na(Y_ci[i_n, ])
+			
 		}
+	
+		# get the standard errors of the confidence interval curves
+		se = apply(Y_ci, 2, FUN=stats::sd)
+		
+	}
 			
+	# return the curve coordinates and standard errors
+	return(list(x=X, y=Y_mean, se=se))	
+	
+}
+
+
+#' Get missing values by interpolating
+#'
+#' Helper function used by [get_rarefaction()]. Replaces NA values in a vector with interpolated values.
+#'
+#' @param x Numeric vector. The first and last values must not be NA.
+#'
+#' @details
+#' Mainly used for rarefaction curves, to interpolate any missing values. E.g. if the first sample in the rarefaction had three wasps and one species (x=3, y=1), and the origin is (x=0, y=0), the points in between will be interpolated: (x=1, y=0.33) (x=2, y=0.66). 
+#' 
+#' @return The vector `x` with any missing values replaced with interpolated values. 
+#'
+#' @keywords internal 
+#'
+interpolate_na = function(x){
+	
+	# stop if the first or last values are NA
+	if (is.na(x[1]) | is.na(x[length(x)])){
+		stop("The interpolated vector mustn't start or end with a NA value.")
 	}
 	
-	# get the average of the curves
-	Y_mean = colMeans(Y)
+	# get the indices of missing values, and of non-missing values
+	na = which(is.na(x))
+	nna = which(! is.na(x))
 	
-	# get the upper and lower limits of the curves
-	# (e.g. if p=0.84, remove the outmost 8% of the curves at each point)
-	Y_min <- Y_max <- rep(NA, ncol(Y))
-	for (i in 1:ncol(Y)){
-		Y_min[i] = stats::quantile(Y[, i], probs=(1-p)/2)
-		Y_max[i] = stats::quantile(Y[, i], probs=1-(1-p)/2)
+	# interpolate the missing values
+	for (i_na in na){
+			
+		# get the index of the previous and next non-missing point
+		i0 = i_na - 1
+		i1 = min(nna[nna > i_na])
+			
+		# save the interpolated value
+		dx = i1 - i0
+		dy = x[i1] - x[i0]
+		x[i_na] = x[i0] + dy / dx * (i_na - i0)
+		
 	}
-	
-	# return the curve coordinates
-	return(list(x=X, y=Y_mean, y_min=Y_min, y_max=Y_max))	
+
+	# return the vector with NA values replaced by interpolated values
+	return(x)
 	
 }
 
@@ -433,8 +524,8 @@ match_names = function(x, xname, levs, column_name){
 #'
 #' @param x Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.
 #' @param n Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.
-#' @param p How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).
-#' @param ci If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.
+#' @param  n_ci Number of resamples for estimating confidence intervals (see Details). Default (NULL) is to only show the curve without confidence intervals. 10 is fast, but gives very jagged intervals; 100 already gives quite smooth intervals.
+#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95% curves overlap, see Details).
 #' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
 #' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Curves are drawn in the same order as the order of the factor levels of the column (change the levels with [factor()] if you e.g. want the curves in different order in the legend drawn by [legend_rarefaction()]). Default is to draw one curve containing all the wasps.
 #' @param col Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.
@@ -456,14 +547,23 @@ match_names = function(x, xname, levs, column_name){
 #' ## Sample-based curves 
 #' The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
 #'
-#'  Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if `p=0.84`, drops the topmost and lowermost resampled curves until 84% of the curves are in the limits).
+#'  Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species.
 #'
 #' There are good reasons to prefer randomly drawing the wasps one *sample* at a time, instead of one *wasp* at a time (see e.g. Gotelli & Colwell 2011: Estimating species richness). For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? We'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+#'
+#' ## Confidence intervals
+#' The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.96 SE).
+#'  
+#' Standard errors are estimated by bootstrapping. Samples are randomly picked *with replacement*, and a rarefaction curve calculated. This is repeated `n_ci` times, to give a set of rarefaction curves. The standard error at any given point of the x axis is the standard deviation of these curves.
+#' 
+#' This, however, underestimates the standard error. A better estimate would randomly pick samples from all possible samples, including those that were not collected (and which may include uncollected species). Since we are only picking samples from those that were actually collected, the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e if coverage is good).
+#'
+#' To check if two curves are significantly different, I recommend using 95% confidence intervals (`p=0.95`). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, [https://doi.org/10.1093/jpe/rtr044]). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch. 
 #'
 #' @seealso Function [combine_columns()], which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
 #' 
 #' @return List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to [legend_rarefaction()] to draw a legend with the right colours etc. The list has 6 items:
-#' * `r` The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by `p`. If several curves are drawn, returns a list of each curves's coordinates.
+#' * `r` The curve coordinates and standard errors. List with the x coordinates (=number of wasps) of the curves, the average y coordinates (number of species), and the standard errors. If several curves are drawn, returns a list of each curves's coordinates.
 #' * `nwasps` Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 #' * `col` Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
 #' * `lty` Line type of the curve. If several curves are drawn, returns a named vector of the line types of each curve.
@@ -488,7 +588,7 @@ match_names = function(x, xname, levs, column_name){
 #' 
 #' @export
 #' 
-plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
+plot_rarefaction = function(x, n=10, n_ci=NULL, p=0.95, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
 
 	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){
@@ -534,10 +634,10 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 		for (i in 1:length(X)){
 			
 			# get this rarefaction curve
-			r[[i]] = get_rarefaction(X[[i]], n, p)
+			r[[i]] = get_rarefaction(X[[i]], n=n, n_ci=n_ci)
 			
 			# save all the arguments, including the x and y limits if not given by the user
-			plot_args = c(list(r=r[[i]], ci=ci, add=add, col=col[i], lty=lty[i], pch=pch[i], pch_col=pch_col[i]), list(...))
+			plot_args = c(list(r=r[[i]], p=p, add=add, col=col[i], lty=lty[i], pch=pch[i], pch_col=pch_col[i]), list(...))
 			if (! "xlim" %in% names(list(...))){ plot_args$xlim = xlim }
 			if (! "ylim" %in% names(list(...))){ plot_args$ylim = ylim }
 			
@@ -552,11 +652,11 @@ plot_rarefaction = function(x, n=10, p=0.84, ci=FALSE, add=FALSE, by=NULL, col="
 	# .. if `by`was not given, just draw one curve
 	} else {
 	
-		# get the rarefaction curve and its upper and lower limits
-		r = get_rarefaction(x, n, p)
+		# get the rarefaction curve and its standard errors
+		r = get_rarefaction(x, n=n, n_ci=n_ci)
 	
 		# draw the rarefaction curve
-		draw_rarefaction(r, ci=ci, add=add, col=col, lty=lty, pch=pch, pch_col=pch_col, ...)
+		draw_rarefaction(r, p=p, add=add, col=col, lty=lty, pch=pch, pch_col=pch_col, ...)
 		
 		# get the number of wasps in the curve
 		nwasps=nrow(x)

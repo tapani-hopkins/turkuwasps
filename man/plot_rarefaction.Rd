@@ -7,8 +7,8 @@
 plot_rarefaction(
   x,
   n = 10,
-  p = 0.84,
-  ci = FALSE,
+  n_ci = NULL,
+  p = 0.95,
   add = FALSE,
   by = NULL,
   col = "black",
@@ -23,9 +23,9 @@ plot_rarefaction(
 
 \item{n}{Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.}
 
-\item{p}{How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84\% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).}
+\item{n_ci}{Number of resamples for estimating confidence intervals (see Details). Default (NULL) is to only show the curve without confidence intervals. 10 is fast, but gives very jagged intervals; 100 already gives quite smooth intervals.}
 
-\item{ci}{If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
+\item{p}{How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95\% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95\% curves overlap, see Details).}
 
 \item{add}{If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.}
 
@@ -44,7 +44,7 @@ plot_rarefaction(
 \value{
 List with the curve coordinates, number of wasps and parameters, returned silently. This can be passed to \code{\link[=legend_rarefaction]{legend_rarefaction()}} to draw a legend with the right colours etc. The list has 6 items:
 \itemize{
-\item \code{r} The curve coordinates. List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}. If several curves are drawn, returns a list of each curves's coordinates.
+\item \code{r} The curve coordinates and standard errors. List with the x coordinates (=number of wasps) of the curves, the average y coordinates (number of species), and the standard errors. If several curves are drawn, returns a list of each curves's coordinates.
 \item \code{nwasps} Number of wasps in the curve. If several curves are drawn, returns a table (basically a named vector) of the number of wasps of each curve.
 \item \code{col} Colour of the curve. If several curves are drawn, returns a named vector of the colours of each curve.
 \item \code{lty} Line type of the curve. If several curves are drawn, returns a named vector of the line types of each curve.
@@ -71,9 +71,20 @@ A single value for the colours and other parameters works but gives the same val
 
 The curves are sample-based rarefaction curves. This means that the wasps are drawn randomly, one sample at a time, and the number of species versus number of wasps is added to the plot. Samples keep on being drawn until all the wasps have been added.
 
-Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species. The upper and lower limits are also saved, but are very approximate (e.g. if \code{p=0.84}, drops the topmost and lowermost resampled curves until 84\% of the curves are in the limits).
+Several randomly drawn curves are made (default is 10). The returned curve is an averaged version of these: at each point of the x axis, we take the average number of species.
 
 There are good reasons to prefer randomly drawing the wasps one \emph{sample} at a time, instead of one \emph{wasp} at a time (see e.g. Gotelli & Colwell 2011: Estimating species richness). For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? We'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
+}
+
+\subsection{Confidence intervals}{
+
+The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.96 SE).
+
+Standard errors are estimated by bootstrapping. Samples are randomly picked \emph{with replacement}, and a rarefaction curve calculated. This is repeated \code{n_ci} times, to give a set of rarefaction curves. The standard error at any given point of the x axis is the standard deviation of these curves.
+
+This, however, underestimates the standard error. A better estimate would randomly pick samples from all possible samples, including those that were not collected (and which may include uncollected species). Since we are only picking samples from those that were actually collected, the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e if coverage is good).
+
+To check if two curves are significantly different, I recommend using 95\% confidence intervals (\code{p=0.95}). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, \link{https://doi.org/10.1093/jpe/rtr044}). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch.
 }
 }
 \examples{

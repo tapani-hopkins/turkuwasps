@@ -4,19 +4,24 @@
 \alias{get_rarefaction}
 \title{Get rarefaction curves}
 \usage{
-get_rarefaction(x, n = 10, p = 0.84)
+get_rarefaction(x, n = 10, n_ci = 10)
 }
 \arguments{
 \item{x}{Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.}
 
 \item{n}{Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.}
 
-\item{p}{How large a part of the resampled curves to show in confidence intervals. Default (0.84) shows where 84\% of the resampled curves fell. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 0.84 curves overlap).}
+\item{n_ci}{Number of resamples for estimating standard errors. If NULL, standard errors are not calculated. Default (10) is fast, but gives very jagged estimates. Increase to e.g. 100 to get smoother estimates.}
 }
 \value{
-List with the x coordinates (=number of wasps) of the curves, and the average, min and max y coordinates (number of species). Min and max values are for the interval given by \code{p}.
+List with the x coordinates (=number of wasps) of the curves, and the corresponding average y coordinates (number of species) and standard errors. If standard errors were not asked for (\code{n_ci} is NULL), returns NULL for the standard errors.
 }
 \description{
-Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. Randomly resamples wasp data to create rarefaction curves, and takes the average, minimum and maximum of the curves.
+Helper function used by \code{\link[=plot_rarefaction]{plot_rarefaction()}}. Randomly resamples wasp data to create rarefaction curves, and takes the average of the curves. Also estimates standard errors.
+}
+\details{
+Standard errors are estimated by bootstrapping. I.e. by randomly picking samples \emph{with replacement} and making a rarefaction curve. This is repeated \code{n_ci} times, then the standard deviation of the curves is taken at each point of the x axis.
+
+Note that this is an underestimate! A proper estimate would randomly pick samples from all possible samples, including those that were not collected (which may include uncollected species). This function only picks from the samples that happened to be collected, so the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e .if coverage is good).
 }
 \keyword{internal}

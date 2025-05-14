@@ -4,12 +4,12 @@
 \alias{draw_rarefaction}
 \title{Draw rarefaction curves}
 \usage{
-draw_rarefaction(r, ci = FALSE, add = FALSE, pch = NULL, pch_col = NULL, ...)
+draw_rarefaction(r, p = 0.95, add = FALSE, pch = NULL, pch_col = NULL, ...)
 }
 \arguments{
-\item{r}{List of coordinates for the curves returned by \code{\link[=get_rarefaction]{get_rarefaction()}}. Should have the X coordinates of the curve, and the average, max and min Y coordinates of the curve.}
+\item{r}{List of coordinates and standard errors for the curve returned by \code{\link[=get_rarefaction]{get_rarefaction()}}. Should have the x and y coordinates of the curve (\code{x}, \code{y}), and the standard errors (\code{se}). If the standard errors are not NULL, confidence intervals are drawn as well as the main curve.}
 
-\item{ci}{If TRUE, confidence intervals are shown around the rarefaction curve. Default is to only show the curve without confidence intervals.}
+\item{p}{How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95\% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95\% curves overlap).}
 
 \item{add}{If TRUE, the rarefaction curve is added to an existing plot. Default is to create a new plot.}
 

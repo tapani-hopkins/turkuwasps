@@ -84,7 +84,7 @@ Standard errors are estimated by bootstrapping. Samples are randomly picked \emp
 
 This, however, underestimates the standard error. A better estimate would randomly pick samples from all possible samples, including those that were not collected (and which may include uncollected species). Since we are only picking samples from those that were actually collected, the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e if coverage is good).
 
-To check if two curves are significantly different, I recommend using 95\% confidence intervals (\code{p=0.95}). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, \link{https://doi.org/10.1093/jpe/rtr044}). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch.
+To check if two curves are significantly different, I recommend using 95\% confidence intervals (\code{p=0.95}). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, \href{https://doi.org/10.1093/jpe/rtr044}{https://doi.org/10.1093/jpe/rtr044}). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch.
 }
 }
 \examples{

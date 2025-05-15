@@ -4,10 +4,25 @@
 \alias{save_png}
 \title{Save plots as PNG}
 \usage{
-save_png(f = "turkuwasp_image.png", what)
+save_png(
+  f = "turkuwasp_image.png",
+  width = 164,
+  height = 140,
+  bg = "transparent",
+  res = 300,
+  what
+)
 }
 \arguments{
 \item{f}{File path where to save the PNG file.}
+
+\item{width}{Width of the plot in mm.}
+
+\item{height}{Height of the plot in mm.}
+
+\item{bg}{Background colour. Typically "transparent" (the default) or "white".}
+
+\item{res}{Resolution as an integer. It's slightly uncertain exactly how \code{\link[=png]{png()}} handles this when using mm as units, but the bigger this number the higher the resolution.}
 
 \item{what}{Plotting commands. The plot created by these will be saved to PNG. See examples for how to write these.}
 }
@@ -24,13 +39,21 @@ figure = expression( {
 } )
 
 # .. then save to file
-save_png("example.png", figure)
+save_png("example.png", what=figure)
 
-# alternatively, you can write the commands in the function
-save_png("example.png", {
+# alternatively, you can write the commands inside the function
+save_png("example.png", what={
 	barplot(1:10, space=0, col=1:10)
 	legend("topleft", legend=1:10, fill=1:10)
 })
+
+# another alternative is to run as a function
+figure1 = function(){
+	barplot(1:10, space=0, col=1:10)
+	legend("topleft", legend=1:10, fill=1:10)
+}
+
+save_png("example.png", what=figure1())
 
 }
 

@@ -480,7 +480,7 @@ match_names = function(x, xname, levs, column_name){
 	# save some error messages
 	stopmessages = c(
 		paste0("Couldn't match the following to ",  xname, ": ", paste(levs[! levs %in% nms], collapse=", "), ". Check that the names of ", xname, " contain all the values found in ", column_name, "."), 
-		paste0(xname, " is the wrong length. It should be either length 1, or the same length as the number of different kinds of values in ", column_name, " (i.e. ", length(levs), ").")
+		paste0(xname, " is the wrong length. It should be either length 1, or the same length as the number of different kinds of values in ", column_name, " (i.e. ", length(levs), "). Alternatively, it can be a named vector with the values of ", column_name, " as names.")
 	)
 	
 	# if `x` is a named vector with any of the levels as a name, put it into the same order as the levels..

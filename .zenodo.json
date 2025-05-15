@@ -1,0 +1,18 @@
+{
+    "creators": [
+        {
+            "orcid": "0000-0002-2256-0098",
+            "affiliation": "Zoological Museum, Biodiversity Unit, University of Turku",
+            "name": "Hopkins, Tapani"
+        }
+    ],
+
+    "license": "CC0-1.0",
+
+    "title": "turkuwasps: R package for analysing tropical wasps at the University of Turku",
+
+    "communities": [
+        {"identifier": "uganda2014-2015"}
+    ]
+
+}

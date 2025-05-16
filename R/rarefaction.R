@@ -3,7 +3,7 @@
 #' Helper function used by [plot_rarefaction()]. Draws rarefaction curves created by [get_rarefaction()].
 #' 
 #' @param r List of coordinates and standard errors for the curve returned by [get_rarefaction()]. Should have the x and y coordinates of the curve (`x`, `y`), and the standard errors (`se`). If the standard errors are not NULL, confidence intervals are drawn as well as the main curve.
-#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95% curves overlap).
+#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.84) is to draw 84% intervals, i.e. ± 1.4 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 84% curves overlap).
 #' @param add If TRUE, the rarefaction curve is added to an existing plot. Default is to create a new plot.
 #' @param pch What symbols to use on the curve. Typically an integer between 0:18. See [points()] for accepted values. Default is for the curve to be drawn without symbols.
 #' @param pch_col Colour to be used for the symbols.
@@ -11,7 +11,7 @@
 #' 
 #' @keywords internal
 #' 
-draw_rarefaction = function(r, p=0.95, add=FALSE, pch=NULL, pch_col=NULL, ...){
+draw_rarefaction = function(r, p=0.84, add=FALSE, pch=NULL, pch_col=NULL, ...){
 	
 	# store various default arguments for the plot
 	plot_args = list(
@@ -525,7 +525,7 @@ match_names = function(x, xname, levs, column_name){
 #' @param x Data frame containing the wasp data. Must contain columns "taxon" and "sample". Each row is an individual wasp.
 #' @param n Number of resamples. Default (10) is fast, but gives very jagged curves. Increase to e.g. 100 to get smooth averaged out curves.
 #' @param  n_ci Number of resamples for estimating confidence intervals (see Details). Default (NULL) is to only show the curve without confidence intervals. 10 is fast, but gives very jagged intervals; 100 already gives quite smooth intervals.
-#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95% curves overlap, see Details).
+#' @param p How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.84) is to draw 84% intervals, i.e. ± 1.4 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 84% curves overlap, see Details).
 #' @param add If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.
 #' @param by Name of column in 'x' to split the data by. E.g. if `by`="forest_type", draws separate rarefaction curves for each forest type. Curves are drawn in the same order as the order of the factor levels of the column (change the levels with [factor()] if you e.g. want the curves in different order in the legend drawn by [legend_rarefaction()]). Default is to draw one curve containing all the wasps.
 #' @param col Colour to be used for the curves. Typically a string if only one curve is drawn. If several curves are drawn (`by` is not NULL), should preferably be a named character vector giving the colour for each curve. But unnamed vectors or a string work too, see 'Details'.
@@ -552,13 +552,13 @@ match_names = function(x, xname, levs, column_name){
 #' There are good reasons to prefer randomly drawing the wasps one *sample* at a time, instead of one *wasp* at a time (see e.g. Gotelli & Colwell 2011: Estimating species richness). For the wasp data, they boil down to rarefaction curves basically being a re-enactment. We're re-enacting what would happen if we went back and sampled the area again, several times. How many species for a given number of wasps caught would we expect to get? We'd still be collecting the wasps one sample at a time, so it makes sense to keep the wasps of each sample together.
 #'
 #' ## Confidence intervals
-#' The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.96 SE).
+#' The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.4 SE).
 #'  
 #' Standard errors are estimated by bootstrapping. Samples are randomly picked *with replacement*, and a rarefaction curve calculated. This is repeated `n_ci` times, to give a set of rarefaction curves. The standard error at any given point of the x axis is the standard deviation of these curves.
 #' 
 #' This, however, underestimates the standard error. A better estimate would randomly pick samples from all possible samples, including those that were not collected (and which may include uncollected species). Since we are only picking samples from those that were actually collected, the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e if coverage is good).
 #'
-#' To check if two curves are significantly different, I recommend using 95% confidence intervals (`p=0.95`). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, \href{https://doi.org/10.1093/jpe/rtr044}{https://doi.org/10.1093/jpe/rtr044}). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch. 
+#' To check if two curves are significantly different, I recommend using 84% confidence intervals (`p=0.84`). These should be reasonably conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. MacGregor-Fors and Payton 2013, \href{https://doi.org/10.1371/journal.pone.0056794}{https://doi.org/10.1371/journal.pone.0056794}). Another option would be 95% intervals, which are guaranteed conservative (e.g. Colwell et al. 2012, \href{https://doi.org/10.1093/jpe/rtr044}{https://doi.org/10.1093/jpe/rtr044}). Whichever or whatever is used, it is worth treating the intervals as a rough guide; I would e.g. be cautious in my interpretations of curves whose confidence intervals almost touch. 
 #'
 #' @seealso Function [combine_columns()], which makes it easier to split the data by several columns, e.g. to draw separate rarefaction curves for each forest type and collecting event.
 #' 
@@ -588,7 +588,7 @@ match_names = function(x, xname, levs, column_name){
 #' 
 #' @export
 #' 
-plot_rarefaction = function(x, n=10, n_ci=NULL, p=0.95, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
+plot_rarefaction = function(x, n=10, n_ci=NULL, p=0.84, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
 
 	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){

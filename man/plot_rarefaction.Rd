@@ -8,7 +8,7 @@ plot_rarefaction(
   x,
   n = 10,
   n_ci = NULL,
-  p = 0.95,
+  p = 0.84,
   add = FALSE,
   by = NULL,
   col = "black",
@@ -25,7 +25,7 @@ plot_rarefaction(
 
 \item{n_ci}{Number of resamples for estimating confidence intervals (see Details). Default (NULL) is to only show the curve without confidence intervals. 10 is fast, but gives very jagged intervals; 100 already gives quite smooth intervals.}
 
-\item{p}{How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.95) is to draw 95\% intervals, i.e. ± 1.96 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 95\% curves overlap, see Details).}
+\item{p}{How large confidence intervals to draw around the rarefaction curves. Number between 0 and 1. Default (0.84) is to draw 84\% intervals, i.e. ± 1.4 standard errors. Used to estimate if two rarefaction curves are significantly different (e.g. for a significance of 0.05, check if the confidence intervals of two 84\% curves overlap, see Details).}
 
 \item{add}{If TRUE, the rarefaction curve(s) are added to an existing plot. Default is to create a new plot.}
 
@@ -78,13 +78,13 @@ There are good reasons to prefer randomly drawing the wasps one \emph{sample} at
 
 \subsection{Confidence intervals}{
 
-The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.96 SE).
+The confidence intervals are approximate, and should be interpreted with caution. They are drawn a set number of standard errors above and below the rarefaction curve (default is ± 1.4 SE).
 
 Standard errors are estimated by bootstrapping. Samples are randomly picked \emph{with replacement}, and a rarefaction curve calculated. This is repeated \code{n_ci} times, to give a set of rarefaction curves. The standard error at any given point of the x axis is the standard deviation of these curves.
 
 This, however, underestimates the standard error. A better estimate would randomly pick samples from all possible samples, including those that were not collected (and which may include uncollected species). Since we are only picking samples from those that were actually collected, the variation will inevitably be smaller. This should not be too big a problem if most of the common species have been collected (i.e if coverage is good).
 
-To check if two curves are significantly different, I recommend using 95\% confidence intervals (\code{p=0.95}). These should be quite conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. Colwell et al. 2012, \href{https://doi.org/10.1093/jpe/rtr044}{https://doi.org/10.1093/jpe/rtr044}). This should also help counteract the underestimated standard errors, although I would still be cautious about curves whose confidence intervals almost touch.
+To check if two curves are significantly different, I recommend using 84\% confidence intervals (\code{p=0.84}). These should be reasonably conservative: if the intervals of two curves don't touch, they're likely significantly different (see e.g. MacGregor-Fors and Payton 2013, \href{https://doi.org/10.1371/journal.pone.0056794}{https://doi.org/10.1371/journal.pone.0056794}). Another option would be 95\% intervals, which are guaranteed conservative (e.g. Colwell et al. 2012, \href{https://doi.org/10.1093/jpe/rtr044}{https://doi.org/10.1093/jpe/rtr044}). Whichever or whatever is used, it is worth treating the intervals as a rough guide; I would e.g. be cautious in my interpretations of curves whose confidence intervals almost touch.
 }
 }
 \examples{

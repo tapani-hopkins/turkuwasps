@@ -24,7 +24,7 @@ There are a bewildering variety of evenness indices. This uses the classificatio
 \href{https://doi.org/10.1111/j.1600-0706.2011.19897.x}{https://doi.org/10.1111/j.1600-0706.2011.19897.x},
 where different values of \code{q} give a different index.
 The index ranges from near 0 (very uneven) to 1 (all species have same abundance).
-This function is currently very preliminary, and will likely be replaced with more complex evenness analyses in future version of \link{turkuwasps}.
+This function is currently very preliminary, and will likely be replaced with more complex evenness analyses in future versions of the package.
 }
 \examples{
 

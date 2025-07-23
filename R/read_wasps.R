@@ -52,8 +52,7 @@ read_wasps = function(file, simplify=TRUE, ...){
 		m = turkuwasps::malaise_sample
 		
 		# find each wasp's sample in the sample data
-		samp = sub("http://mus.utu.fi/ZMUT.", "", x$"MYSeparatedFrom")
-		i = match(samp, m$name)
+		i = match(x$"MYSeparatedFrom", m$kotka_id)
 		
 		# overwrite `x` with more readable columns (or column names) + columns from the sample data
 		x = data.frame(list(id=id, sex=sex, taxon=taxon, event=m$event[i], forest_type=m$forest_type[i], site=m$site[i], trap=m$trap[i], sample=m$name[i], start=m$start[i], end=m$end[i], tdiff=m$tdiff[i], season=m$season[i], ecology_use=!m$damaged[i]))	

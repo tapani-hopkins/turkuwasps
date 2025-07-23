@@ -5,22 +5,24 @@
 \alias{malaise_sample}
 \title{Samples}
 \format{
-A data frame with 18 variables. The variables are:
+A data frame with 19 variables. The variables are:
 \itemize{
 \item name Name of the sample, e.g. "CCT1-141022".
-\item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011".
+\item kotka_id Identifier of the sample in the Kotka database, e.g. "http://mus.utu.fi/CCT1-141022".
+\item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011", "Skanssi2024".
 \item forest_type Name of forest type, e.g. "primary".
 \item site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
 \item trap Name of trap, e.g. "CCT1".
 \item colour Colour to use by default when plotting. Different colour for each forest type.
-\item start Datetime when sample started to be collected by the Malaise trap, e.g. "2014-10-14 11:04:00 UTC+03:00".
-\item end Datetime when sample stopped being collected by the Malaise trap, e.g. "2014-10-22 11:34:00 UTC+03:00".
+\item start Datetime when sample started to be collected by the trap, e.g. "2014-10-14 11:04:00 UTC+03:00".
+\item end Datetime when sample stopped being collected by the trap, e.g. "2014-10-22 11:34:00 UTC+03:00".
 \item days Number of days from from the start of the sampling event to the middle of when the sample was collected. The start of each sampling event is (somewhat arbitrarily):
 \itemize{
 \item "Amazon 1998" : "1998-08-01 00:00:00 UTC-05:00"
 \item "Amazon 2000" : "2000-01-01 00:00:00 UTC-05:00"
 \item "Amazon 2008" : "2008-05-01 00:00:00 UTC-05:00"
 \item "Amazon 2011" : "2011-04-01 00:00:00 UTC-05:00"
+\item "Skanssi2024" : "2024-05-01 00:00:00 UTC+03:00"
 \item "Uganda 2014-2015" : "2014-09-01 00:00:00 UTC+03:00" .
 }
 \item tdiff Length of time the sample was collected, in days.
@@ -41,13 +43,13 @@ A data frame with 18 variables. The variables are:
 }
 }
 
-Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
+Samples are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011, then Skanssi. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda primary forest samples to farm samples).
 }
 \usage{
 malaise_sample
 }
 \description{
-Ugandan and Peruvian Malaise samples. Used by e.g. \code{\link[=read_wasps]{read_wasps()}} to get forest type etc for each wasp, and by other functions to find out when and how long each sample was collected. Could also be used to get all the samples, what order to plot them in by default, and what colours to use.
+Ugandan, Peruvian and Skanssi samples. Used by e.g. \code{\link[=read_wasps]{read_wasps()}} to get forest type etc for each wasp, and by other functions to find out when and how long each sample was collected. Could also be used to get all the samples, what order to plot them in by default, and what colours to use.
 }
 \seealso{
 \link{weather}, which variables "rain" and "t_max" are based on. The code used to add the variables is in folder "data-raw" at https://github.com/tapani-hopkins/turkuwasps; this folder is not included in the loaded package.

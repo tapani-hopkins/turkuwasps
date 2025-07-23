@@ -8,7 +8,7 @@
 A data frame with 11 variables. The variables are:
 \itemize{
 \item name Name of the trap, e.g. "CCT1".
-\item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011".
+\item event Name of collecting event. One of "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011", "Skanssi2024".
 \item forest_type Name of forest type, e.g. "primary".
 \item site Name of site, e.g. "CC". Mainly relevant for Uganda. For Peru, largely tells the soil type.
 \item colour Colour to use by default when plotting. Different colour for each forest type.
@@ -20,13 +20,13 @@ A data frame with 11 variables. The variables are:
 \item canopy_open Percentage of the sky visible from the trap. (0\% = closed canopy, 100\% = open sky)
 }
 
-Traps are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda CCT1 to FARMT2).
+Traps are in the following order: Uganda, then Peru 1998, 2000, 2008, 2011, then Skanssi. Within each grouping they are sorted by successional status then alphabetical order (e.g. Uganda CCT1 to FARMT2).
 }
 \usage{
 trap
 }
 \description{
-Ugandan and Peruvian Malaise trap sites. Used by some functions to get all the traps, what order to plot them in by default, and what colours to use.
+Ugandan, Peruvian, and Skanssi trap sites. Used by some functions to get all the traps, what order to plot them in by default, and what colours to use.
 }
 \seealso{
 Zenodo has more details on the trap data, e.g. on how the amount of dead and live wood was calculated: https://doi.org/10.5281/zenodo.2225643

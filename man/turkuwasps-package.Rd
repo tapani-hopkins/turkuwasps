@@ -6,7 +6,7 @@
 \alias{turkuwasps-package}
 \title{turkuwasps: Analyse the ecology and taxonomy of tropical wasps}
 \description{
-Functions for analysing the large tropical wasp materials from Peru and Uganda at the Zoological Museum of the University of Turku. Create plots of when and where the wasps flew. Analyse their distribution in space and time with GLMs (≈resampling and fitting curves). Visualise which species most resemble each other, and create automatic identification keys.
+Functions for analysing the large tropical wasp materials from Peru and Uganda, and the wasp material from Skanssi 2024 (Finland), at the Zoological Museum of the University of Turku. Create plots of when and where the wasps flew. Analyse their distribution in space and time with GLMs (≈resampling and fitting curves). Visualise which species most resemble each other, and create automatic identification keys.
 }
 \author{
 \strong{Maintainer}: Tapani Hopkins \email{tapani-hopkins@users.noreply.github.com} (\href{https://orcid.org/0000-0002-2256-0098}{ORCID})

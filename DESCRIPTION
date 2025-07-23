@@ -1,10 +1,11 @@
 Package: turkuwasps
 Title: Analyse the ecology and taxonomy of tropical wasps
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     person("Tapani", "Hopkins", , "tapani-hopkins@users.noreply.github.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2256-0098"))
-Description: Functions for analysing the large tropical wasp materials from Peru and Uganda 
+Description: Functions for analysing the large tropical wasp materials from Peru and Uganda, 
+    and the wasp material from Skanssi 2024 (Finland), 
     at the Zoological Museum of the University of Turku. 
     Create plots of when and where the wasps flew. 
     Analyse their distribution in space and time with GLMs (≈resampling and fitting curves). 

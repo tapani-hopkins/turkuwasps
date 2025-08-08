@@ -10,6 +10,6 @@ default_breaks()
 Vector of datetime objects.
 }
 \description{
-Helper function used by \code{\link[=label_plot_time]{label_plot_time()}}. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
+Helper function used by \code{\link[=axis_datetime]{axis_datetime()}}. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
 }
 \keyword{internal}

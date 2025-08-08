@@ -25,7 +25,7 @@ plot_time(
 
 \item{step}{Length in seconds of the time periods for which to count the number of wasps. Default is to plot wasps at a resolution of 86400 seconds = one day.}
 
-\item{xlabel}{If TRUE, the x axis is labelled (using default settings) by \code{\link[=label_plot_time]{label_plot_time()}}. If FALSE, the x axis is left blank.}
+\item{xlabel}{If TRUE, the x axis is labelled (using default settings) by \code{\link[=axis_datetime]{axis_datetime()}}. If FALSE, the x axis is left blank.}
 
 \item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}, which handles the actual drawing. These will override any default values (e.g. colours, which by default come from \code{\link[=default_colours]{default_colours()}}). Colours (argument \code{col}) are for each taxon, or if taxa were not given then just one colour should be given. Argument \code{xlim} is handled differently to standard \code{\link[=barplot]{barplot()}}.}
 }
@@ -59,6 +59,6 @@ plot_time(waspdates, m, x$taxon, ylab="wasps / trap day")
 
 # plot with modified x axis
 tmp = plot_time(waspdates, m, x$taxon, xlabel=FALSE)
-label_plot_time(tmp$xlim, step=3600*24, srt=270, format="\%d \%b \%Y")
+axis_datetime(tmp$xlim, srt=270, format="\%d \%b \%Y")
 
 }

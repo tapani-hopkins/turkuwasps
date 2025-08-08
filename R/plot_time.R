@@ -7,7 +7,7 @@
 #' @param taxon Vector giving the taxon of each wasp. If given, shows each taxon in a different colour.
 #' @param xlim Interval object (see [as.interval()]) giving the desired left and right limits of the plot. If not given, default limits given by [default_xlims()] are used.
 #' @param step Length in seconds of the time periods for which to count the number of wasps. Default is to plot wasps at a resolution of 86400 seconds = one day.
-#' @param xlabel If TRUE, the x axis is labelled (using default settings) by [label_plot_time()]. If FALSE, the x axis is left blank.
+#' @param xlabel If TRUE, the x axis is labelled (using default settings) by [axis_datetime()]. If FALSE, the x axis is left blank.
 #' @param ...  Graphical parameters and other arguments passed to [barplot()], which handles the actual drawing. These will override any default values (e.g. colours, which by default come from [default_colours()]). Colours (argument `col`) are for each taxon, or if taxa were not given then just one colour should be given. Argument `xlim` is handled differently to standard [barplot()].
 #'
 #' @return A list giving the x and y coordinates of each bar (= time period `step` seconds long), returned silently. The list has three items:
@@ -34,7 +34,7 @@
 #' 
 #' # plot with modified x axis
 #' tmp = plot_time(waspdates, m, x$taxon, xlabel=FALSE)
-#' label_plot_time(tmp$xlim, step=3600*24, srt=270, format="%d %b %Y")
+#' axis_datetime(tmp$xlim, srt=270, format="%d %b %Y")
 #' 
 #' @export
 plot_time = function(x, m=NULL, taxon=NULL, xlim=default_xlims(x), step=3600*24, xlabel=TRUE, ...){
@@ -99,7 +99,7 @@ plot_time = function(x, m=NULL, taxon=NULL, xlim=default_xlims(x), step=3600*24,
 	
 	# add default x labels if asked to do so
 	if (xlabel){
-		label_plot_time(xlim, step)
+		axis_datetime(xlim)
 	}
 	
 	# return the bar positions and heights invisibly

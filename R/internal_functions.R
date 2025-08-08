@@ -26,7 +26,7 @@ as_italic = function(x){
 
 #' Get default breaks for label_plot_time()
 #'
-#' Helper function used by [label_plot_time()]. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
+#' Helper function used by [axis_datetime()]. Gets the default breaks for x axis tick marks. These are generally every three months, during the five collecting events.
 #'
 #' @return Vector of datetime objects. 
 #'

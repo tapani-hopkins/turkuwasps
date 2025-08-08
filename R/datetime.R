@@ -5,7 +5,8 @@
 #' @param x Vector of datetimes.
 #'
 #' @return Character vector.
-#' 
+#'
+#'
 as.character.datetime = function(x){
 	
 	# get datetime (in local time) as text
@@ -212,6 +213,7 @@ axis_datetime = function(xlim, ticks=TRUE, format="%Y-%m-%d", breaks=default_bre
 #' @return Vector of datetimes.
 #' 
 #' @method c datetime
+#' 
 #' @export
 c.datetime = function(...){
 	
@@ -351,6 +353,7 @@ length.datetime = function(x){
 #'
 #' @seealso [as.datetime()]
 #'  
+#' @export
 lines.datetime = function(x, y, xlim, ...){
 	
 	# get the coordinates of the plot region
@@ -556,6 +559,7 @@ Ops.datetime = function (e1, e2){
 #' * `d` The x coordinates of each point, as datetimes.
 #' * `xlim` The left and right limits of the plot as an interval object.
 #'  
+#' @export
 plot.datetime = function(x, y, xlim=NULL, xlabel=TRUE, ...){
 	
 	# get pretty y limits for the plot region
@@ -619,6 +623,7 @@ plot.datetime = function(x, y, xlim=NULL, xlabel=TRUE, ...){
 #'
 #' @seealso [as.datetime()]
 #'  
+#' @export
 points.datetime = function(x, y, xlim, ...){
 	
 	# get the coordinates of the plot region

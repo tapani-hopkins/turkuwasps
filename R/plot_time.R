@@ -10,7 +10,7 @@
 #' @param xlabel If TRUE, the x axis is labelled (using default settings) by [axis_datetime()]. If FALSE, the x axis is left blank.
 #' @param ...  Graphical parameters and other arguments passed to [barplot()], which handles the actual drawing. These will override any default values (e.g. colours, which by default come from [default_colours()]). Colours (argument `col`) are for each taxon, or if taxa were not given then just one colour should be given. Argument `xlim` is handled differently to standard [barplot()].
 #'
-#' @return A list giving the x and y coordinates of each bar (= time period `step` seconds long), returned silently. The list has three items:
+#' @return A list giving the x and y coordinates of each bar (= time period `step` seconds long), returned silently. The list has four items:
 #' * `x` The x coordinates of the centre of each bar, in plot coordinates. Use these to draw e.g. lines and further labels on the plot.
 #' * `y` The height of each bar, in plot coordinates.
 #' * `d` The start and end datetimes of each bar. 

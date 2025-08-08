@@ -30,7 +30,7 @@ plot_time(
 \item{...}{Graphical parameters and other arguments passed to \code{\link[=barplot]{barplot()}}, which handles the actual drawing. These will override any default values (e.g. colours, which by default come from \code{\link[=default_colours]{default_colours()}}). Colours (argument \code{col}) are for each taxon, or if taxa were not given then just one colour should be given. Argument \code{xlim} is handled differently to standard \code{\link[=barplot]{barplot()}}.}
 }
 \value{
-A list giving the x and y coordinates of each bar (= time period \code{step} seconds long), returned silently. The list has three items:
+A list giving the x and y coordinates of each bar (= time period \code{step} seconds long), returned silently. The list has four items:
 \itemize{
 \item \code{x} The x coordinates of the centre of each bar, in plot coordinates. Use these to draw e.g. lines and further labels on the plot.
 \item \code{y} The height of each bar, in plot coordinates.

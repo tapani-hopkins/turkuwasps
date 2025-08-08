@@ -32,8 +32,8 @@ as.character.datetime = function(x){
 #'
 #' @return Vector of datetime objects.
 #' 
-#' @seealso [get_date()], [is_datetime()] and [set_tz()]. The following base functions have been modified to work with datetimes:
-#' * [as.character.datetime()], [c.datetime()], [ceiling.datetime()], [floor.datetime()], [length.datetime()], [max.datetime()], [mean.datetime()], [min.datetime()], [print.datetime()], [seq.datetime()]
+#' @seealso [axis_datetime()], [get_date()], [is_datetime()] and [set_tz()]. The following base functions have been modified to work with datetimes:
+#' * [as.character.datetime()], [c.datetime()], [ceiling.datetime()], [floor.datetime()], [length.datetime()], [lines.datetime()], [max.datetime()], [mean.datetime()], [min.datetime()], [plot.datetime()], [points.datetime()], [print.datetime()], [seq.datetime()]
 #' * basic operators such as `+`, `-` (see examples)
 #' * data frames accept datetimes (but convert them to character)
 #'
@@ -128,6 +128,77 @@ as_h_min = function(secs){
 	
 	# return
 	return(tz)
+	
+}
+
+
+#' Label the x axis of datetime plots
+#'
+#' Add labels and tick marks to the x axis of plots that have datetimes on the x axis, such as plots created by [plot_time()]. Called by [plot_time()] by default.
+#'
+#' @param xlim Interval object (see [as.interval()] giving the left and right limits of the plot.
+#' @param ticks If TRUE (the default), draw tick marks above the label. These tick marks cannot be customised by the user: if wanting custom line widths, colours etc, you will have to draw them separately.
+#' @param format Character string telling how to format the labels. See [strftime()] for accepted formats. Default is year-month-day.
+#' @param breaks Vector of datetime objects (see [as.datetime()]) telling where to place labels. Anything outside the plot area is ignored. If not given, uses default breaks provided by [default_breaks()], which are at about three month intervals.
+#' @param ... Other arguments passed to [text()] (which handles the actual drawing of the labels). Typically these can include `srt` to adjust the angle at which labels are drawn, and `cex` to adjust the label size.
+#'
+#' @return List of the arguments given to [text()], returned invisibly. These may be useful as a starting point if wanting to create custom labels, especially arguments `x` and `y` which give the plot coordinates of each label. 
+#'
+#' @export
+axis_datetime = function(xlim, ticks=TRUE, format="%Y-%m-%d", breaks=default_breaks(), ...){
+	
+	# ignore breaks that are outside the plot area
+	breaks = breaks[breaks >= xlim$s & breaks <= xlim$e]
+	
+	# if there are no breaks in the plot area, add breaks to the start and end
+	if (length(breaks) == 0){
+		breaks = c(xlim$s, xlim$e)
+	}
+
+	# get the coordinates of the plot region
+	left = graphics::par("usr")[1]
+	right = graphics::par("usr")[2]
+	bottom = graphics::par("usr")[3]
+	top = graphics::par("usr")[4]
+		
+	# store default arguments for the x axis labels
+	label_args = list(
+		
+		# place labels at the correct datetime
+		x = left + (breaks - xlim$s) / tdiff(xlim) * (right - left) ,
+		
+		# place labels below the x axis, leave a space that is 3% of the plot height
+		y = bottom - (top - bottom) * 0.03 ,
+		
+		# convert labels to the desired format
+		labels = get_date(breaks, format) ,
+		
+		# store various default arguments
+		adj = c(0, 0.5) , 
+		cex = 0.7 ,
+		srt = 270 + 22 ,
+		xpd = TRUE
+		
+	)
+	
+	# add the arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	label_args[names(user_args)] = user_args
+	
+	# draw the tick marks
+	if (ticks){
+		x0 = label_args$x
+		y0 = bottom - 0.1 * 0.03 * (top - bottom)
+		y1 = bottom - 0.6 * 0.03 * (top - bottom)
+		n = length(x0)
+		graphics::segments(x0=x0, y0=rep(y0, n), y1=rep(y1, n), lwd=0.4, xpd=TRUE)
+	}
+	
+	# draw the labels
+	do.call(graphics::text, args=label_args)
+	
+	# return arguments invisibly
+	invisible(label_args)
 	
 }
 
@@ -265,6 +336,32 @@ length.datetime = function(x){
 	
 	# get length from the datetimes
 	return(length(x$d))
+	
+}
+
+
+#' Add lines to a datetime plot
+#'
+#' Add lines to a plot that has datetimes on the x axis. Basically a wrapper for [lines()], but converts the datetimes to plot coordinates.
+#'
+#' @param x Vector of datetimes.
+#' @param y Vector of y coordinates, same length as `x`.
+#' @param xlim Interval object (see [as.interval()]) giving the left and right limits of the plot.
+#' @param ...  Graphical parameters and other arguments passed to [lines()], which handles the actual drawing.
+#'
+#' @seealso [as.datetime()]
+#'  
+lines.datetime = function(x, y, xlim, ...){
+	
+	# get the coordinates of the plot region
+	left = graphics::par("usr")[1]
+	right = graphics::par("usr")[2]
+	
+	# convert the datetimes to plot coordinates
+	x2 = left + (x - xlim$s) / tdiff(xlim) * (right - left)
+	
+	# draw the lines	
+	graphics::lines(x2, y, ...)	
 	
 }
 
@@ -437,6 +534,102 @@ Ops.datetime = function (e1, e2){
 	
 	# stop if the operator doesn't work for datetime objects
 	stop(paste0("'", op, "' does not work for datetime objects."))
+	
+}
+
+
+#' Draw a scatterplot with datetimes
+#'
+#' Draw a scatterplot that has datetimes on the x axis. Basically a wrapper for [plot.default()], but converts the datetimes to plot coordinates.
+#'
+#' @param x Vector of datetimes.
+#' @param y Vector of y coordinates, same length as `x`.
+#' @param xlim Interval object (see [as.interval()]) giving the left and right limits of the plot. If not given, default limits are used.
+#' @param xlabel If TRUE, the x axis is labelled (using default settings) by [axis_datetime()]. If FALSE, the x axis is left blank.
+#' @param ...  Graphical parameters and other arguments passed to [plot()], which handles the actual drawing.
+#'
+#' @seealso [as.datetime()]
+#'  
+#' @return A list giving the x and y coordinates, returned silently. The list has four items:
+#' * `x` The x coordinates of each point, in plot coordinates.
+#' * `y` The y coordinates of each point, in plot coordinates.
+#' * `d` The x coordinates of each point, as datetimes.
+#' * `xlim` The left and right limits of the plot as an interval object.
+#'  
+plot.datetime = function(x, y, xlim=NULL, xlabel=TRUE, ...){
+	
+	# get pretty y limits for the plot region
+	top = max(y, na.rm=TRUE)
+	bottom = min(min(y, na.rm=TRUE), 0)
+	top = top + (top - bottom) * 0.04
+	bottom = bottom - (top - bottom) * 0.04
+	
+	# store default arguments for the plot
+	plot_args = list(
+		xaxs = "i" ,
+		xaxt = "n" ,
+		xlab = "" ,  
+		yaxs = "i" ,
+		ylab = "" ,
+		ylim = c(bottom, top)
+	)
+	
+	# add the arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	plot_args[names(user_args)] = user_args
+	
+	# if xlim wasn't given, use default datetime limits on the x axis
+	if (is.null(xlim)){
+		xlim = as.interval(min(x, na.rm=TRUE), max(x, na.rm=TRUE))
+	}
+	
+	# set the x coordinates of the plot region
+	left = 0
+	right = tdiff(xlim) / 3600 / 24
+	
+	# add the x coordinates of the plot region to the arguments
+	plot_args$xlim = c(left, right)
+	
+	# add the x coordinates (by converting from datetimes), and the y coordinates
+	plot_args$x = left + (x - xlim$s) / tdiff(xlim) * (right - left)
+	plot_args$y = y
+	
+	# draw the plot
+	do.call(graphics::plot, args=plot_args)
+	
+	# add a default x axis if asked to do so
+	if (xlabel) {
+		axis_datetime(xlim)
+	}
+	
+	# return the x and y coordinates, the x coordinates as datetimes, and the x limits
+	invisible(list(x=plot_args$x, y=y, d=x, xlim=xlim))
+	
+}
+
+
+#' Add points to a datetime plot
+#'
+#' Add points to a plot that has datetimes on the x axis. Basically a wrapper for [points()], but converts the datetimes to plot coordinates.
+#'
+#' @param x Vector of datetimes.
+#' @param y Vector of y coordinates, same length as `x`.
+#' @param xlim Interval object (see [as.interval()]) giving the left and right limits of the plot.
+#' @param ...  Graphical parameters and other arguments passed to [points()], which handles the actual drawing.
+#'
+#' @seealso [as.datetime()]
+#'  
+points.datetime = function(x, y, xlim, ...){
+	
+	# get the coordinates of the plot region
+	left = graphics::par("usr")[1]
+	right = graphics::par("usr")[2]
+	
+	# convert the datetimes to plot coordinates
+	x2 = left + (x - xlim$s) / tdiff(xlim) * (right - left)
+	
+	# draw the points
+	graphics::points(x2, y, ...)
 	
 }
 

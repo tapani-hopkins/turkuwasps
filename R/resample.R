@@ -114,7 +114,41 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 		p_pairwise <- p_pairwise_sp <- summaries <- NULL
 	}
 	
+	# get the fitted values, including for any samples which manyglm dropped
+	fitted_values = include_na(fit$fitted.values, m)
+	
 	# return
-	return(list(fit=fit$fitted.values, coefficients=fit$coefficients, p=p, p_sp=p_sp, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, mg=fit, anova=a, summaries=summaries))
+	return(list(fit=fitted_values, coefficients=fit$coefficients, p=p, p_sp=p_sp, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, mg=fit, anova=a, summaries=summaries))
+	
+}
+
+#' Include samples dropped by manyglm
+#'
+#' Helper function used by [resample()]. Finds out what samples, if any, were dropped by manyglm, and returns them to the manyglm results as NA values. Manyglm will drop any samples which return NA, for example samples for which there is no rain data if rain is included in the model, which will often mess up further analyses unless fixed.
+#'
+#' @param f Results returned by [manyglm()] when fitting a model to the data. A matrix with each sample on a separate row. Typically the fitted values.
+#' @param m Data frame with the Malaise sample data. Must contain column "name" which gives the names of the samples.
+#' 
+#' @return Matrix 'f' with the samples dropped by manyglm added. Same number of rows as 'm', and with the samples in the same order.
+#'
+#' @keywords internal
+#'
+include_na = function(f, m){
+	
+	# get the samples which are not in the manyglm results
+	i = which(! m$name %in% rownames(f))
+	newnames = c(rownames(f), m$name[i])
+
+	# add one row of NA for each missing sample to the manyglm results
+	add = matrix(NA, nrow=length(i), ncol=ncol(f))
+	f = rbind(f, add)
+	rownames(f) = newnames
+	
+	# sort into the same order as 'm'
+	o = match(m$name, rownames(f))
+	f = f[o, ]
+	
+	# return
+	return(f)
 	
 }

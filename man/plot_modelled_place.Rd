@@ -25,7 +25,7 @@ List with two items, returned invisibly:
 }
 }
 \description{
-Add modelled catches to plots of wasps per place
+Get the modelled wasp catches per place from the fitted values returned by \code{\link[=resample]{resample()}}, and (optionally) add them to a plot. Typically used after plotting the number of wasps caught in each place with \code{\link[=plot_place]{plot_place()}}, to add a line to the plot with the model predictions.
 }
 \details{
 If the x coordinates are given as a matrix with each species on its own row, the assumption is each species should be plotted separately. The function will count the wasp catches and x coordinates of species 1, then species 2 etc, and return wasp catch and x coodinate vectors which have the species' values pasted together (e.g. wasp catch vector has species 1 wasp catches, followed by species 2 wasp catches..). This matches how \code{\link[=plot_place]{plot_place()}} places the bars when there is more than one species plotted.

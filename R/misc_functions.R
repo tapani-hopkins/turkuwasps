@@ -179,8 +179,8 @@ relevel0 = function(x, ref){
 #' @param xlim Interval object giving the start and end of the time period for which smoothed data is wanted. If not given, the smoothed data will cover the entire period from which there is data.
 #' @param step Desired resolution (in seconds) of the smoothed data. Default is to return a smoothed data point every 24 hours.
 #'
-#' @return List giving the time intervals and values of the smoothed data. The list has two items: 
-#' * `x` Vector of intervals.
+#' @return List giving the datetimes and values of the smoothed data. The list has two items: 
+#' * `x` Vector of datetimes giving the end of the datat point's time interval.
 #' * `y` Vector of smoothed data.
 #'
 #' @details

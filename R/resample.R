@@ -156,7 +156,7 @@ include_na = function(f, m){
 
 #' Add modelled catches to plots of wasps per place
 #'
-#' 
+#' Get the modelled wasp catches per place from the fitted values returned by [resample()], and (optionally) add them to a plot. Typically used after plotting the number of wasps caught in each place with [plot_place()], to add a line to the plot with the model predictions.
 #'
 #' @param f Matrix of fitted values returned by [resample()], one row for each sample and one column for each taxon.
 #' @param by Character vector giving the place (generally trap or forest type) each sample was collected. Same length as the number of rows in 'f'. 
@@ -270,6 +270,85 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 	# return invisibly
 	invisible(list(x=x, y=y))
 
+}
+
+
+#' Add modelled catches to plots of wasps over time
+#'
+#' Get the modelled wasp catches over time from the fitted values returned by [resample()], and (optionally) add them to a plot. Typically used after plotting the number of wasps caught each day with [plot_time()], to add a line to the plot with the model predictions. Currently only gives the predicted number of wasps per trap day for each day, cannot be used for plots that are not scaled down by sampling effort.
+#'
+#' @param f Matrix of fitted values returned by [resample()], one row for each sample and one column for each taxon.
+#' @param xlim Interval object giving the x limits of the plot. Typically as returned by [plot_time()]. If given, the modelled catches will be added as a line to the existing plot. If not, the modelled catches will only be returned, not plotted.
+#' @param mdate Interval object giving the sample start and end dates. Same length as as the number of rows in 'f'. If NULL, the start and end dates will be got from the package's internal sample data, by comparing to the row names of 'f'.
+#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'.
+#'
+#' @return List with two items, returned invisibly:
+#' * x Vector of datetimes (see [as.datetime()]). In a sequence at one-day intervals, giving the end datetimes of the daily averages of wasp catches.
+#' * y Numeric vector. Daily averages of the modelled wasp catches.
+#' 
+#' @examples
+#' # get example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' wasps = read_wasps(f)
+#' 
+#' # remove damaged samples and their wasps
+#' tmp = ecology_usable(wasps)
+#' x = tmp$wasps
+#' m = tmp$samples
+#' 
+#' # fit model, only do one resample since we don't need p values
+#' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+#' a = resample(model, x, m, nBoot=1)
+#' 
+#' # get the start and end of when each wasp was collected
+#' waspdates = as.interval(x$start, x$end)
+#'
+#' # plot how many wasps were caught each day
+#' z = plot_time(waspdates, m, x$taxon, ylab="wasps / trap day")
+#' 
+#' # add a line showing how many wasps each day the fitted model predicts
+#' plot_modelled_time(a$fit, xlim=z$xlim)
+#'
+#' @export
+plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
+	
+	# combine the columns (species) of the fitted data
+	f = rowSums(f)
+	
+	# if mdate wasn't given, get the start and end dates of the samples from the package's sample data
+	if (is.null(mdate)){
+		m = turkuwasps::malaise_sample
+		s = m[m$name %in% names(f), "start"]
+		e = m[m$name %in% names(f), "end"]
+		mdate = as.interval(s, e)
+	}
+	
+	# if tdiff wasn't given, get the sampling efforts of the samples from the package's sample data
+	if (is.null(tdiff)){
+		m = turkuwasps::malaise_sample
+		tdiff = m[m$name %in% names(f), "tdiff"]
+	}
+	
+	# count the daily average of how many wasps were caught in the fitted data
+	wasps = smooth_data(f, mdate, k=1, p=0)
+	
+	# count the daily average of the sampling effort
+	tdiff = smooth_data(tdiff, mdate, k=1, p=0)
+	
+	# get the daily average of how many wasps per trap day the fitted model predicts
+	y = wasps$y / tdiff$y
+	
+	# get the corresponding end dates
+	x = wasps$x
+	
+	# add to the plot if asked to do so
+	if (! is.null(xlim)){
+		graphics::lines(x=x, y=y, xlim=xlim)
+	}
+	
+	# return invisibly
+	invisible(list(x=x, y=y))
+	
 }
 
 

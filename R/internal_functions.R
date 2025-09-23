@@ -116,6 +116,38 @@ default_colours = function(n){
 }
 
 
+#' Relevel locations to default order
+#'
+#' Helper function. Gives defaults for what order to place traps, forest types or other locations. Factors a vector of locations so the factor levels are in default order.
+#'
+#' @param x Vector of traps, forest types or other locations. Either as strings or factor.
+#'
+#' @return Vector of locations, factored so that the factor levels are in default order. 
+#'
+#' @keywords internal
+#'
+default_order = function(x){
+	
+	# find out if the locations are forest types, sites or traps
+	location = get_locationtype(stats::na.omit(x))	
+	
+	# get defaults from the appropriate data frame
+	d = get_locationdata(location)
+		
+	# only include collecting events that are in `x`
+	i = match(x, d$name)
+	ii = which(d$event %in% d$event[i])
+	d = d[ii, ]
+		
+	# store the locations and their default order, as factor levels of `x`
+	x = factor(x, levels=d$name)
+	
+	# return
+	return(x)
+	
+}
+
+
 #' Get default x limits for plot_time()
 #'
 #' Helper function used by [plot_time()]. Gets the default x limits to use for the plot.

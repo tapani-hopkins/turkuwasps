@@ -19,5 +19,5 @@ List with two elements:
 }
 }
 \description{
-Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from.
+Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from. Also removes any samples that came from other collecting events than the event(s) the wasps came from.
 }

@@ -1,6 +1,6 @@
 #' Get data that is usable in ecological analyses
 #'
-#' Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from. 
+#' Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from. Also removes any samples that came from other collecting events than the event(s) the wasps came from.
 #'
 #' @param x Data frame with the wasp data. Must contain columns "sample" and "trap", which give the Malaise sample and trap that each wasp came from. 
 #' @param unusable Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). 
@@ -26,6 +26,9 @@ ecology_usable = function(x, unusable=""){
 	# remove unusable samples
 	i = which(! m$name %in% unusable)
 	m = m[i, ]
+	
+	# remove samples that come from events for which no wasps were collected
+	m = m[m$event %in% x$event, ]
 	
 	# return
 	return(list(wasps=x, samples=m))

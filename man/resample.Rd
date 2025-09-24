@@ -17,7 +17,7 @@ resample(model, x, m, pairwise = NULL, family = "negative.binomial", ...)
 
 \item{family}{Probability distribution used to fit the model. Passed to \code{\link[=manyglm]{manyglm()}}. In general, this will be "negative.binomial" or "poisson".}
 
-\item{...}{Other parameters passed to \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. These will override any default parameters. In general, there will be little need to adjust anything except \code{nBoot} (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. \code{nBoot=499}, which can take hours to finish.}
+\item{...}{Other parameters passed to \code{\link[=anova.manyglm]{anova.manyglm()}}, and \code{\link[=summary.manyglm]{summary.manyglm()}}. These will override any default parameters. In general, there will be little need to adjust anything except \code{nBoot} (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. \code{nBoot=499}, which can take hours to finish. If you only want to fit the model, without calculating p values, set \code{nBoot=0}.}
 }
 \value{
 List with items:

@@ -7,7 +7,7 @@
 #' @param m Data frame with the Malaise sample data. Must contain columns "name" and "event".
 #' @param pairwise Character string giving the column in `m` for which pairwise p values should be calculated. E.g. `pairwise = "forest_type"` will check what forest types differ significantly from each other, not just if significant differences exist between forest types. Should only be used for categorical variables such as forest type, trap etc; not numeric such as rainfall. If NULL, only checks if significant differences exist, does not do pairwise checks. 
 #' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
-#' @param ...  Other parameters passed to [anova.manyglm()], and [summary.manyglm()]. These will override any default parameters. In general, there will be little need to adjust anything except `nBoot` (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. `nBoot=499`, which can take hours to finish.  
+#' @param ...  Other parameters passed to [anova.manyglm()], and [summary.manyglm()]. These will override any default parameters. In general, there will be little need to adjust anything except `nBoot` (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. `nBoot=499`, which can take hours to finish. If you only want to fit the model, without calculating p values, set `nBoot=0`.
 #' 
 #' @details This function is in effect a translator for the [mvabund] package: it converts the wasp data to the format mvabund expects, does the analyses, then extracts the relevant results in a readable format. Although much easier to use than standard mvabund, the returned results are still a bit on the complex side.
 #' @details The fitted model is returned as list item `coefficients`. For a model like "offset(tdiff_log) + rain + forest_type" (and default settings), you get the predicted number of wasps by counting: tdiff * `exp( c1 + c2 * rain + c3(forest_type) )`.
@@ -91,27 +91,50 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 	# add the fitted model to the analysis arguments
 	analysis_args$object = fit
 	
-	# test which variables had a significant effect on wasp catches
-	a = do.call(mvabund::anova.manyglm, args=analysis_args)
-	
-	# extract the p values (both overall and for each taxon)
-	p = a$table[, 4, drop=F]
-	p_sp = a$uni.p
-	attributes(p_sp)$title = NULL
-	
-	# if `pairwise` was given, test for differences between the levels of that variable..
-	if (! is.null(pairwise)){
+	# get p values unless nBoot is zero..
+	if (! analysis_args$nBoot == 0){
 		
-		# test which levels (e.g. forest types) differed significantly from each other
-		summaries = get_summaries(m, pairwise, model, family, analysis_args)	
-		
+		# test which variables had a significant effect on wasp catches
+		a = do.call(mvabund::anova.manyglm, args=analysis_args)
+	
 		# extract the p values (both overall and for each taxon)
-		p_pairwise = get_p(summaries, pairwise, levels0(m[, pairwise]))
-		p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
+		p = a$table[, 4, drop=F]
+		p_sp = a$uni.p
+		attributes(p_sp)$title = NULL
+	
+		# if `pairwise` was given, test for differences between the levels of that variable..
+		if (! is.null(pairwise)){
 		
-	# ..if `pairwise` was not given, return blank variables for pairwise comparisons
+			# test which levels (e.g. forest types) differed significantly from each other
+			summaries = get_summaries(m, pairwise, model, family, analysis_args)	
+		
+			# extract the p values (both overall and for each taxon)
+			p_pairwise = get_p(summaries, pairwise, levels0(m[, pairwise]))
+			if (ncol(mv) > 1){
+				p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
+			} else {
+				p_pairwise_sp = NULL
+			}
+		
+		# ..if `pairwise` was not given, return blank variables for pairwise comparisons
+		} else {
+			p_pairwise <- p_pairwise_sp <- summaries <- NULL
+		}
+	
+	# if nBoot is zero, save time by making the p values NULL
 	} else {
-		p_pairwise <- p_pairwise_sp <- summaries <- NULL
+		a <- p <- p_sp <- p_pairwise <- p_pairwise_sp <- summaries <- NULL
+	}
+	
+	# fix a problem where manyglm drops sample names if there's just one species
+	if (ncol(mv) == 1){
+		
+		# drop the samples from `mv` for which there is missing data in one or more of the model terms
+		i = which(is.na(m[, model_terms]), arr.ind=TRUE)[, 1]
+		mv2 = mv[-i, , drop=FALSE]
+		
+		# get the sample names and species name from mv2 (they *should* be in the same order..)
+		dimnames(fit$fitted.values) = dimnames(mv2)
 	}
 	
 	# get the fitted values, including for any samples which manyglm dropped
@@ -146,7 +169,7 @@ include_na = function(f, m){
 	
 	# sort into the same order as 'm'
 	o = match(m$name, rownames(f))
-	f = f[o, ]
+	f = f[o, , drop=FALSE]
 	
 	# return
 	return(f)

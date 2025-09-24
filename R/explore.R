@@ -66,6 +66,9 @@ explore = function(x, m, what=NULL, scale="tdiff", res=15, ...){
 		plot_args$ylab = paste0("wasps / ", scale) 
 	}
 	
+	# store default graphical parameters
+	default_parameters = graphics::par(no.readonly = TRUE)
+	
 	# reserve space in the plot window for all the plots
 	n = length(what)
 	ncol = ceiling(n^0.5)
@@ -90,5 +93,7 @@ explore = function(x, m, what=NULL, scale="tdiff", res=15, ...){
 
 	}
 	
+	# return to default graphical parameters
+	graphics::par(default_parameters)
 	
 }

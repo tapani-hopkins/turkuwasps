@@ -106,6 +106,8 @@ explore(x$sample, m)
 
 ### Analyse how wasp catches depend on rain, forest type etc 
 
+<img src="inst/example_images/plot_modelled_time.png" height="140">
+
 ``` r
 # store model (GLM) which will be fitted to wasp catches
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
@@ -121,6 +123,16 @@ a$p
 
 # show which forest types differed from each other in number of wasps caught
 a$p_pairwise
+
+# show the actual and modelled catches in each trap
+coords = plot_place(x$trap, m=m, ylab="wasps / trap day")
+default_legend("forest_type", "Uganda 2014-2015")
+plot_modelled_place(a$fit, m$trap, x=coords)
+
+# show the actual and modelled catches over time
+z = plot_time(as.interval(x$start, x$end), m, x$taxon, ylab="wasps / trap day")
+plot_modelled_time(a$fit, xlim=z$xlim)
+
 ```
 
 ### Show how quickly species accumulated

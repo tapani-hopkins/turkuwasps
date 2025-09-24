@@ -5,9 +5,9 @@ citEntry(
   title    = "turkuwasps: Analyse the ecology and taxonomy of tropical wasps",
   author   = "Tapani Hopkins",
   year     = "2025",
-  note     = "R package version 0.0.3",
+  note     = "R package version 0.0.6",
   url      = "https://github.com/tapani-hopkins/turkuwasps",
   textVersion = paste(
-"Hopkins T 2025. turkuwasps: Analyse the ecology and taxonomy of tropical wasps. R package version 0.0.3, https://github.com/tapani-hopkins/turkuwasps"
+"Hopkins T 2025. turkuwasps: Analyse the ecology and taxonomy of tropical wasps. R package version 0.0.6, https://github.com/tapani-hopkins/turkuwasps"
   )
 )

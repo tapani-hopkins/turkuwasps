@@ -1,149 +1,45 @@
-#' Fit glm and analyse it
+#' Get the modelled number of wasps caught in each place
 #'
-#' Fit generalised linear models to the wasp catches, and get the p values for whether forest type, rain etc affect the catch of each species. This is basically a wrapper for the package [mvabund], functions [manyglm()], [anova.manyglm()], and [summary.manyglm()]. The analyses take a long time to finish, anything from some minutes (`nBoot=9`) to hours (`nBoot=499`)!
+#' Helper function used by [plot_modelled_place()]. Gets the modelled number of wasps caught in each place, and the sampling efforts of each place if asked to scale by sampling effort.
 #'
-#' @param model Character string giving the model to fit. Generally something like "offset(tdiff_log) + days + rain + forest_type + deadwood". The variables should be found as column names in `m`. Converted to [formula], and will accept e.g. interaction terms in the same format as for formulae.
-#' @param x Data frame with the wasp data. Must contain columns "sample" and "taxon". 
-#' @param m Data frame with the Malaise sample data. Must contain columns "name" and "event".
-#' @param pairwise Character string giving the column in `m` for which pairwise p values should be calculated. E.g. `pairwise = "forest_type"` will check what forest types differ significantly from each other, not just if significant differences exist between forest types. Should only be used for categorical variables such as forest type, trap etc; not numeric such as rainfall. If NULL, only checks if significant differences exist, does not do pairwise checks. 
-#' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
-#' @param ...  Other parameters passed to [anova.manyglm()], and [summary.manyglm()]. These will override any default parameters. In general, there will be little need to adjust anything except `nBoot` (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. `nBoot=499`, which can take hours to finish. If you only want to fit the model, without calculating p values, set `nBoot=0`.
+#' Any samples which couldn't be fitted by the model (NA value in 'f') will be ignored.
+#'
+#' @param f Vector of fitted values returned by [resample()], one value for each sample. Should be a vector, i.e. the matrix returned by [resample()] should have every colum (i.e. species) added together, or just one species selected from the matrix.
+#' @param by Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'. 
+#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort (the function will return a sampling effort of 1).
 #' 
-#' @details This function is in effect a translator for the [mvabund] package: it converts the wasp data to the format mvabund expects, does the analyses, then extracts the relevant results in a readable format. Although much easier to use than standard mvabund, the returned results are still a bit on the complex side.
-#' @details The fitted model is returned as list item `coefficients`. For a model like "offset(tdiff_log) + rain + forest_type" (and default settings), you get the predicted number of wasps by counting: tdiff * `exp( c1 + c2 * rain + c3(forest_type) )`.
-#' @details The basic p values are returned in list item `p`. If e.g. the p value of forest type is significant, there is some significant difference in the number of wasps caught between forest types. Look at `p_pairwise` to see which forest types differ, and `p_sp` to see which taxa have significant differences. (neither forest types nor taxa necessarily show anything, the basic p values are for everything pooled and are better at detecting differences)
-#' @details In general, the p values should be treated with a pinch of salt. Any real differences will be visible in plots of the wasp catches, and/or in the fitted model. P values are an additional confirmation that the differences are likely true. For really rare species especially, the p values are likely to be nonsense (due to the nature of resampling). P values are a good tool for interpreting results, not the end goal!
+#' @return List with two items:
+#' * wasps Total number of wasps in each place as estimated by the fitted model. Vector.
+#' * tdiff_wasps Total sampling effort in trap days of each place. Vector. If 'tdiff' was NULL, this will be a vector of ones.
 #'
-#' @return List with items:
-#' * fit Fitted values for each sample and taxon.
-#' * coefficients Coefficients of the fitted model for each taxon and variable. See "Details" for how to interpret these.
-#' * p Vector of p values for each variable of the model. See "Details" for how to interpret these.
-#' * p_sp Matrix of p values for each variable of the model, separately for each taxon. See "Details" for how to interpret these.
-#' * p_pairwise Matrix of p values for pairwise differences between the levels of the model variable given by `pairwise`. E.g. for forest type, p values for primary versus disturbed, primary versus clearcut etc. 
-#' * p_pairwise_sp List of matrixes of p values for pairwise differences between the levels of the model variable given by `pairwise`. One list item for each taxon. E.g. for forest type, p values for primary versus disturbed, primary versus clearcut etc. 
-#' * mg Fitted model as a [manyglm()] object. This is what `fit` and `coefficients` are extracted from.
-#' * anova Results of [anova.manyglm()]. This is what `p` is extracted from.
-#' * summaries List of results of [summary.manyglm()], which is called multiple times to get pairwise comparisons. This is what `p_pairwise` and `p_pairwise_sp` are extracted from.
-#' 
-#' @examples
-#' # get example wasp data
-#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
-#' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
-#' 
-#' \dontrun{
+#' @keywords internal
 #'
-#' # fit model and get p values (only do three resamples to save time)
-#' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-#' a = resample(model, x, m, pairwise="forest_type", nBoot=3)
-#' 
-#' # show coefficients of the fitted model
-#' a$coefficients
-#'
-#' # show which variables affected wasp catches
-#' a$p
-#'
-#' # show which forest types differed from each other in number of wasps caught
-#' a$p_pairwise
-#'
-#' }
-#'
-#' @export
-resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...){
+get_modelled_place = function(f, by, tdiff=NULL){
 	
-	# store various default arguments for the analysis
-	analysis_args = list(
-		nBoot = 9,
-		p.uni="unadjusted", 
-		resamp="pit.trap", 
-		test = "LR"
-	)
-	
-	# add the analysis arguments given by the user (overwrite any defaults with the same name)
-	user_args = list(...)
-	analysis_args[names(user_args)] = user_args
-	
-	# warn if not all variables are found in `m`
-	model_terms = all.vars(stats::as.formula(paste("~", model)))
-	if (! all(model_terms %in% colnames(m))){
-		warning("Some of the variables of the model were not found in `m`. Resample may not work as expected.")
+	# if tdiff wasn't given, get the sampling efforts of the samples from the package's sample data
+	if (is.null(tdiff)){
+		m = turkuwasps::malaise_sample
+		tdiff = m[m$name %in% names(f), "tdiff"]
 	}
 	
-	# store the model in the format expected by manyglm
-	model = stats::as.formula(paste("mv ~", model))	
+	# ignore NA values
+	i = which(! is.na(f))
 	
-	# only use samples from the collecting event(s) the wasps come from
-	m = filter_samples(x$sample, m)
+	# get the number of wasps caught in each place
+	wasps = sum_by(f[i], by[i])
 	
-	# make sure that all samples are counted (not just those that caught wasps)
-	x$sample = factor(x$sample, levels=m$name)
-	
-	# count the number of wasps of each species caught in each sample
-	mv = table(x$sample, x$taxon)
-
-	# fit the model to the data
-	fit = mvabund::manyglm(model, data=m, family=family)
-	
-	# add the fitted model to the analysis arguments
-	analysis_args$object = fit
-	
-	# get p values unless nBoot is zero..
-	if (! analysis_args$nBoot == 0){
-		
-		# test which variables had a significant effect on wasp catches
-		a = do.call(mvabund::anova.manyglm, args=analysis_args)
-	
-		# extract the p values (both overall and for each taxon)
-		p = a$table[, 4, drop=F]
-		p_sp = a$uni.p
-		attributes(p_sp)$title = NULL
-	
-		# if `pairwise` was given, test for differences between the levels of that variable..
-		if (! is.null(pairwise)){
-		
-			# test which levels (e.g. forest types) differed significantly from each other
-			summaries = get_summaries(m, pairwise, model, family, analysis_args)	
-		
-			# extract the p values (both overall and for each taxon)
-			p_pairwise = get_p(summaries, pairwise, levels0(m[, pairwise]))
-			if (ncol(mv) > 1){
-				p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
-			} else {
-				p_pairwise_sp = NULL
-			}
-		
-		# ..if `pairwise` was not given, return blank variables for pairwise comparisons
-		} else {
-			p_pairwise <- p_pairwise_sp <- summaries <- NULL
-		}
-	
-	# if nBoot is zero, save time by making the p values NULL
+	# get the sampling effort of each place, if asked to scale by sampling effort
+	if (! is_na(tdiff)){
+		tdiff_wasps = sum_by(tdiff[i], by[i])
 	} else {
-		a <- p <- p_sp <- p_pairwise <- p_pairwise_sp <- summaries <- NULL
-	}
-	
-	# fix a problem where manyglm drops sample names if there's just one species
-	if (ncol(mv) == 1){
-		
-		# drop the samples from `mv` for which there is missing data in one or more of the model terms
-		i = which(is.na(m[, model_terms]), arr.ind=TRUE)[, 1]
-		mv2 = mv[-i, , drop=FALSE]
-		
-		# get the sample names and species name from mv2 (they *should* be in the same order..)
-		dimnames(fit$fitted.values) = dimnames(mv2)
-	}
-	
-	# get the fitted values, including for any samples which manyglm dropped
-	fitted_values = include_na(fit$fitted.values, m)
+		tdiff_wasps = 1
+	}	
 	
 	# return
-	return(list(fit=fitted_values, coefficients=fit$coefficients, p=p, p_sp=p_sp, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, mg=fit, anova=a, summaries=summaries))
+	return(list(wasps=wasps, tdiff_wasps=tdiff_wasps))
 	
 }
+
 
 #' Include samples dropped by manyglm
 #'
@@ -173,6 +69,30 @@ include_na = function(f, m){
 	
 	# return
 	return(f)
+	
+}
+
+
+#' Check if a variable is a matrix with several rows
+#'
+#' Helper function used by [plot_modelled_place()]. 
+#'
+#' @param x Variable to be checked. Typically a vector or matrix
+#' 
+#' @return TRUE if 'x' is a matrix with more than one row, otherwise FALSE. Matrixes that R calls by a different name (e.g. tables, 2D arrays etc) are counted as a matrix.
+#'
+#' @keywords internal
+#'
+is_multirow = function(x){
+	
+	multirow = FALSE
+	if (is.array(x)){
+		if (nrow(x) > 1){
+			multirow = TRUE
+		}
+	}
+	
+	return(multirow)
 	
 }
 
@@ -214,7 +134,7 @@ include_na = function(f, m){
 #' default_legend("forest_type", "Uganda 2014-2015")
 #' plot_modelled_place(a$fit, m$trap, x=coords)
 #' 
-#' # plot how many wasps were caugh and modelled in each forest type, each species separate
+#' # plot how many wasps were caught and modelled in each forest type, each species separate
 #' coords = plot_place(x$forest_type, m=m, taxon=x$taxon)
 #' plot_modelled_place(a$fit, m$forest_type, x=coords)
 #'
@@ -383,68 +303,149 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 }
 
 
-#' Get the modelled number of wasps caught in each place
+#' Fit glm and analyse it
 #'
-#' Helper function used by [plot_modelled_place()]. Gets the modelled number of wasps caught in each place, and the sampling efforts of each place if asked to scale by sampling effort.
+#' Fit generalised linear models to the wasp catches, and get the p values for whether forest type, rain etc affect the catch of each species. This is basically a wrapper for the package [mvabund], functions [manyglm()], [anova.manyglm()], and [summary.manyglm()]. The analyses take a long time to finish, anything from some minutes (`nBoot=9`) to hours (`nBoot=499`)!
 #'
-#' Any samples which couldn't be fitted by the model (NA value in 'f') will be ignored.
-#'
-#' @param f Vector of fitted values returned by [resample()], one value for each sample. Should be a vector, i.e. the matrix returned by [resample()] should have every colum (i.e. species) added together, or just one species selected from the matrix.
-#' @param by Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'. 
-#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort (the function will return a sampling effort of 1).
+#' @param model Character string giving the model to fit. Generally something like "offset(tdiff_log) + days + rain + forest_type + deadwood". The variables should be found as column names in `m`. Converted to [formula], and will accept e.g. interaction terms in the same format as for formulae.
+#' @param x Data frame with the wasp data. Must contain columns "sample" and "taxon". 
+#' @param m Data frame with the Malaise sample data. Must contain columns "name" and "event".
+#' @param pairwise Character string giving the column in `m` for which pairwise p values should be calculated. E.g. `pairwise = "forest_type"` will check what forest types differ significantly from each other, not just if significant differences exist between forest types. Should only be used for categorical variables such as forest type, trap etc; not numeric such as rainfall. If NULL, only checks if significant differences exist, does not do pairwise checks. 
+#' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
+#' @param ...  Other parameters passed to [anova.manyglm()], and [summary.manyglm()]. These will override any default parameters. In general, there will be little need to adjust anything except `nBoot` (number of resamples). It is nine by default, to give a quick but approximate result. More accurate results will need e.g. `nBoot=499`, which can take hours to finish. If you only want to fit the model, without calculating p values, set `nBoot=0`.
 #' 
-#' @return List with two items:
-#' * wasps Total number of wasps in each place as estimated by the fitted model. Vector.
-#' * tdiff_wasps Total sampling effort in trap days of each place. Vector. If 'tdiff' was NULL, this will be a vector of ones.
+#' @details This function is in effect a translator for the [mvabund] package: it converts the wasp data to the format mvabund expects, does the analyses, then extracts the relevant results in a readable format. Although much easier to use than standard mvabund, the returned results are still a bit on the complex side.
+#' @details The fitted model is returned as list item `coefficients`. For a model like "offset(tdiff_log) + rain + forest_type" (and default settings), you get the predicted number of wasps by counting: tdiff * `exp( c1 + c2 * rain + c3(forest_type) )`.
+#' @details The basic p values are returned in list item `p`. If e.g. the p value of forest type is significant, there is some significant difference in the number of wasps caught between forest types. Look at `p_pairwise` to see which forest types differ, and `p_sp` to see which taxa have significant differences. (neither forest types nor taxa necessarily show anything, the basic p values are for everything pooled and are better at detecting differences)
+#' @details In general, the p values should be treated with a pinch of salt. Any real differences will be visible in plots of the wasp catches, and/or in the fitted model. P values are an additional confirmation that the differences are likely true. For really rare species especially, the p values are likely to be nonsense (due to the nature of resampling). P values are a good tool for interpreting results, not the end goal!
 #'
-#' @keywords internal
+#' @return List with items:
+#' * fit Fitted values for each sample and taxon.
+#' * coefficients Coefficients of the fitted model for each taxon and variable. See "Details" for how to interpret these.
+#' * p Vector of p values for each variable of the model. See "Details" for how to interpret these.
+#' * p_sp Matrix of p values for each variable of the model, separately for each taxon. See "Details" for how to interpret these.
+#' * p_pairwise Matrix of p values for pairwise differences between the levels of the model variable given by `pairwise`. E.g. for forest type, p values for primary versus disturbed, primary versus clearcut etc. 
+#' * p_pairwise_sp List of matrixes of p values for pairwise differences between the levels of the model variable given by `pairwise`. One list item for each taxon. E.g. for forest type, p values for primary versus disturbed, primary versus clearcut etc. 
+#' * mg Fitted model as a [manyglm()] object. This is what `fit` and `coefficients` are extracted from.
+#' * anova Results of [anova.manyglm()]. This is what `p` is extracted from.
+#' * summaries List of results of [summary.manyglm()], which is called multiple times to get pairwise comparisons. This is what `p_pairwise` and `p_pairwise_sp` are extracted from.
+#' 
+#' @examples
+#' # get example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' wasps = read_wasps(f)
+#' 
+#' # remove damaged samples and their wasps
+#' tmp = ecology_usable(wasps)
+#' x = tmp$wasps
+#' m = tmp$samples
+#' 
+#' \dontrun{
 #'
-get_modelled_place = function(f, by, tdiff=NULL){
+#' # fit model and get p values (only do three resamples to save time)
+#' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+#' a = resample(model, x, m, pairwise="forest_type", nBoot=3)
+#' 
+#' # show coefficients of the fitted model
+#' a$coefficients
+#'
+#' # show which variables affected wasp catches
+#' a$p
+#'
+#' # show which forest types differed from each other in number of wasps caught
+#' a$p_pairwise
+#'
+#' }
+#'
+#' @export
+resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...){
 	
-	# if tdiff wasn't given, get the sampling efforts of the samples from the package's sample data
-	if (is.null(tdiff)){
-		m = turkuwasps::malaise_sample
-		tdiff = m[m$name %in% names(f), "tdiff"]
+	# store various default arguments for the analysis
+	analysis_args = list(
+		nBoot = 9,
+		p.uni="unadjusted", 
+		resamp="pit.trap", 
+		test = "LR"
+	)
+	
+	# add the analysis arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	analysis_args[names(user_args)] = user_args
+	
+	# warn if not all variables are found in `m`
+	model_terms = all.vars(stats::as.formula(paste("~", model)))
+	if (! all(model_terms %in% colnames(m))){
+		warning("Some of the variables of the model were not found in `m`. Resample may not work as expected.")
 	}
 	
-	# ignore NA values
-	i = which(! is.na(f))
+	# store the model in the format expected by manyglm
+	model = stats::as.formula(paste("mv ~", model))	
 	
-	# get the number of wasps caught in each place
-	wasps = sum_by(f[i], by[i])
+	# only use samples from the collecting event(s) the wasps come from
+	m = filter_samples(x$sample, m)
 	
-	# get the sampling effort of each place, if asked to scale by sampling effort
-	if (! is_na(tdiff)){
-		tdiff_wasps = sum_by(tdiff[i], by[i])
+	# make sure that all samples are counted (not just those that caught wasps)
+	x$sample = factor(x$sample, levels=m$name)
+	
+	# count the number of wasps of each species caught in each sample
+	mv = table(x$sample, x$taxon)
+
+	# fit the model to the data
+	fit = mvabund::manyglm(model, data=m, family=family)
+	
+	# add the fitted model to the analysis arguments
+	analysis_args$object = fit
+	
+	# get p values unless nBoot is zero..
+	if (! analysis_args$nBoot == 0){
+		
+		# test which variables had a significant effect on wasp catches
+		a = do.call(mvabund::anova.manyglm, args=analysis_args)
+	
+		# extract the p values (both overall and for each taxon)
+		p = a$table[, 4, drop=F]
+		p_sp = a$uni.p
+		attributes(p_sp)$title = NULL
+	
+		# if `pairwise` was given, test for differences between the levels of that variable..
+		if (! is.null(pairwise)){
+		
+			# test which levels (e.g. forest types) differed significantly from each other
+			summaries = get_summaries(m, pairwise, model, family, analysis_args)	
+		
+			# extract the p values (both overall and for each taxon)
+			p_pairwise = get_p(summaries, pairwise, levels0(m[, pairwise]))
+			if (ncol(mv) > 1){
+				p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
+			} else {
+				p_pairwise_sp = NULL
+			}
+		
+		# ..if `pairwise` was not given, return blank variables for pairwise comparisons
+		} else {
+			p_pairwise <- p_pairwise_sp <- summaries <- NULL
+		}
+	
+	# if nBoot is zero, save time by making the p values NULL
 	} else {
-		tdiff_wasps = 1
-	}	
+		a <- p <- p_sp <- p_pairwise <- p_pairwise_sp <- summaries <- NULL
+	}
+	
+	# fix a problem where manyglm drops sample names if there's just one species
+	if (ncol(mv) == 1){
+		
+		# drop the samples from `mv` for which there is missing data in one or more of the model terms
+		i = which(is.na(m[, model_terms]), arr.ind=TRUE)[, 1]
+		mv2 = mv[-i, , drop=FALSE]
+		
+		# get the sample names and species name from mv2 (they *should* be in the same order..)
+		dimnames(fit$fitted.values) = dimnames(mv2)
+	}
+	
+	# get the fitted values, including for any samples which manyglm dropped
+	fitted_values = include_na(fit$fitted.values, m)
 	
 	# return
-	return(list(wasps=wasps, tdiff_wasps=tdiff_wasps))
-	
-}
-
-
-#' Check if a variable is a matrix with several rows
-#'
-#' Helper function used by [plot_modelled_place()]. 
-#'
-#' @param x Variable to be checked. Typically a vector or matrix
-#' 
-#' @return TRUE if 'x' is a matrix with more than one row, otherwise FALSE. Matrixes that R calls by a different name (e.g. tables, 2D arrays etc) are counted as a matrix.
-#'
-#' @keywords internal
-#'
-is_multirow = function(x){
-	
-	multirow = FALSE
-	if (is.array(x)){
-		if (nrow(x) > 1){
-			multirow = TRUE
-		}
-	}
-	
-	return(multirow)
+	return(list(fit=fitted_values, coefficients=fit$coefficients, p=p, p_sp=p_sp, p_pairwise=p_pairwise, p_pairwise_sp=p_pairwise_sp, mg=fit, anova=a, summaries=summaries))
 	
 }

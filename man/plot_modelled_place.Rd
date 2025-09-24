@@ -48,11 +48,12 @@ a = resample(model, x, m, nBoot=0)
 
 # plot how many wasps were caught in each trap versus how many the model predicts
 coords = plot_place(x$trap, m=m)
-default_legend("forest_type", "Uganda 2014-2015")
 plot_modelled_place(a$fit, m$trap, x=coords)
+default_legend("forest_type", "Uganda 2014-2015", modelled=TRUE)
 
 # plot how many wasps were caught and modelled in each forest type, each species separate
 coords = plot_place(x$forest_type, m=m, taxon=x$taxon)
 plot_modelled_place(a$fit, m$forest_type, x=coords)
+default_legend("forest_type", "Uganda 2014-2015", modelled=TRUE, x="top")
 
 }

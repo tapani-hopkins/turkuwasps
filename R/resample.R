@@ -131,12 +131,13 @@ is_multirow = function(x){
 #' 
 #' # plot how many wasps were caught in each trap versus how many the model predicts
 #' coords = plot_place(x$trap, m=m)
-#' default_legend("forest_type", "Uganda 2014-2015")
 #' plot_modelled_place(a$fit, m$trap, x=coords)
+#' default_legend("forest_type", "Uganda 2014-2015", modelled=TRUE)
 #' 
 #' # plot how many wasps were caught and modelled in each forest type, each species separate
 #' coords = plot_place(x$forest_type, m=m, taxon=x$taxon)
 #' plot_modelled_place(a$fit, m$forest_type, x=coords)
+#' default_legend("forest_type", "Uganda 2014-2015", modelled=TRUE, x="top")
 #'
 #' @export
 plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
@@ -247,9 +248,9 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 #' x = tmp$wasps
 #' m = tmp$samples
 #' 
-#' # fit model, only do one resample since we don't need p values
+#' # fit model, with zero resamples since we don't need p values
 #' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-#' a = resample(model, x, m, nBoot=1)
+#' a = resample(model, x, m, nBoot=0)
 #' 
 #' # get the start and end of when each wasp was collected
 #' waspdates = as.interval(x$start, x$end)
@@ -259,6 +260,9 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 #' 
 #' # add a line showing how many wasps each day the fitted model predicts
 #' plot_modelled_time(a$fit, xlim=z$xlim)
+#'
+#' # add a legend
+#' default_legend(x$taxon, x="topleft", modelled=TRUE)
 #'
 #' @export
 plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){

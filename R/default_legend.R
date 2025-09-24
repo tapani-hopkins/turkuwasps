@@ -4,6 +4,7 @@
 #'
 #' @param what What legend to add. Can be "forest type", in which case shows the forest types. Or can be a character vector of taxon names, in which case shows the taxa. Taxa are got from the factor levels of the vector, so it is OK to have the same taxon several times. 
 #' @param event Character vector of what collecting events to include if making a forest type legend. Accepted events are "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". *Alternatively*, can be a character vector of locations (e.g. traps), in which case all collecting events involving those locations will be included. If NULL, all events are included. 
+#' @param modelled If TRUE, a line for modelled wasp catches will be added to the legend. If FALSE (the default), no modelled catches are added to the legend.
 #' @param ... Other arguments passed to [legend()]. Typically `x`, which gives the position of the legend (default is "topright"). Arguments `legend` and `fill` have no effect.
 #'
 #' @note Taxon names are automatically italicised by [as_italic()], on the assumption they are species names. If wanting non-italics, the legend will have to be drawn manually.
@@ -34,7 +35,7 @@
 #' 
 #' @export
 #'
-default_legend = function(what="forest_type", event=NULL, ...){
+default_legend = function(what="forest_type", event=NULL, modelled=FALSE, ...){
 	
 	# store various default arguments for the legend
 	legend_args = list(
@@ -93,6 +94,11 @@ default_legend = function(what="forest_type", event=NULL, ...){
 	# show the legend
 	res = do.call(graphics::legend, args=legend_args)
 	
+	# add the modelled wasp catch to the legend if asked to do so
+	if (modelled){
+		graphics::legend(x=res$rect$left, y=res$rect$top - res$rect$h, lwd=1, legend="modelled", cex=0.7, bty="n")
+	}
+		
 	# return
 	invisible(res)
 	

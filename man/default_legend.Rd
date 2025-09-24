@@ -4,12 +4,14 @@
 \alias{default_legend}
 \title{Default legend}
 \usage{
-default_legend(what = "forest_type", event = NULL, ...)
+default_legend(what = "forest_type", event = NULL, modelled = FALSE, ...)
 }
 \arguments{
 \item{what}{What legend to add. Can be "forest type", in which case shows the forest types. Or can be a character vector of taxon names, in which case shows the taxa. Taxa are got from the factor levels of the vector, so it is OK to have the same taxon several times.}
 
 \item{event}{Character vector of what collecting events to include if making a forest type legend. Accepted events are "Uganda 2014-2015", "Amazon 1998", "Amazon 2000", "Amazon 2008", "Amazon 2011". \emph{Alternatively}, can be a character vector of locations (e.g. traps), in which case all collecting events involving those locations will be included. If NULL, all events are included.}
+
+\item{modelled}{If TRUE, a line for modelled wasp catches will be added to the legend. If FALSE (the default), no modelled catches are added to the legend.}
 
 \item{...}{Other arguments passed to \code{\link[=legend]{legend()}}. Typically \code{x}, which gives the position of the legend (default is "topright"). Arguments \code{legend} and \code{fill} have no effect.}
 }

@@ -35,9 +35,9 @@ tmp = ecology_usable(wasps)
 x = tmp$wasps
 m = tmp$samples
 
-# fit model, only do one resample since we don't need p values
+# fit model, with zero resamples since we don't need p values
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-a = resample(model, x, m, nBoot=1)
+a = resample(model, x, m, nBoot=0)
 
 # get the start and end of when each wasp was collected
 waspdates = as.interval(x$start, x$end)
@@ -47,5 +47,8 @@ z = plot_time(waspdates, m, x$taxon, ylab="wasps / trap day")
 
 # add a line showing how many wasps each day the fitted model predicts
 plot_modelled_time(a$fit, xlim=z$xlim)
+
+# add a legend
+default_legend(x$taxon, x="topleft", modelled=TRUE)
 
 }

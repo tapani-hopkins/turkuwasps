@@ -471,6 +471,32 @@ get_weights = function(barnames, m){
 }
 
 
+#' Check if a variable is NA (just a single NA)
+#'
+#' Helper function. Checks if something is exactly NA. I.e. just a single NA, not e.g. a vector of NAs. Useful e.g. when `ìf(is.na(x))` returns an error because `x` may be a vector.
+#'
+#' @param x What to check.
+#'
+#' @return TRUE if `x` is a single NA value, otherwise FALSE.
+#'
+#' @keywords internal
+#'
+is_na = function(x){
+	
+	# return FALSE unless `x` is just a single NA value
+	isna = FALSE
+	if (length(x) == 1) {
+		if (is.na(x)){
+			isna = TRUE
+		}
+	}
+	
+	# return
+	return(isna)
+	
+}
+
+
 #' Add legend to extended scatterplot
 #'
 #' Helper function used by [plot_explore()]. Adds a legend showing the colours used in the grid cells.

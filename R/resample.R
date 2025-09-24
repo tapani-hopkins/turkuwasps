@@ -184,7 +184,7 @@ include_na = function(f, m){
 #' @param f Matrix of fitted values returned by [resample()], one row for each sample and one column for each taxon.
 #' @param by Character vector giving the place (generally trap or forest type) each sample was collected. Same length as the number of rows in 'f'. 
 #' @param x  x coordinates to use when adding the modelled catch of each place to the plot. Can be a vector, matrix (with taxa in rows and places in columns), or a list of coordinates returned by [plot_place()]. See 'Details' for what happens if 'x' is a matrix with more than one row (i.e. more than one taxon). If not given, default x coordinates will be used.
-#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, results won't be scaled by sampling effort.
+#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort.
 #' @param plot If TRUE, the modelled catches of each place will be added to the plot as lines + points. If FALSE, the modelled catches will only be returned, not plotted.
 #' 
 #' @details If the x coordinates are given as a matrix with each species on its own row, the assumption is each species should be plotted separately. The function will count the wasp catches and x coordinates of species 1, then species 2 etc, and return wasp catch and x coodinate vectors which have the species' values pasted together (e.g. wasp catch vector has species 1 wasp catches, followed by species 2 wasp catches..). This matches how [plot_place()] places the bars when there is more than one species plotted.
@@ -205,18 +205,18 @@ include_na = function(f, m){
 #' x = tmp$wasps
 #' m = tmp$samples
 #' 
-#' # fit model, only do one resample since we don't need p values
+#' # fit model, with zero resamples since we don't need p values
 #' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-#' a = resample(model, x, m, nBoot=1)
+#' a = resample(model, x, m, nBoot=0)
 #' 
 #' # plot how many wasps were caught in each trap versus how many the model predicts
 #' coords = plot_place(x$trap, m=m)
 #' default_legend("forest_type", "Uganda 2014-2015")
-#' plot_modelled_place(a$fit, m$trap, x=coords, tdiff=m$tdiff)
+#' plot_modelled_place(a$fit, m$trap, x=coords)
 #' 
 #' # plot how many wasps were caugh and modelled in each forest type, each species separate
 #' coords = plot_place(x$forest_type, m=m, taxon=x$taxon)
-#' plot_modelled_place(a$fit, m$forest_type, x=coords, tdiff=m$tdiff)
+#' plot_modelled_place(a$fit, m$forest_type, x=coords)
 #'
 #' @export
 plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
@@ -243,9 +243,17 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 		}
 	}
 	
-	# check that by and tdiff are the right length
+	# check that by is the right length
 	if (nrow(f) != length(by)){ stop("'by' is the wrong length") }	
-	if (! length(tdiff) == nrow(f) & ! is.null(tdiff)){ stop("'tdiff' is the wrong length") }	
+	
+	# check that tdiff is either the right length, or is NULL or NA 
+	if (! length(tdiff) == nrow(f) & ! is.null(tdiff) & ! is_na(tdiff)) {
+	#	if (length(tdiff) == 1) {
+	#		if (! is.na(tdiff)) { stop("'tdiff' is the wrong length") }
+	#	} else {
+			stop("'tdiff' is the wrong length")
+	#	}
+	}	
 		
 	# get the number of wasps in each place, for all species combined unless 'x' is a multirow matrix..
 	if (! is_multirow(x)){
@@ -383,7 +391,7 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 #'
 #' @param f Vector of fitted values returned by [resample()], one value for each sample. Should be a vector, i.e. the matrix returned by [resample()] should have every colum (i.e. species) added together, or just one species selected from the matrix.
 #' @param by Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'. 
-#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as 'f'. If NULL, results won't be scaled by sampling effort (the function will return a sampling effort of 1 for all places).
+#' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort (the function will return a sampling effort of 1).
 #' 
 #' @return List with two items:
 #' * wasps Total number of wasps in each place as estimated by the fitted model. Vector.
@@ -393,6 +401,12 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 #'
 get_modelled_place = function(f, by, tdiff=NULL){
 	
+	# if tdiff wasn't given, get the sampling efforts of the samples from the package's sample data
+	if (is.null(tdiff)){
+		m = turkuwasps::malaise_sample
+		tdiff = m[m$name %in% names(f), "tdiff"]
+	}
+	
 	# ignore NA values
 	i = which(! is.na(f))
 	
@@ -400,7 +414,7 @@ get_modelled_place = function(f, by, tdiff=NULL){
 	wasps = sum_by(f[i], by[i])
 	
 	# get the sampling effort of each place, if asked to scale by sampling effort
-	if (! is.null(tdiff)){
+	if (! is_na(tdiff)){
 		tdiff_wasps = sum_by(tdiff[i], by[i])
 	} else {
 		tdiff_wasps = 1

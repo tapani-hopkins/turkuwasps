@@ -11,7 +11,7 @@ get_modelled_place(f, by, tdiff = NULL)
 
 \item{by}{Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'.}
 
-\item{tdiff}{Numeric vector giving the sampling effort of each sample, in trap days. Same length as 'f'. If NULL, results won't be scaled by sampling effort (the function will return a sampling effort of 1 for all places).}
+\item{tdiff}{Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort (the function will return a sampling effort of 1).}
 }
 \value{
 List with two items:

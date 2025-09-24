@@ -13,7 +13,7 @@ plot_modelled_place(f, by, x = NULL, tdiff = NULL, plot = TRUE)
 
 \item{x}{x coordinates to use when adding the modelled catch of each place to the plot. Can be a vector, matrix (with taxa in rows and places in columns), or a list of coordinates returned by \code{\link[=plot_place]{plot_place()}}. See 'Details' for what happens if 'x' is a matrix with more than one row (i.e. more than one taxon). If not given, default x coordinates will be used.}
 
-\item{tdiff}{Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, results won't be scaled by sampling effort.}
+\item{tdiff}{Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort.}
 
 \item{plot}{If TRUE, the modelled catches of each place will be added to the plot as lines + points. If FALSE, the modelled catches will only be returned, not plotted.}
 }
@@ -42,17 +42,17 @@ tmp = ecology_usable(wasps)
 x = tmp$wasps
 m = tmp$samples
 
-# fit model, only do one resample since we don't need p values
+# fit model, with zero resamples since we don't need p values
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-a = resample(model, x, m, nBoot=1)
+a = resample(model, x, m, nBoot=0)
 
 # plot how many wasps were caught in each trap versus how many the model predicts
 coords = plot_place(x$trap, m=m)
 default_legend("forest_type", "Uganda 2014-2015")
-plot_modelled_place(a$fit, m$trap, x=coords, tdiff=m$tdiff)
+plot_modelled_place(a$fit, m$trap, x=coords)
 
 # plot how many wasps were caugh and modelled in each forest type, each species separate
 coords = plot_place(x$forest_type, m=m, taxon=x$taxon)
-plot_modelled_place(a$fit, m$forest_type, x=coords, tdiff=m$tdiff)
+plot_modelled_place(a$fit, m$forest_type, x=coords)
 
 }

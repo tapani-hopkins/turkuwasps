@@ -12,14 +12,13 @@
 #' @return List returned by [legend()]. Returned invisibly.
 #'
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
 #' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
 #' 
 #' # plot traps
 #' tmp = plot_place(x$trap, m)

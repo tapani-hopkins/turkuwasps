@@ -42,14 +42,13 @@ A list giving the x and y coordinates of each bar (= time period \code{step} sec
 Plot the number of wasps caught each day (or other time period). This is at heart function \code{\link[=barplot]{barplot()}}, with one bar for each time period.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 # get the start and end of when each wasp was collected
 waspdates = as.interval(x$start, x$end)

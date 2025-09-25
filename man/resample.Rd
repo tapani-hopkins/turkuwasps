@@ -46,14 +46,13 @@ The basic p values are returned in list item \code{p}. If e.g. the p value of fo
 In general, the p values should be treated with a pinch of salt. Any real differences will be visible in plots of the wasp catches, and/or in the fitted model. P values are an additional confirmation that the differences are likely true. For really rare species especially, the p values are likely to be nonsense (due to the nature of resampling). P values are a good tool for interpreting results, not the end goal!
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 \dontrun{
 

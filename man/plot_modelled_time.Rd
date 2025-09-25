@@ -26,14 +26,13 @@ List with two items, returned invisibly:
 Get the modelled wasp catches over time from the fitted values returned by \code{\link[=resample]{resample()}}, and (optionally) add them to a plot. Typically used after plotting the number of wasps caught each day with \code{\link[=plot_time]{plot_time()}}, to add a line to the plot with the model predictions. Currently only gives the predicted number of wasps per trap day for each day, cannot be used for plots that are not scaled down by sampling effort.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 # fit model, with zero resamples since we don't need p values
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"

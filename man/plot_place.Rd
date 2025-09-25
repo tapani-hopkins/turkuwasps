@@ -29,14 +29,13 @@ The plot will look different depending on whether taxa (argument \code{taxon}) w
 Argument \code{beside} can be set to FALSE by the user, but doing so will change what the plot looks like. One bar will be plotted for each location, and the bars will be split/stacked by taxon. (If taxa were not given, all wasps are assumed to belong to the same taxon.) Colours will be for each taxon, not for each bar. (Default taxon colours will be used if \code{defaults} is TRUE) Normally it is best to leave argument \code{beside} alone.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 # plot
 plot_place(x$trap, m)

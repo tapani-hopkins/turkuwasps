@@ -45,15 +45,13 @@ More usage examples to come, package is still under construction.
 # load the package
 library(turkuwasps)
 
-# get example wasp data (csv file from Kotka)
+# get path to example wasp data (csv file from Kotka)
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# get wasps and samples which can be used in ecological analyses
-# (e.g. damaged samples and their wasps removed)
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 ```
 
 ### Show where wasps were caught
@@ -141,21 +139,22 @@ default_legend(x$taxon, x="topleft", modelled=TRUE)
 <img src="inst/example_images/plot_rarefaction.png" height="140">
 
 ``` r
+## Read all the data, including wasps from damaged samples
+f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+tmp = read_wasps(f, ecology_usable=FALSE)
+wasps = tmp$x
+
 ## Simple
 
 # save colours to be used for each habitat type
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
 
 # plot separate curves for each habitat type, with confidence intervals
-r = plot_rarefaction(wasps, n=30, n_ci=30, by="forest_type", col=col, pch=1:4)
+r = plot_rarefaction(wasps, n=30, n_ci=30, by="forest_type", col=col, pch=1:5)
 legend_rarefaction(r=r)
 
 
 ## Complex
-
-# see to it the curves will be drawn in successional order from primary to farm
-levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
-wasps$forest_type = factor(wasps$forest_type, levels=levs)
 
 # prepare a new column in the wasp data, for drawing separate curves for dry and wet season
 wasps$forest_season = combine_columns(wasps, c("forest_type", "season"), all=TRUE)

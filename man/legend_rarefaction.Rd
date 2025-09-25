@@ -51,13 +51,9 @@ List of legend coordinates returned by \code{\link[=legend]{legend()}}, returned
 Add legend to rarefaction plots. Basically a wrapper for \code{\link[=legend]{legend()}}, adapted to easily draw lines, symbols, several columns, column subtitles etc for rarefaction curve plots.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data and read the data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
-
-# see to it the curves will be drawn in successional order from primary to farm
-levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
-wasps$forest_type = factor(wasps$forest_type, levels=levs)
+wasps = read_wasps(f, ecology_usable=FALSE)$x
 
 # plot rarefaction curves with separate curves for each forest type
 col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")

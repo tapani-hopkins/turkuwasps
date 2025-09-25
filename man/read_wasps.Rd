@@ -2,35 +2,42 @@
 % Please edit documentation in R/read_wasps.R
 \name{read_wasps}
 \alias{read_wasps}
-\title{Read wasp data from file}
+\title{Read wasp data from Kotka file}
 \usage{
-read_wasps(file, simplify = TRUE, ...)
+read_wasps(file, ecology_usable = TRUE, factor = TRUE, unusable = "", ...)
 }
 \arguments{
 \item{file}{Name of the file to read from.}
 
-\item{simplify}{If TRUE, convert the data to something more usable. Drop irrelevant columns, rename remaining columns, get forest type, trap etc from the sample data.}
+\item{ecology_usable}{If TRUE, any samples that are unrepresentative of a normal catch will be filtered out, and so will wasps from those samples. Such samples are typically samples that were damaged during collecting (e.g. trampled by elephants). Use parameter \code{unusable} to filter out more samples, e.g. if a sample rotted before you had time to separate the taxon you are currently dealing with. If FALSE, samples will not be filtered.}
 
-\item{...}{Arguments passed to \link{read.csv}.}
+\item{factor}{If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.}
+
+\item{unusable}{Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). Only has an effect if \code{ecology_usable=TRUE}.}
+
+\item{...}{Arguments passed to \code{\link[=read.csv]{read.csv()}}.}
 }
 \value{
-Data frame with the wasp data. If simplified, has the following columns:
+List with items \code{x}, a data frame with the wasp data, and \code{m}, a data frame with the sample data. The sample data has the same columns as data frame \link{malaise_sample}, the wasp data has the following columns:
 \itemize{
 \item id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
 \item sex F for female, M for male, U for unknown.
 \item taxon Taxon, taken from the first column with an identification. If there are several identifications, this may need overwriting.
-\item event
-\item forest_type
-\item site
-\item trap
-\item sample Malaise sample the wasp came from.
+\item event Collecting event, e.g. "Uganda 2014-2015".
+\item forest_type Habitat type the wasp came from, if relevant.
+\item site Site the wasp came from, if relevant.
+\item trap Trap the wasp came from.
+\item sample Sample the wasp came from. Usually a Malaise trap sample.
 \item start Date and time when the wasp's sample started to be collected.
 \item end Date and time when the wasp's sample stopped being collected.
 \item tdiff Number of days that the sample was collected.
-\item tdiff Season when the sample was collected.
-\item ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since \code{\link[=ecology_usable]{ecology_usable()}} will typically be used to remove unusable wasps before analyses.
+\item season Season when the sample was collected.
+\item ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample is marked in dataset \link{malaise_sample} as damaged or otherwise unrepresentative of a normal catch. Rarely used, since parameter \code{ecology_usable} will typically be used to remove unusable wasps before analyses.
 }
 }
 \description{
-Read a csv file downloaded from Kotka (Kotka Collection Management System). This is basically a wrapper for \code{\link[=read.csv]{read.csv()}}. Reads the column names ok (read.csv often corrupts them), removes extra header rows, and (optionally) simplifies the data. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
+Read wasp data from a csv file downloaded from Kotka (Kotka Collection Management System), and return the wasp data and its corresponding sample data. This tidies up the data into a standard format, e.g. removing extra columns and renaming columns, and getting the wasps' forest type, trap etc from the sample data. Also (optionally) filters out samples that were damaged or otherwise unrepresentative of a normal catch, and the wasps from those samples.
+}
+\seealso{
+\code{\link[=read_kotka]{read_kotka()}} if you just want to read a Kotka csv file without tidying it up, \code{\link[=ecology_usable]{ecology_usable()}} for filtering out unrepresentative samples and their wasps, \code{\link[=read.csv]{read.csv()}}. This function is basically a wrapper for these three functions.
 }

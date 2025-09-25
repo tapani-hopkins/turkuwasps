@@ -116,14 +116,13 @@ is_multirow = function(x){
 #' * y Total number of wasps for each place as estimated by the model. Scaled by sampling effort if 'tdiff' was given.
 #' 
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
 #' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
 #' 
 #' # fit model, with zero resamples since we don't need p values
 #' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
@@ -239,14 +238,13 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 #' * y Numeric vector. Daily averages of the modelled wasp catches.
 #' 
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
 #' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
 #' 
 #' # fit model, with zero resamples since we don't need p values
 #' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
@@ -335,14 +333,13 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 #' * summaries List of results of [summary.manyglm()], which is called multiple times to get pairwise comparisons. This is what `p_pairwise` and `p_pairwise_sp` are extracted from.
 #' 
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
 #' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
 #' 
 #' \dontrun{
 #'

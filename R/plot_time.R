@@ -17,14 +17,13 @@
 #' * `xlim` The left and right limits of the plot as an interval object.
 #' 
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
 #' 
-#' # remove damaged samples and their wasps
-#' tmp = ecology_usable(wasps)
-#' x = tmp$wasps
-#' m = tmp$samples
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
 #' 
 #' # get the start and end of when each wasp was collected
 #' waspdates = as.interval(x$start, x$end)

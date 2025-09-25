@@ -1,27 +1,62 @@
-#' Read wasp data from file
+#' Get data that is usable in ecological analyses
+#'
+#' Get the wasp and sample data that can be used in ecological analyses. Removes samples that were damaged in the field, and any other samples marked by the user as being unusable (typically because the wasp jar rotted). Removes wasps from these samples, and also any wasps that have no data on what trap they came from.
+#'
+#' @param x Data frame with the wasp data. Must contain columns "sample" and "trap", which give the Malaise sample and trap that each wasp came from. 
+#' @param unusable Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). 
+#'
+#' @return List with two elements:
+#' * `wasps` The wasp data without wasps that came from unusable samples.
+#' * `samples` The sample data (i.e. data frame [malaise_sample]) without unusable samples.
+#' @export
+ecology_usable = function(x, unusable=""){
+	
+	# get malaise sample data and add unusable samples to `unusable`
+	m = turkuwasps::malaise_sample
+	unusable = c(unusable, m$name[m$damaged])
+	
+	# remove wasps that came from unusable samples
+	i = which(! x$sample %in% unusable)
+	x = x[i, ]
+	
+	# remove wasps with empty values for the trap (typically hand-netted wasps)
+	i = which(! is.na(x$trap) & x$trap!="")
+	x = x[i, ]
+	
+	# remove unusable samples
+	i = which(! m$name %in% unusable)
+	m = m[i, ]
+	
+	# return
+	return(list(wasps=x, samples=m))
+	
+}
+
+
+#' Read Kotka file
 #'
 #' Read a csv file downloaded from Kotka (Kotka Collection Management System). This is basically a wrapper for [read.csv()]. Reads the column names ok (read.csv often corrupts them), removes extra header rows, and (optionally) simplifies the data. Simplification removes columns which are not needed, and renames other columns + adds several new columns so the data can be directly used by other functions.
 #'
 #' @param file Name of the file to read from. 
 #' @param simplify If TRUE, convert the data to something more usable. Drop irrelevant columns, rename remaining columns, get forest type, trap etc from the sample data. 
-#' @param ... Arguments passed to [read.csv]. 
+#' @param ... Arguments passed to [read.csv()]. 
 #'
 #' @return Data frame with the wasp data. If simplified, has the following columns:
 #' * id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
 #' * sex F for female, M for male, U for unknown.
 #' * taxon Taxon, taken from the first column with an identification. If there are several identifications, this may need overwriting.
-#' * event
-#' * forest_type
-#' * site
-#' * trap
-#' * sample Malaise sample the wasp came from.
+#' * event Collecting event, e.g. "Uganda 2014-2015".
+#' * forest_type Habitat type the wasp came from, if relevant.
+#' * site Site the wasp came from, if relevant.
+#' * trap Trap the wasp came from.
+#' * sample Sample the wasp came from. Usually a Malaise trap sample.
 #' * start Date and time when the wasp's sample started to be collected.
 #' * end Date and time when the wasp's sample stopped being collected.
 #' * tdiff Number of days that the sample was collected.
-#' * tdiff Season when the sample was collected.
+#' * season Season when the sample was collected.
 #' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since [ecology_usable()] will typically be used to remove unusable wasps before analyses.
 #' @export
-read_wasps = function(file, simplify=TRUE, ...){
+read_kotka = function(file, simplify=TRUE, ...){
 	
 	# store default arguments for read.csv
 	read_args = list(
@@ -64,4 +99,77 @@ read_wasps = function(file, simplify=TRUE, ...){
 	
 	# return
 	return(x)
+}
+
+
+#' Read wasp data from Kotka file
+#'
+#' Read wasp data from a csv file downloaded from Kotka (Kotka Collection Management System), and return the wasp data and its corresponding sample data. This tidies up the data into a standard format, e.g. removing extra columns and renaming columns, and getting the wasps' forest type, trap etc from the sample data. Also (optionally) filters out samples that were damaged or otherwise unrepresentative of a normal catch, and the wasps from those samples.
+#'
+#' @param file Name of the file to read from. 
+#' @param ecology_usable If TRUE, any samples that are unrepresentative of a normal catch will be filtered out, and so will wasps from those samples. Such samples are typically samples that were damaged during collecting (e.g. trampled by elephants). Use parameter `unusable` to filter out more samples, e.g. if a sample rotted before you had time to separate the taxon you are currently dealing with. If FALSE, samples will not be filtered.
+#' @param factor If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.
+#' @param unusable Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). Only has an effect if `ecology_usable=TRUE`.
+#' @param ... Arguments passed to [read.csv()]. 
+#'
+#' @seealso [read_kotka()] if you just want to read a Kotka csv file without tidying it up, [ecology_usable()] for filtering out unrepresentative samples and their wasps, [read.csv()]. This function is basically a wrapper for these three functions.
+#'
+#' @return List with items `x`, a data frame with the wasp data, and `m`, a data frame with the sample data. The sample data has the same columns as data frame [malaise_sample], the wasp data has the following columns:
+#' * id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
+#' * sex F for female, M for male, U for unknown.
+#' * taxon Taxon, taken from the first column with an identification. If there are several identifications, this may need overwriting.
+#' * event Collecting event, e.g. "Uganda 2014-2015".
+#' * forest_type Habitat type the wasp came from, if relevant.
+#' * site Site the wasp came from, if relevant.
+#' * trap Trap the wasp came from.
+#' * sample Sample the wasp came from. Usually a Malaise trap sample.
+#' * start Date and time when the wasp's sample started to be collected.
+#' * end Date and time when the wasp's sample stopped being collected.
+#' * tdiff Number of days that the sample was collected.
+#' * season Season when the sample was collected.
+#' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample is marked in dataset [malaise_sample] as damaged or otherwise unrepresentative of a normal catch. Rarely used, since parameter `ecology_usable` will typically be used to remove unusable wasps before analyses.
+#' @export
+read_wasps = function(file, ecology_usable=TRUE, factor=TRUE, unusable="", ...){
+	
+	# get the wasp data
+	x = read_kotka(file, ...)
+	
+	# get those samples (and their wasps) which are usable in ecological analyses if asked to so..
+	if (ecology_usable){
+		wasps = ecology_usable(x, unusable=unusable)
+		x = wasps$wasps
+		m = wasps$samples
+		
+	# .. otherwise get all malaise samples
+	} else {
+		m = turkuwasps::malaise_sample
+	}
+		
+	# remove samples that come from events for which no wasps were collected
+	m = m[m$event %in% x$event, ]
+	
+	# convert trap, forest type etc columns to factor if asked to do so
+	# put the factor levels in the default order, same order as in datasets `trap`, `forest_type` etc
+	if (factor){
+		
+		# get the default forest type, site etc data
+		forest_type = turkuwasps::forest_type
+		site = turkuwasps::site
+		trap = turkuwasps::trap
+		
+		# factor wasp data, only the factor levels of events from which wasps were collected
+		x$forest_type = factor(x$forest_type, levels=forest_type$name[forest_type$event %in% x$event])
+		x$site = factor(x$site, levels=site$name[site$event %in% x$event])
+		x$trap = factor(x$trap, levels=trap$name[trap$event %in% x$event])
+		
+		# factor sample data, only the factor levels of events from which wasps were collected
+		m$forest_type = factor(m$forest_type, levels=forest_type$name[forest_type$event %in% x$event])
+		m$site = factor(m$site, levels=site$name[site$event %in% x$event])
+		m$trap = factor(m$trap, levels=trap$name[trap$event %in% x$event])
+		
+	}
+	
+	# return
+	return(list(x=x, m=m))
+	
 }

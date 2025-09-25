@@ -33,14 +33,13 @@ Usually the x coordinates are a vector, or a matrix with just one row. Then the 
 Typically, 'x' will be the list returned by \code{\link[=plot_place]{plot_place()}}. Then the plotting of modelled values will automatically match the plot; the x coordinates will be extracted from the list as a matrix with either one or several rows.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 # fit model, with zero resamples since we don't need p values
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"

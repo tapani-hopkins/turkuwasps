@@ -263,13 +263,9 @@ interpolate_na = function(x){
 #' @return List of legend coordinates returned by [legend()], returned silently.
 #' 
 #' @examples
-#' # get example wasp data
+#' # get path to example wasp data and read the data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
-#' 
-#' # see to it the curves will be drawn in successional order from primary to farm
-#' levs = c("primary", "swamp", "disturbed", "clearcut", "farm")
-#' wasps$forest_type = factor(wasps$forest_type, levels=levs)
+#' wasps = read_wasps(f, ecology_usable=FALSE)$x
 #'
 #' # plot rarefaction curves with separate curves for each forest type
 #' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
@@ -572,16 +568,16 @@ match_names = function(x, xname, levs, column_name){
 #'
 #' @examples 
 #'
-#' # get example wasp data
+#' # get path to example wasp data and read the data
 #' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-#' wasps = read_wasps(f)
+#' wasps = read_wasps(f, ecology_usable=FALSE)$x
 #' 
 #' # plot a rarefaction curve with all wasps
 #' plot_rarefaction(wasps, n=5)
 #' 
 #' # plot separate curves for each forest type
 #' col = c(primary="darkgreen", swamp="blue", disturbed="green", clearcut="yellow", farm="orange")
-#' r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:4)
+#' r = plot_rarefaction(wasps, by="forest_type", col=col, pch=1:5)
 #' 
 #' # add a legend
 #' legend_rarefaction(r=r)

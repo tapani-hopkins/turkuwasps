@@ -34,14 +34,13 @@ E.g. if rainfall (in mm) is on the x axis, then each cell in column 5 mm - 10 mm
 Without scaling like this, it gets hard to compare different levels of rainfall. The sample sizes (number of points) can be quite different in different columns.
 }
 \examples{
-# get example wasp data
+# get path to example wasp data
 f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
-wasps = read_wasps(f)
 
-# remove damaged samples and their wasps
-tmp = ecology_usable(wasps)
-x = tmp$wasps
-m = tmp$samples
+# read the wasp data and get the corresponding sample data
+tmp = read_wasps(f)
+x = tmp$x
+m = tmp$m
 
 # show how catches varied with rain and amount of wood 
 explore(x$sample, m, what=c("rain", "deadwood", "livewood"))

@@ -4,18 +4,27 @@
 \alias{read_wasps}
 \title{Read wasp data from Kotka file}
 \usage{
-read_wasps(file, ecology_usable = TRUE, factor = TRUE, unusable = "", ...)
+read_wasps(
+  file,
+  ecology_usable = TRUE,
+  unusable = "",
+  columns = NULL,
+  factor = TRUE,
+  ...
+)
 }
 \arguments{
 \item{file}{Name of the file to read from.}
 
 \item{ecology_usable}{If TRUE, any samples that are unrepresentative of a normal catch will be filtered out, and so will wasps from those samples. Such samples are typically samples that were damaged during collecting (e.g. trampled by elephants). Use parameter \code{unusable} to filter out more samples, e.g. if a sample rotted before you had time to separate the taxon you are currently dealing with. If FALSE, samples will not be filtered.}
 
-\item{factor}{If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.}
-
 \item{unusable}{Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). Only has an effect if \code{ecology_usable=TRUE}.}
 
-\item{...}{Arguments passed to \code{\link[=read.csv]{read.csv()}}.}
+\item{columns}{Named character vector giving the name of columns in the Kotka file that you want to keep. For example, \code{columns=c(location="MYDocumentLocation", notes="MYNotes")} adds the columns "MYDocumentLocation" and "MYNotes" to the data, renaming them to "location" and "notes". Will overwrite any standard columns of the same name. If NULL, only the standard columns "id", "sex" etc will be returned. Useful e.g. if the species names of the wasps are in an unusual column.}
+
+\item{factor}{If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.}
+
+\item{...}{Arguments passed to \code{\link[=read.csv]{read.csv()}}, which does the basic reading of the csv file.}
 }
 \value{
 List with items \code{x}, a data frame with the wasp data, and \code{m}, a data frame with the sample data. The sample data has the same columns as data frame \link{malaise_sample}, the wasp data has the following columns:
@@ -39,5 +48,5 @@ List with items \code{x}, a data frame with the wasp data, and \code{m}, a data 
 Read wasp data from a csv file downloaded from Kotka (Kotka Collection Management System), and return the wasp data and its corresponding sample data. This tidies up the data into a standard format, e.g. removing extra columns and renaming columns, and getting the wasps' forest type, trap etc from the sample data. Also (optionally) filters out samples that were damaged or otherwise unrepresentative of a normal catch, and the wasps from those samples.
 }
 \seealso{
-\code{\link[=read_kotka]{read_kotka()}} if you just want to read a Kotka csv file without tidying it up, \code{\link[=ecology_usable]{ecology_usable()}} for filtering out unrepresentative samples and their wasps, \code{\link[=read.csv]{read.csv()}}. This function is basically a wrapper for these three functions.
+\code{\link[=read_kotka]{read_kotka()}} if you just want to read a Kotka csv file without tidying it up, \code{\link[=ecology_usable]{ecology_usable()}} for filtering out unrepresentative samples and their wasps. This function is basically a wrapper for these two functions.
 }

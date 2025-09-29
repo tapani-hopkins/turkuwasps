@@ -12,10 +12,12 @@ ecology_usable(x, unusable = "")
 \item{unusable}{Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022").}
 }
 \value{
-List with two elements:
+List with four elements:
 \itemize{
 \item \code{wasps} The wasp data without wasps that came from unusable samples.
 \item \code{samples} The sample data (i.e. data frame \link{malaise_sample}) without unusable samples.
+\item \code{removed_wasps} The row numbers of wasps which were removed as unusable. Useful if wanting to go back to the raw data, to see which wasps were kept and which filtered out.
+\item \code{removed_samples} The row numbers of samples which were removed as unusable. Useful if wanting to go back to the raw data, to see which samples were kept and which filtered out.
 }
 }
 \description{

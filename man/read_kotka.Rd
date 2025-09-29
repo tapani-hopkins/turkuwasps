@@ -4,12 +4,14 @@
 \alias{read_kotka}
 \title{Read Kotka file}
 \usage{
-read_kotka(file, simplify = TRUE, ...)
+read_kotka(file, simplify = TRUE, columns = NULL, ...)
 }
 \arguments{
 \item{file}{Name of the file to read from.}
 
 \item{simplify}{If TRUE, convert the data to something more usable. Drop irrelevant columns, rename remaining columns, get forest type, trap etc from the sample data.}
+
+\item{columns}{Named character vector giving the name of columns in the Kotka file that you want to keep if simpifying the data. For example, \code{columns=c(location="MYDocumentLocation", notes="MYNotes")} adds the columns "MYDocumentLocation" and "MYNotes" to the simplified data, renaming them to "location" and "notes". Will overwrite any standard columns of the same name. If NULL, only the standard columns "id", "sex" etc will be returned.}
 
 \item{...}{Arguments passed to \code{\link[=read.csv]{read.csv()}}.}
 }

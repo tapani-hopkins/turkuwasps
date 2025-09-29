@@ -5,9 +5,11 @@
 #' @param x Data frame with the wasp data. Must contain columns "sample" and "trap", which give the Malaise sample and trap that each wasp came from. 
 #' @param unusable Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). 
 #'
-#' @return List with two elements:
+#' @return List with four elements:
 #' * `wasps` The wasp data without wasps that came from unusable samples.
 #' * `samples` The sample data (i.e. data frame [malaise_sample]) without unusable samples.
+#' * `removed_wasps` The row numbers of wasps which were removed as unusable. Useful if wanting to go back to the raw data, to see which wasps were kept and which filtered out.
+#' * `removed_samples` The row numbers of samples which were removed as unusable. Useful if wanting to go back to the raw data, to see which samples were kept and which filtered out.
 #' @export
 ecology_usable = function(x, unusable=""){
 	
@@ -15,20 +17,20 @@ ecology_usable = function(x, unusable=""){
 	m = turkuwasps::malaise_sample
 	unusable = c(unusable, m$name[m$damaged])
 	
-	# remove wasps that came from unusable samples
-	i = which(! x$sample %in% unusable)
-	x = x[i, ]
+	# get wasps that came from unusable samples or had an empty value for the trap (typically hand-netted wasps)
+	i0 = which(x$sample %in% unusable)
+	i1 = which(is.na(x$trap) | x$trap == "")
+	i_x = union(i0, i1)
 	
-	# remove wasps with empty values for the trap (typically hand-netted wasps)
-	i = which(! is.na(x$trap) & x$trap!="")
-	x = x[i, ]
+	# remove unusable wasps
+	x = x[-i_x, ]
 	
 	# remove unusable samples
-	i = which(! m$name %in% unusable)
-	m = m[i, ]
+	i_m = which(m$name %in% unusable)
+	m = m[-i_m, ]
 	
 	# return
-	return(list(wasps=x, samples=m))
+	return(list(wasps=x, samples=m, removed_wasps=i_x, removed_samples=i_m))
 	
 }
 
@@ -39,6 +41,7 @@ ecology_usable = function(x, unusable=""){
 #'
 #' @param file Name of the file to read from. 
 #' @param simplify If TRUE, convert the data to something more usable. Drop irrelevant columns, rename remaining columns, get forest type, trap etc from the sample data. 
+#' @param columns Named character vector giving the name of columns in the Kotka file that you want to keep if simpifying the data. For example, `columns=c(location="MYDocumentLocation", notes="MYNotes")` adds the columns "MYDocumentLocation" and "MYNotes" to the simplified data, renaming them to "location" and "notes". Will overwrite any standard columns of the same name. If NULL, only the standard columns "id", "sex" etc will be returned.
 #' @param ... Arguments passed to [read.csv()]. 
 #'
 #' @return Data frame with the wasp data. If simplified, has the following columns:
@@ -56,7 +59,7 @@ ecology_usable = function(x, unusable=""){
 #' * season Season when the sample was collected.
 #' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample was damaged or otherwise unrepresentative of a normal catch. Rarely used, since [ecology_usable()] will typically be used to remove unusable wasps before analyses.
 #' @export
-read_kotka = function(file, simplify=TRUE, ...){
+read_kotka = function(file, simplify=TRUE, columns=NULL, ...){
 	
 	# store default arguments for read.csv
 	read_args = list(
@@ -77,6 +80,9 @@ read_kotka = function(file, simplify=TRUE, ...){
 	# simplify data if asked to do so
 	if (simplify){
 		
+		# save a backup of the Kotka format data
+		x_kotka = x
+		
 		# convert some columns (or column names) so they are more readable 
 		id = paste0("ZMUT.", x$MYObjectID)
 		sex = x$"MYGathering[0][MYUnit][0][MYSex]"
@@ -95,6 +101,11 @@ read_kotka = function(file, simplify=TRUE, ...){
 		# mark NA values in "ecology_use" as not usable for ecological analyses (typically hand-netted wasps)
 		x$ecology_use[is.na(x$ecology_use)] = FALSE
 		
+		# add the columns the user asked for, renaming them to what was asked for
+		if (! is.null(columns)){
+			x[, names(columns)] = x_kotka[, columns]
+		}
+		
 	}	
 	
 	# return
@@ -108,11 +119,12 @@ read_kotka = function(file, simplify=TRUE, ...){
 #'
 #' @param file Name of the file to read from. 
 #' @param ecology_usable If TRUE, any samples that are unrepresentative of a normal catch will be filtered out, and so will wasps from those samples. Such samples are typically samples that were damaged during collecting (e.g. trampled by elephants). Use parameter `unusable` to filter out more samples, e.g. if a sample rotted before you had time to separate the taxon you are currently dealing with. If FALSE, samples will not be filtered.
-#' @param factor If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.
 #' @param unusable Character vector giving any additional samples that are unusable. Case sensitive (e.g. "CCT1-141022", not "cct1-141022"). Only has an effect if `ecology_usable=TRUE`.
-#' @param ... Arguments passed to [read.csv()]. 
+#' @param columns Named character vector giving the name of columns in the Kotka file that you want to keep. For example, `columns=c(location="MYDocumentLocation", notes="MYNotes")` adds the columns "MYDocumentLocation" and "MYNotes" to the data, renaming them to "location" and "notes". Will overwrite any standard columns of the same name. If NULL, only the standard columns "id", "sex" etc will be returned. Useful e.g. if the species names of the wasps are in an unusual column.
+#' @param factor If TRUE, convert columns "forest_type", "site" and "trap" to factor, with the factor levels in default order. Especially useful for the Ugandan data: this makes sure the traps are plotted in the correct successional order instead of e.g. alphabetical order.
+#' @param ... Arguments passed to [read.csv()], which does the basic reading of the csv file. 
 #'
-#' @seealso [read_kotka()] if you just want to read a Kotka csv file without tidying it up, [ecology_usable()] for filtering out unrepresentative samples and their wasps, [read.csv()]. This function is basically a wrapper for these three functions.
+#' @seealso [read_kotka()] if you just want to read a Kotka csv file without tidying it up, [ecology_usable()] for filtering out unrepresentative samples and their wasps. This function is basically a wrapper for these two functions.
 #'
 #' @return List with items `x`, a data frame with the wasp data, and `m`, a data frame with the sample data. The sample data has the same columns as data frame [malaise_sample], the wasp data has the following columns:
 #' * id Wasp's identifier, e.g. "ZMUT.53". (in short form, long form is e.g. "http://mus.utu.fi/ZMUT.53")
@@ -129,10 +141,10 @@ read_kotka = function(file, simplify=TRUE, ...){
 #' * season Season when the sample was collected.
 #' * ecology_use True if the wasp can be used for ecological analyses. FALSE if its sample is marked in dataset [malaise_sample] as damaged or otherwise unrepresentative of a normal catch. Rarely used, since parameter `ecology_usable` will typically be used to remove unusable wasps before analyses.
 #' @export
-read_wasps = function(file, ecology_usable=TRUE, factor=TRUE, unusable="", ...){
+read_wasps = function(file, ecology_usable=TRUE, unusable="", columns=NULL, factor=TRUE, ...){
 	
 	# get the wasp data
-	x = read_kotka(file, ...)
+	x = read_kotka(file, simplify=TRUE, columns=columns, ...)
 	
 	# get those samples (and their wasps) which are usable in ecological analyses if asked to so..
 	if (ecology_usable){

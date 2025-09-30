@@ -4,7 +4,7 @@
 #'
 #' Any samples which couldn't be fitted by the model (NA value in 'f') will be ignored.
 #'
-#' @param f Vector of fitted values returned by [resample()], one value for each sample. Should be a vector, i.e. the matrix returned by [resample()] should have every colum (i.e. species) added together, or just one species selected from the matrix.
+#' @param f Vector of fitted values returned by [resample()], one value for each sample. Should be a vector, i.e. the matrix returned by [resample()] should have every column (i.e. species) added together, or just one species selected from the matrix.
 #' @param by Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'. 
 #' @param tdiff Numeric vector giving the sampling effort of each sample, in trap days. Same length as as the number of rows in 'f'. If NULL, the sampling efforts will be got from the package's internal sample data, by comparing to the row names of 'f'. If NA, results won't be scaled by sampling effort (the function will return a sampling effort of 1).
 #' 
@@ -141,6 +141,11 @@ is_multirow = function(x){
 #' @export
 plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 	
+	# make sure 'f' is stored as a matrix, not a vector
+	if (is.null(nrow(f))){
+		f = as.matrix(f)
+	}
+	
 	# if x coordinates weren't given, use the sequence 1,2,3..
 	if (is.null(x)){
 		x = 1:nlevels0(by)
@@ -168,11 +173,7 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 	
 	# check that tdiff is either the right length, or is NULL or NA 
 	if (! length(tdiff) == nrow(f) & ! is.null(tdiff) & ! is_na(tdiff)) {
-	#	if (length(tdiff) == 1) {
-	#		if (! is.na(tdiff)) { stop("'tdiff' is the wrong length") }
-	#	} else {
 			stop("'tdiff' is the wrong length")
-	#	}
 	}	
 		
 	# get the number of wasps in each place, for all species combined unless 'x' is a multirow matrix..

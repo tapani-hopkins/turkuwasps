@@ -7,7 +7,7 @@
 get_modelled_place(f, by, tdiff = NULL)
 }
 \arguments{
-\item{f}{Vector of fitted values returned by \code{\link[=resample]{resample()}}, one value for each sample. Should be a vector, i.e. the matrix returned by \code{\link[=resample]{resample()}} should have every colum (i.e. species) added together, or just one species selected from the matrix.}
+\item{f}{Vector of fitted values returned by \code{\link[=resample]{resample()}}, one value for each sample. Should be a vector, i.e. the matrix returned by \code{\link[=resample]{resample()}} should have every column (i.e. species) added together, or just one species selected from the matrix.}
 
 \item{by}{Character vector giving the place (generally trap or forest type) the sample was collected. Same length as 'f'.}
 

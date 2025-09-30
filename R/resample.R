@@ -266,8 +266,10 @@ plot_modelled_place = function(f, by, x=NULL, tdiff=NULL, plot=TRUE){
 #' @export
 plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 	
-	# combine the columns (species) of the fitted data
-	f = rowSums(f)
+	# combine the columns (species) of the fitted data, unless 'f' is already a vector
+	if (! is.null(nrow(f))){
+		f = rowSums(f)
+	}
 	
 	# if mdate wasn't given, get the start and end dates of the samples from the package's sample data
 	if (is.null(mdate)){

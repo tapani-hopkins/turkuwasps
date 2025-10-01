@@ -352,6 +352,11 @@ get_p_sp = function(summaries, pairwise, levs){
 	# get the taxon names
 	taxa = rownames(summaries[[1]]$uni.p)
 	
+	# check that all taxa have a name
+	if (any(taxa == "") | any(is.na(taxa))){
+		stop("Some taxa do not have a name. Check the data to make sure there are no blank values for the taxon.")
+	}
+	
 	# create a list of matrixes, one for each taxon
 	tmp = summaries[[1]]$uni.p
 	p = rep(list(p), length(taxa))

@@ -2,6 +2,15 @@
 "_PACKAGE"
 
 
+#' Example results resample()
+#'
+#' Results of a fitted generalised linear model, returned by [resample()]. Fitted to example Rhyssinae wasp data with 99 resamples and pairwise comparisons between forest types. Used in several of the examples to save time, since it can take several minutes to run the analyses.
+#'
+#' @format A list with 9 items, returned by [resample()].
+#'
+"a"
+
+
 #' Forest types
 #'
 #' Ugandan and Peruvian forest types. Used by some functions to get all the forest types, what order to plot them in by default, and what colours to use.

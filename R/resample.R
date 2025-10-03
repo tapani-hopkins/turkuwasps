@@ -41,6 +41,71 @@ get_modelled_place = function(f, by, tdiff=NULL){
 }
 
 
+#' Group together locations whose watch catches do not differ significantly
+#'
+#' Helper function used by [plot_significant_place()]. Groups together forest types, traps or other locations based on whether or not they differed significantly from each other in number of wasps caught.
+#'
+#' @param p Matrix of pairwise p values returned by [resample()], giving the p values for differences between locations.
+#' @param signif What p value to interpret as significant. Default is for p<0.05 to be significant. 
+#' 
+#' @return List of numeric vectors. Each vector gives the indexes of locations that belong together in the same group.
+#'
+#' @keywords internal
+#'
+get_pairwisegroups = function(p, signif=0.05){
+
+	# get a list of those pairwise differences which are insignificant
+    insignificant = which(p >= signif & upper.tri(p), arr.ind=TRUE)
+    insignificant = split(insignificant, seq(nrow(insignificant)))
+    
+    # get a list of all possible ways in which the elements can be grouped
+    combs = NULL
+    for (i in 2:nrow(p)){
+        combs = c(combs, utils::combn(1:nrow(p), i, simplify=FALSE))
+    }
+    
+    # get the groups of elements which belong together, because none of their pairwise differences are significant
+    # (e.g. for the group (1,2,4), check that 1 vs 2, 1 vs 4, and 2 vs 4 are all insignificant)
+    groups = list()
+    for(i in combs){
+    	
+    		# get all possible pairwise comparisons inside this group
+        tmp = utils::combn(i, 2, simplify=FALSE)
+        
+        # add this group to the list if all pairwise comparisons were insignificant
+        if(all(tmp %in% insignificant)){
+            groups = c(groups, list(i))
+        }
+        
+    }   
+    
+    # remove duplicate groups
+    if (length(groups) > 1){
+    	
+    		# cycle through the groups and mark e.g. group (1,2) as a duplicate if group (1,2,4) is also on the list
+    		validgroup = rep(TRUE, length(groups))
+   		for (i in 1:(length(groups) - 1)){
+    			for (i2 in (i + 1):length(groups)){
+    			
+    				# mark as duplicate if there's a later group that has all the same elements
+    				if(all(groups[[i]] %in% groups[[i2]])){
+    					validgroup[i] = FALSE
+    				}
+    			
+    			}
+    		}
+    	
+   	 	# remove duplicates
+   	 	groups = groups[validgroup]
+    	
+    }
+ 	
+ 	# return
+ 	return(groups)   
+    
+}
+
+
 #' Include samples dropped by manyglm
 #'
 #' Helper function used by [resample()]. Finds out what samples, if any, were dropped by manyglm, and returns them to the manyglm results as NA values. Manyglm will drop any samples which return NA, for example samples for which there is no rain data if rain is included in the model, which will often mess up further analyses unless fixed.
@@ -304,6 +369,129 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 	
 	# return invisibly
 	invisible(list(x=x, y=y))
+	
+}
+
+
+#' Show which bars group together in plots of wasps per place
+#'
+#' Group together forest types, traps or other locations based on whether or not they differed significantly from each other in number of wasps caught, and add the groupings to a plot drawn by [plot_place()]. Draws lines onto the plot that connect bars that belong together. Also shows the smallest p value between the bars in a group, to give a rough estimate of how valid the group is.
+#'
+#' @param p Matrix of pairwise p values returned by [resample()], or list of such matrixes. (If a list, typically one matrix for each species.) Each square matrix gives the p values for differences between locations.
+#' @param x Coordinates of the bars as returned by [plot_place()]. List with elements `x` and `y`.
+#' @param signif What p value to interpret as significant. Default is for p<0.05 to be significant. 
+#' @param plot if TRUE, the groupings will be added to the plot as lines + significance values. If FALSE, the results will ony be returned, not plotted.
+#' @param ... Graphical parameters passed to [segments()] and [text()]. These will override any default parameters. Not all aparmeters are guaranteed to work as expected, but at least `cex`, `col`, `lty` and `lwd` can be used to adjust the text size, colour and line appearance.
+#' 
+#' @return List with five items, returned invisibly. All are fairly complex lists, with one list item for each item in `p` (typically each species) and that list item split into one list item for each grouping of bars:
+#' * group Indexes of the bars that group together.
+#' * x0 Left x coordinates of lines grouping bars together.
+#' * x1 Right x coordinates of lines grouping bars together.
+#' * y y coordinates of lines grouping bars together. Average of the bar heights.
+#' * p_min Minimum pairwise p value between the bars that group together.
+#'
+#' @examples
+#' # get path to example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' 
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
+#' 
+#' # fit a model and get p values (read from file by default to save time)
+#' if (FALSE){
+#' 	model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+#' 	a = resample(model, x, m, pairwise="forest_type", nBoot=99)
+#' } else {
+#' 	a = turkuwasps::a
+#' }
+#' 
+#' # show how species 1 was distributed in habitat types
+#' X = x[x$taxon == levels0(x$taxon)[1], ]
+#' coords = plot_place(X$forest_type, m=m)
+#' 
+#' # join habitat types that were not significantly different with grey lines
+#' plot_significant_place(a$p_pairwise_sp[1], coords)
+#' 
+#' # show the same plots for all species with more than ten individuals
+#' i = which( table(x$taxon) > 10 )
+#' X = x[x$taxon %in% levels0(x$taxon)[i], ]
+#' coords = plot_place(X$forest_type, m=m, taxon=X$taxon)
+#' plot_significant_place(a$p_pairwise_sp[i], coords)
+#'
+#' @export
+#'
+plot_significant_place = function(p, x, signif=0.05, plot=TRUE, ...){
+	
+	# store various default arguments for the plot
+	plot_args = list(
+		cex = 0.7,
+		col = "grey55"
+	)
+	
+	# add the plot arguments given by the user (overwrite any defaults with the same name)
+	user_args = list(...)
+	plot_args[names(user_args)] = user_args
+	
+	# make sure p is a list, for easier handling
+	if (! is.list(p)){ p = list(p)}
+	
+	# get the y and x coordinates of the bars
+	y = t(x$y)
+	x = t(x$x)
+	
+	# create empty lists for the groups of bars, their plot coordinates, and their minimum p values
+	GROUPS <- X0 <- X1 <- Y0 <- MIN_P <- vector("list", length(p))
+	
+	# plot one taxon at a time
+	for (i in 1:length(p)){
+	
+		# group locations whose wasp catches don't differ significantly from each other
+		groups = get_pairwisegroups(p[[i]], signif)
+		
+		# plot this taxon's groups
+		for (g in groups){
+		
+			# get the estimated width of the bars
+			barwidth = diff(x[, i])[1]
+		
+			# get the start and end coordinates of the lines to group the bars with
+			x0 = x[g, i] - barwidth / 2
+			x1 = x[g, i] + barwidth / 2
+			y0 = mean(y[g, i])
+
+			# get the smallest p value between the bars of the group
+			min_p = min(p[[i]][g, g], na.rm=TRUE)
+			
+			# add the results to the plot
+			if (plot){	
+				
+				# draw the lines
+				do.call(graphics::segments, args=c(plot_args, list(x=x0), list(x1=x1), list(y0=y0)) )
+			
+				# draw the minimum p value
+				xmean = mean(c(x0[1], x1[1]))
+				lab = round(min_p, 2)
+				do.call(graphics::text, args=c(plot_args, list(x=xmean), list(y=y0), list(labels=lab), list(pos=3)) )
+				
+			}
+			
+			# save the coordinates and minimum p values
+			X0[[i]] = c( X0[[i]], list(x0) )
+			X1[[i]] = c( X1[[i]], list(x1) )
+			Y0[[i]] = c( Y0[[i]], list(y0) )
+			MIN_P[[i]] = c( MIN_P[[i]], list(min_p) )
+		
+		}
+		
+		# save the groupings
+		GROUPS[[i]] = groups
+	
+	}
+	
+	# return invisibly
+	invisible(list(group=GROUPS, x0=X0, x1=X1, y=Y0, p_min=MIN_P))
 	
 }
 

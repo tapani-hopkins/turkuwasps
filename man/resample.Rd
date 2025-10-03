@@ -54,11 +54,13 @@ tmp = read_wasps(f)
 x = tmp$x
 m = tmp$m
 
-\dontrun{
-
-# fit model and get p values (only do three resamples to save time)
-model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-a = resample(model, x, m, pairwise="forest_type", nBoot=3)
+# fit a model and get p values (read from file by default to save time)
+if (FALSE){
+	model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+	a = resample(model, x, m, pairwise="forest_type", nBoot=99)
+} else {
+	a = turkuwasps::a
+}
 
 # show coefficients of the fitted model
 a$coefficients
@@ -68,7 +70,5 @@ a$p
 
 # show which forest types differed from each other in number of wasps caught
 a$p_pairwise
-
-}
 
 }

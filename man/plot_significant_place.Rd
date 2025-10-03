@@ -57,7 +57,7 @@ plot_significant_place(a$p_pairwise_sp[1], coords)
 # show the same plots for all species with more than ten individuals
 i = which( table(x$taxon) > 10 )
 X = x[x$taxon \%in\% levels0(x$taxon)[i], ]
-coords = plot_place(X$forest_type, m=m, taxon=X$taxon)
+coords = plot_place(X$forest_type, m=m, taxon=X$taxon, cex.names=0.5)
 plot_significant_place(a$p_pairwise_sp[i], coords)
 
 }

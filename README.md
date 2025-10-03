@@ -110,16 +110,13 @@ explore(x$sample, m)
 # store model (GLM) which will be fitted to wasp catches
 model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
 
-# fit model and get p values (only do three resamples to save time)
-a = resample(model, x, m, pairwise="forest_type", nBoot=3)
+# fit model and get p values (read package's pre-saved variable to save time)
+# a = resample(model, x, m, pairwise="forest_type", nBoot=99)
+a = turkuwasps::a
 
-# show coefficients of the fitted model
+# show coefficients of the fitted model, and some p values
 a$coefficients
-
-# show which variables affected wasp catches
 a$p
-
-# show which forest types differed from each other in number of wasps caught
 a$p_pairwise
 
 # show the actual and modelled catches in each trap
@@ -131,6 +128,12 @@ default_legend("forest_type", "Uganda 2014-2015", modelled=TRUE)
 z = plot_time(as.interval(x$start, x$end), m, x$taxon, ylab="wasps / trap day")
 plot_modelled_time(a$fit, xlim=z$xlim)
 default_legend(x$taxon, x="topleft", modelled=TRUE)
+
+# show which habitat types were not significantly different from each other (species 1)
+X = x[x$taxon == levels0(x$taxon)[1], ]
+coords = plot_place(X$forest_type, m=m)
+plot_significant_place(a$p_pairwise_sp[1], coords)
+default_legend(event="Uganda 2014-2015")
 
 ```
 

@@ -1,6 +1,6 @@
 Package: turkuwasps
 Title: Analyse the ecology and taxonomy of tropical wasps
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: 
     person("Tapani", "Hopkins", , "tapani-hopkins@users.noreply.github.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2256-0098"))

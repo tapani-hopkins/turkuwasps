@@ -417,7 +417,7 @@ plot_modelled_time = function(f, xlim=NULL, mdate=NULL, tdiff=NULL){
 #' # show the same plots for all species with more than ten individuals
 #' i = which( table(x$taxon) > 10 )
 #' X = x[x$taxon %in% levels0(x$taxon)[i], ]
-#' coords = plot_place(X$forest_type, m=m, taxon=X$taxon)
+#' coords = plot_place(X$forest_type, m=m, taxon=X$taxon, cex.names=0.5)
 #' plot_significant_place(a$p_pairwise_sp[i], coords)
 #'
 #' @export
@@ -531,12 +531,14 @@ plot_significant_place = function(p, x, signif=0.05, plot=TRUE, ...){
 #' tmp = read_wasps(f)
 #' x = tmp$x
 #' m = tmp$m
-#' 
-#' \dontrun{
 #'
-#' # fit model and get p values (only do three resamples to save time)
-#' model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
-#' a = resample(model, x, m, pairwise="forest_type", nBoot=3)
+#' # fit a model and get p values (read from file by default to save time)
+#' if (FALSE){
+#' 	model = "offset(tdiff_log) + days + rain + forest_type + deadwood"
+#' 	a = resample(model, x, m, pairwise="forest_type", nBoot=99)
+#' } else {
+#' 	a = turkuwasps::a
+#' }
 #' 
 #' # show coefficients of the fitted model
 #' a$coefficients
@@ -546,8 +548,6 @@ plot_significant_place = function(p, x, signif=0.05, plot=TRUE, ...){
 #'
 #' # show which forest types differed from each other in number of wasps caught
 #' a$p_pairwise
-#'
-#' }
 #'
 #' @export
 resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...){

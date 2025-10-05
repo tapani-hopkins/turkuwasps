@@ -598,6 +598,7 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 		p = a$table[, 4, drop=F]
 		p_sp = a$uni.p
 		attributes(p_sp)$title = NULL
+		colnames(p_sp) = colnames(mv)
 	
 		# if `pairwise` was given, test for differences between the levels of that variable..
 		if (! is.null(pairwise)){

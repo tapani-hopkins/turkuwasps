@@ -610,7 +610,8 @@ resample = function(model, x, m, pairwise=NULL, family="negative.binomial", ...)
 			if (ncol(mv) > 1){
 				p_pairwise_sp = get_p_sp(summaries, pairwise, levels0(m[, pairwise]))
 			} else {
-				p_pairwise_sp = NULL
+				p_pairwise_sp = list(p_pairwise)
+				names(p_pairwise_sp) = colnames(mv)
 			}
 		
 		# ..if `pairwise` was not given, return blank variables for pairwise comparisons

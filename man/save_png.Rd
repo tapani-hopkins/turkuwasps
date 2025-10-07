@@ -8,7 +8,7 @@ save_png(
   f = "turkuwasp_image.png",
   width = 164,
   height = 140,
-  bg = "transparent",
+  bg = "white",
   res = 300,
   what
 )
@@ -20,7 +20,7 @@ save_png(
 
 \item{height}{Height of the plot in mm.}
 
-\item{bg}{Background colour. Typically "transparent" (the default) or "white".}
+\item{bg}{Background colour. Typically "transparent" or "white" (the default).}
 
 \item{res}{Resolution as an integer. It's slightly uncertain exactly how \code{\link[=png]{png()}} handles this when using mm as units, but the bigger this number the higher the resolution.}
 

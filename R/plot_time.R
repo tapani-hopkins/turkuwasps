@@ -50,7 +50,7 @@ plot_time = function(x, m=NULL, taxon=NULL, xlim=default_xlims(x), step=3600*24,
 	# store various default arguments for the barplot
 	barplot_args = list(
 		axisnames = FALSE, 
-		border = FALSE,
+		border = NA,
 		col = default_colours(ntaxa),
 		space = 0, 
 		xaxs = "i",

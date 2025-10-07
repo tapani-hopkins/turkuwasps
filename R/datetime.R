@@ -3,11 +3,12 @@
 #' Convert datetime objects to strings of the format "2014-10-14 11:04:00 UTC+03:00". 
 #'
 #' @param x Vector of datetimes.
+#' @param ... Other parameters. Included for consistency with [as.character()], currently these are ignored.
 #'
 #' @return Character vector.
 #'
-#'
-as.character.datetime = function(x){
+#' @export
+as.character.datetime = function(x, ...){
 	
 	# get datetime (in local time) as text
 	d = x$d + x$tz

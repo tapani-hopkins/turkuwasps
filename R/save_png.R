@@ -5,7 +5,7 @@
 #' @param f File path where to save the PNG file.
 #' @param width Width of the plot in mm.
 #' @param height Height of the plot in mm.
-#' @param bg Background colour. Typically "transparent" (the default) or "white". 
+#' @param bg Background colour. Typically "transparent" or "white" (the default). 
 #' @param res Resolution as an integer. It's slightly uncertain exactly how [png()] handles this when using mm as units, but the bigger this number the higher the resolution.
 #' @param what Plotting commands. The plot created by these will be saved to PNG. See examples for how to write these.  
 #'
@@ -38,7 +38,7 @@
 #' }
 #' 
 #' @export
-save_png = function(f="turkuwasp_image.png", width=164, height=140, bg="transparent", res=300, what){
+save_png = function(f="turkuwasp_image.png", width=164, height=140, bg="white", res=300, what){
 	
 	# start saving to png file with default settings
 	grDevices::png(filename=f, width=width, height=height, units="mm", bg=bg, res=res)

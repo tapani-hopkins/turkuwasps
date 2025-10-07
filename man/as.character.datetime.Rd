@@ -4,10 +4,12 @@
 \alias{as.character.datetime}
 \title{Convert datetime to character}
 \usage{
-\method{as.character}{datetime}(x)
+\method{as.character}{datetime}(x, ...)
 }
 \arguments{
 \item{x}{Vector of datetimes.}
+
+\item{...}{Other parameters. Included for consistency with \code{\link[=as.character]{as.character()}}, currently these are ignored.}
 }
 \value{
 Character vector.

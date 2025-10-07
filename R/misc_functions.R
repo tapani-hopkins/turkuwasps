@@ -1,6 +1,32 @@
 # Miscellaneous functions. Many are used by other functions, but can also be useful for the user.
 
 
+#' Print text as italic
+#'
+#' Helper function used by [default_legend()]. Makes a character vector (typically species names) display in italic font. Exactly how this works is a bit of a mystery to me: R handles italics, bold etc rather unclearly.
+#'
+#' @param x Character vector which is to be converted to italic.
+#'
+#' @return Vector which when displayed in a plot, is in italics. 
+#'
+#' @export
+#'
+as_italic = function(x){
+	
+	# create temporary function which makes *one* vector item italic
+	to_italic = function(y){
+		bquote(italic(.(y)))
+	}
+	
+	# apply the temporary function to all items in the vector
+	x = as.expression(lapply(x, to_italic))
+	
+	# return
+	return(x)
+	
+} 
+
+
 #' Combine columns
 #'
 #' Combine the columns in a data frame. Mainly for combining e.g. the forest type and collecting event of wasp data for easy use in rarefaction plots etc. A handier wrapper for [paste()], since it preserves factor levels and their order.

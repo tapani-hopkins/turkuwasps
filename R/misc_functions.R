@@ -270,3 +270,42 @@ smooth_data = function(x, xdate, k=28, p=0.25, xlim=NULL, step=3600*24){
 	return(list(x=px, y=y))
 	
 }
+
+
+#' Add together all the numbers that belong to the same category
+#'
+#' Split a numeric vector into categories and get the sum of each category. This is basically a more readable wrapper for [aggregate()].
+#'
+#' @param x Vector of numbers to add together.
+#' @param by Vector of same length as `x`, giving the category that each number belongs to
+#' @param ... Other arguments passed to [aggregate()], which mostly passes them on to [sum()].
+#'
+#' @return Vector of the sums for each category. Named vector, categories are used as names. 
+#'
+#' @examples
+#' # get path to example wasp data
+#' f = system.file("extdata", "wasps_example.csv", package = "turkuwasps", mustWork = TRUE)
+#' 
+#' # read the wasp data and get the corresponding sample data
+#' tmp = read_wasps(f)
+#' x = tmp$x
+#' m = tmp$m
+#' 
+#' # get the total sampling effort of each habitat type
+#' sum_by(m$tdiff, m$forest_type)
+#' 
+#' @export
+#'
+sum_by = function(x, by, ...){
+	
+	# aggregate 
+	m = stats::aggregate(x, list(by), FUN=sum, ...)
+	
+	# convert to vector
+	X = m[, 2]
+	names(X) = m[, 1]
+	
+	# return
+	return(X)
+	
+}

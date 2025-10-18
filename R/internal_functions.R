@@ -585,30 +585,3 @@ plot_explore = function(x, y, res=15, ...){
 	graphics::abline(stats::lm(y ~ x))
 
 }
-
-
-#' Add together all the numbers that belong to the same category
-#'
-#' Helper function used by [get_weights()]. Used to count the total sampling effort for each forest type, trap or other location. This is basically a wrapper for [aggregate()].
-#'
-#' @param x Vector of numbers to add together.
-#' @param by Vector of same length as `x`, giving the category that each number belongs to
-#' @param ... Other arguments passed to [aggregate()], which mostly passes them on to [sum()].
-#'
-#' @return Vector of the sums for each category. Named vector, categories are used as names. 
-#'
-#' @keywords internal
-#'
-sum_by = function(x, by, ...){
-	
-	# aggregate 
-	m = stats::aggregate(x, list(by), FUN=sum, ...)
-	
-	# convert to vector
-	X = m[, 2]
-	names(X) = m[, 1]
-	
-	# return
-	return(X)
-	
-}

@@ -186,3 +186,18 @@ barplot(sort(n[, "clearcut"], decreasing=TRUE), las=2, cex.names=0.5)
 evenness(n[, "clearcut"])
 
 ```
+
+### Miscellaneous
+
+``` r
+# get a rough estimate of how dissimilar the species assemblages of forest types were
+M = table(x$forest_type, x$taxon)
+morisita(M)
+
+# show off some useful utility functions
+levels0(c("a", "b", "a", "d"))
+nlevels0(c("a", "b", "a", "d"))
+sum_by(c(1, 2, 1, 3), by=c("farm", "clear", "farm", "clear"))
+plot(1, main=as_italic("Text in italics"))
+
+```

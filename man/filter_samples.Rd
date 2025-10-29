@@ -15,6 +15,6 @@ filter_samples(x, m)
 Data frame with the Malaise sample data. Only contains samples from the same collecting event(s) as the wasps came from.
 }
 \description{
-Helper function used by \code{\link[=resample]{resample()}}. Filters samples based on the caught wasps. Only samples from the same collecting event(s) as the wasps are kept.
+Helper function used by e.g. \code{\link[=resample]{resample()}}. Filters samples based on the caught wasps. Only samples from the same collecting event(s) as the wasps are kept.
 }
 \keyword{internal}

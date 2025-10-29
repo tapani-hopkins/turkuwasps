@@ -120,3 +120,67 @@ plot_place = function(x, m=NULL, taxon=NULL, defaults=TRUE, ...){
 	# return the x and y coordinates of the bars invisibly
 	invisible(list(x=xcoords, y=height))
 }
+
+
+#' Get default bar order and bar colours for barplots
+#'
+#' Helper function used by [plot_place()]. Gives defaults for what bars to include in the barplot, what order to place them in, and what colour to use.
+#'
+#' @param x Vector of which trap, forest type or other location each wasp came from. Either as strings or factor.
+#'
+#' @return List with items `x` (locations converted to factor, with the factor levels telling what bars to plot) and `colour` (the colours to give each bar). 
+#'
+#' @keywords internal
+#'
+default_bars = function(x){
+	
+	# find out if the locations are forest types, sites or traps
+	location = get_locationtype(x)	
+	
+	# get defaults from the appropriate data frame
+	d = get_locationdata(location)
+		
+	# only include collecting events that are in `x`
+	i = match(x, d$name)
+	ii = which(d$event %in% d$event[i])
+	d = d[ii, ]
+		
+	# store the locations and their default order, as factor levels of `x`
+	x = factor(x, levels=d$name)
+		
+	# save default colours 
+	colour=d$colour
+	
+	# return as list
+	return(list(x=x, colour=colour))
+	
+}
+
+
+#' Get the weights for scaling barplots
+#'
+#' Helper function for scaling the bars of [plot_place()]. Counts the total sampling effort of each bar (e.g. each trap), and tells how to scale the bars by sampling effort.
+#'
+#' @param barnames Vector of bar names for which the weights are desired. Used to find out if the bars are forest types, sites or traps, and to give the correct weights in the correct order for each bar. Must be valid forest type, site or trap names. Either as strings or factor.
+#' @param m Data frame with the Malaise sample data. Used to get the sampling effort of each location. Must contain columns "tdiff" (sampling effort) and one of "forest_type", "site" or "trap" (whatever is being plotted).
+#'
+#' @return Vector of weights with which to multiply the bar heights. Named vector, in same order as the bars.
+#'
+#' @keywords internal
+#'
+get_weights = function(barnames, m){
+	
+	# check if the locations are forest types, sites or traps
+	loc = get_locationtype(barnames)
+	
+	# get the weights of all the locations
+	weight = 1 / sum_by(m$tdiff, m[, loc])
+	
+	# match up the weights with their corresponding bar
+	i = match(barnames, names(weight))
+	weight = weight[i]
+	
+	#return
+	return(weight)	
+	
+}

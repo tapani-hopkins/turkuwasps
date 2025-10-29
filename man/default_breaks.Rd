@@ -2,7 +2,7 @@
 % Please edit documentation in R/internal_functions.R
 \name{default_breaks}
 \alias{default_breaks}
-\title{Get default breaks for label_plot_time()}
+\title{Get default breaks for the x axis of plots of datetime}
 \usage{
 default_breaks()
 }

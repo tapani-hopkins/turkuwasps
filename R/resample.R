@@ -1,3 +1,5 @@
+
+
 #' Get the modelled number of wasps caught in each place
 #'
 #' Helper function used by [plot_modelled_place()]. Gets the modelled number of wasps caught in each place, and the sampling efforts of each place if asked to scale by sampling effort.
@@ -103,6 +105,184 @@ get_pairwisegroups = function(p, signif=0.05){
  	# return
  	return(groups)   
     
+}
+
+
+#' Get overall p values from summary.manyglm
+#'
+#' Helper function used by [resample()]. Extracts the p values from the results given by [summary.manyglm()], and saves in a more convenient format. This extracts the p values between levels of a variable: e.g. if forest type has been analysed, gets the p values for differences between primary and disturbed forest, primary and clearcut etc. 
+#'
+#' @param summaries List of the results returned by [summary.manyglm()]. The results will all be the same, except that each results compares a different level (e.g. "forest") to the other levels (e.g. "disturbed", "clearcut" etc).
+#' @param pairwise Name of the variable to get pairwise p values for. Character string. E.g. "forest_type".
+#' @param levs Character vector giving all the levels of the variable. (e.g. "forest", "disturbed", etc)
+#'
+#' @return Matrix of the p values. Square matrix with row and column names giving the two levels that were compared. (e.g. to get the p value for a difference between forest and clearcut, check row "forest" and column "clearcut") 
+#'
+#' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
+#' @keywords internal
+#'
+get_p = function(summaries, pairwise, levs){
+
+	# create an empty matrix for overall p values
+	p = matrix(NA, nrow=length(levs), ncol=length(levs))
+
+	# name the columns and rows in same format as mvabund uses (e.g. "forest_typeprimary")
+	dnames = paste0(pairwise, levs)
+	dimnames(p) = list(dnames, dnames)
+
+
+	# go through the p value tables and extract the overall p values
+	for (i in 1:length(summaries)){
+	
+		# get the level that is being compared to (in mvabund format, e.g. "forest_typeprimary")
+		lname = paste0(pairwise, levs[i])
+	
+		# get the table with overall p values
+		results = summaries[[i]]$coefficients
+
+		# get the positions of the table's p values in the matrix
+		pos = match(rownames(results), dnames)
+
+		# ignore NA values (these are the p values of other variables, i.e. not found in the matrix)
+		not_na = !is.na(pos)
+		pos = pos[not_na]
+
+		# add p values to the correct places in the matrix
+		p[lname, pos] = results[not_na, 2]
+		p[pos, lname] = results[not_na, 2]
+
+	}
+	
+	# tidy up the column and row names (e.g. "forest_typeprimary" >> "primary")
+	rownames(p) = sub(pairwise, "", rownames(p))
+	colnames(p) = sub(pairwise, "", colnames(p))
+	
+	# return
+	return(p)
+	
+}
+
+
+#' Get taxon p values from summary.manyglm
+#'
+#' Helper function used by [resample()]. Extracts the p values from the results given by [summary.manyglm()], and saves in a more convenient format. This extracts the p values between levels of a variable for each taxon separately: e.g. if forest type has been analysed, gets the p values for differences between primary and disturbed forest, primary and clearcut etc, for species 1, species 2 etc.. 
+#'
+#' @param summaries List of the results returned by [summary.manyglm()]. The results will all be the same, except that each results compares a different level (e.g. "forest") to the other levels (e.g. "disturbed", "clearcut" etc).
+#' @param pairwise Name of the variable to get pairwise p values for. Character string. E.g. "forest_type".
+#' @param levs Character vector giving all the levels of the variable. (e.g. "forest", "disturbed", etc)
+#'
+#' @return List of matrixes of the p values. One list item for each taxon, named with the taxon name. Each matrix is a square matrix with row and column names giving the two levels that were compared. (e.g. to get the p value for a difference between forest and clearcut, check row "forest" and column "clearcut") 
+#' To get the p values from the list, type e.g. `p[["Epirhyssa quagga]]["primary", "clearcut"]`.
+#'
+#' @seealso [get_summaries()] which will typically be used to get the list given as parameter `summaries`.
+#'
+#' @keywords internal
+#'
+get_p_sp = function(summaries, pairwise, levs){
+
+	# create an empty matrix for p values
+	p = matrix(NA, nrow=length(levs), ncol=length(levs))
+	
+	# name the columns and rows in same format as mvabund uses (e.g. "forest_typeprimary")
+	dnames = paste0(pairwise, levs)
+	dimnames(p) = list(dnames, dnames)
+	
+	# get the taxon names
+	taxa = rownames(summaries[[1]]$uni.p)
+	
+	# check that all taxa have a name
+	if (any(taxa == "") | any(is.na(taxa))){
+		stop("Some taxa do not have a name. Check the data to make sure there are no blank values for the taxon.")
+	}
+	
+	# create a list of matrixes, one for each taxon
+	tmp = summaries[[1]]$uni.p
+	p = rep(list(p), length(taxa))
+	names(p) = taxa
+
+	# go through the p value tables and extract the overall and species p values
+	for (i in 1:length(summaries)){
+	
+		# get the level that is being compared to (in mvabund format, e.g. "forest_typeprimary")
+		lname = paste0(pairwise, levs[i])
+	
+		# get the table with p values for each taxon
+		results = summaries[[i]]$uni.p
+		
+		# get the positions of the table's p values in the matrix
+		pos = match(colnames(results), dnames)
+		
+		# ignore NA values (these are the p values of other variables, i.e. not found in the matrix)
+		not_na = !is.na(pos)
+		pos = pos[not_na]
+		
+		# add p values to the correct places in each taxon's matrix
+		for (sp in taxa){
+			p[[sp]][lname, pos] = results[sp, not_na]
+			p[[sp]][pos, lname] = results[sp, not_na]				
+		}
+
+	}
+	
+	# tidy up the column and row names (e.g. "forest_typeprimary" >> "primary")
+	for (sp in 1:length(taxa)){
+		rownames(p[[sp]]) = sub(pairwise, "", rownames(p[[sp]]))
+		colnames(p[[sp]]) = sub(pairwise, "", colnames(p[[sp]]))
+	}
+	
+	# return
+	return(p)
+	
+}
+
+
+#' Analyse pairwise differences with summary.manyglm
+#'
+#' Helper function used by [resample()]. Runs [summary.manyglm()] multiple times, to test for differences between all the levels of a categorical variable. E.g. if forest type is being analysed, analyses the differences between primary and disturbed forest, primary and clearcut, disturbed and clearcut, etc.. 
+#'
+#' @param m Data frame with the Malaise sample data. Must contain the columns given in `model`.
+#' @param pairwise Name of the variable to get pairwise p values for. Character string. E.g. "forest_type". Must be in `model`.
+#' @param model Character string or formula (see [as.formula()]) giving the model to fit. Generally something like "mv ~ offset(tdiff_log) + days + rain + forest_type + deadwood". The variables should be found as column names in `m`.
+#' @param family Probability distribution used to fit the model. Passed to [manyglm()]. In general, this will be "negative.binomial" or "poisson".
+#' @param analysis_args List of arguments to pass to [summary.manyglm()]. 
+#'
+#' @return List of results given by [summary.manyglm()]. Each result will be otherwise identical, except a different level of `pairwise` will be compared to. E.g. first result will compare primary forest to other forest types, second result disturbed forest to other forest types, etc. One list item for each level of `pairwise`, except the last (since that has already been compared to all the others).
+#'
+#' @seealso [get_p()] and [get_p_sp()] to convert the results to something more readable.
+#'
+#' @keywords internal
+#'
+get_summaries = function(m, pairwise, model, family, analysis_args){
+	
+		# make a copy of the sample data
+		M = m
+		
+		# create empty list to save analysis results in
+		summaries = list()
+		
+		# get the levels of the variable (e.g. forest types, sites..)
+		levs = levels0(m[, pairwise])
+		
+		# run analyses several times, each time comparing a different level to the others
+		# (ignore last level, since that will already have been compared to the others)
+		for (i in levs[-length(levs)]){
+			
+			# compare level `i` to the others (by making it the first factor level)
+			M[, pairwise] = relevel0(m[, pairwise], i)
+			
+			# fit the model to the data and save in arguments
+			analysis_args$object = mvabund::manyglm(model, data=M, family=family)
+			
+			# analyse and add analysis results to list
+			s = do.call(mvabund::summary.manyglm, args=analysis_args)
+			summaries = c(summaries, list(s))
+			
+		}
+		
+		# return
+		return(summaries)
+		
 }
 
 

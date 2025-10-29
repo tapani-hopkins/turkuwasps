@@ -105,3 +105,35 @@ plot_time = function(x, m=NULL, taxon=NULL, xlim=default_xlims(x), step=3600*24,
 	invisible(list(x=xcoords, y=height, d=d, xlim=xlim))
 	
 }
+
+
+#' Get default x limits for plot_time()
+#'
+#' Helper function used by [plot_time()]. Gets the default x limits to use for the plot.
+#'
+#' @param x Vector of interval objects, telling when each wasp was collected.
+#'
+#' @return Interval object. 
+#'
+#' @keywords internal
+#'
+default_xlims = function(x){
+	
+	# store default breaks in the x axis (≈ the start and end of each collecting event)
+	xlims = as.datetime(c("1998-07-01 00:00:00 UTC-05:00", "1999-03-01 00:00:00 UTC-05:00", "2000-01-01 00:00:00 UTC-05:00", "2001-02-01 00:00:00 UTC-05:00", "2008-05-01 00:00:00 UTC-05:00", "2008-09-01 00:00:00 UTC-05:00", "2011-03-01 00:00:00 UTC-05:00", "2012-01-01 00:00:00 UTC-05:00", "2014-08-01 00:00:00 UTC+03:00", "2015-10-01 00:00:00 UTC+03:00"))
+	
+	# get last breakpoint before the wasps were collected
+	s = xlims[xlims <= min(x)]
+	s = s[length(s)]
+
+	# get first breakpoint after the wasps were collected
+	e = xlims[xlims >= max(x)]
+	e = e[1]
+
+	# save as interval
+	xlim = as.interval(s, e)
+	
+	# return
+	return(xlim)
+	
+}

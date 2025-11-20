@@ -81,7 +81,7 @@ combine_columns = function(x, what, sep=" ", all=FALSE){
 #' @param step Desired resolution (in seconds) of the smoothed data. Default is to return a smoothed data point every 24 hours.
 #'
 #' @return List giving the datetimes and values of the smoothed data. The list has two items: 
-#' * `x` Vector of datetimes giving the end of the datat point's time interval.
+#' * `x` Vector of datetimes giving the end of each data point's time interval.
 #' * `y` Vector of smoothed data.
 #'
 #' @details

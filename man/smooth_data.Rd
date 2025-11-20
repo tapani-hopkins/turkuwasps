@@ -22,7 +22,7 @@ smooth_data(x, xdate, k = 28, p = 0.25, xlim = NULL, step = 3600 * 24)
 \value{
 List giving the datetimes and values of the smoothed data. The list has two items:
 \itemize{
-\item \code{x} Vector of datetimes giving the end of the datat point's time interval.
+\item \code{x} Vector of datetimes giving the end of each data point's time interval.
 \item \code{y} Vector of smoothed data.
 }
 }

@@ -90,6 +90,27 @@ plot_time(xdate, m, taxon=x$taxon, ylab="wasps / trap day")
 default_legend(x$taxon, x="topleft")
 ```
 
+### Show the weather when wasps were caught
+
+<img src="inst/example_images/plot_weather.png" height="140">
+
+```r
+# prepare layout (two plots)
+layout(matrix(1:2), heights=c(1, 3))
+
+# get x limits that cover the wasp data
+xlim = plot_time(as.interval(x$start, x$end), plot=FALSE, xlabel=FALSE)$xlim
+
+# draw rain plot
+par(mar=c(1.5, 4.1, 0.5, 0.1))
+plot_weather(what="rain", xlim=xlim, ylab="rain (mm)")
+
+# draw wasp plot
+par(mar=c(3.5, 4.1, 2, 0.1))
+plot_time(as.interval(x$start, x$end), m, x$taxon, ylab="wasps / trap day")
+default_legend(x$taxon, x="topleft")
+```
+
 ### Explore how wasp catches varied with rain etc
 
 <img src="inst/example_images/explore.png" height="140">

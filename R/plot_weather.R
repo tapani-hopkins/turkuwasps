@@ -5,10 +5,10 @@
 #' @param what Name of the column in the weather data that should be plotted. Default is to plot rainfall.
 #' @param xlim Interval object (see [as.interval()]) giving the x limits of the plot. If NULL, the start and end datetimes of the Ugandan sampling are used.
 #' @param k How much to smooth the data by (see [smooth_data()]). Number of days over which to smooth the data. Default (21) is to take the average of the past 21 days. If NA, the data is not smoothed.
-#' @param nticks How many tick marks to have on the default y axis. Approximate, passed to [pretty()].The default (3ish) prevents the axis from getting squashed in typical plotting of weather data, where there is little vertical space. If NA, the default y axis is not drawn.
-#' @param add If TRUE, the data is added to the existing plot with [points.datetime()]. If FALSE, the default, draws a new plot with [plot.datetime()].
-#' @param weather Data frame giving the weather data. Must contain columns "start", "end", and the column to be plotted. Default is to use the package's built in data [weather].
-#' @param ... Graphical parameters and other arguments passed to [plot.datetime()] or (if `add` is TRUE, to [points.datetime()]). These will override any default values. Typical arguments to adjust include `axes`, `bty`, `col`, `type`, `xlabel`.
+#' @param nticks How many tick marks to have on the default y axis. Approximate, passed to [pretty()]. The default (3ish) prevents the axis from getting squashed in typical plotting of weather data, where there is little vertical space. If NA, the default y axis is not drawn.
+#' @param add If TRUE, the data is added to the existing plot with [points.datetime()]. If FALSE (the default) draws a new plot with [plot.datetime()].
+#' @param weather Data frame giving the weather data. Must contain columns "start", "end", and the column to be plotted. Default is to use the package's built in data ([weather]).
+#' @param ... Graphical parameters and other arguments passed to [plot.datetime()], or if `add` is TRUE to [points.datetime()]. These will override any default values. Typical arguments to adjust include `axes`, `bty`, `col`, `type`, `xlabel`.
 #'
 #' @return A list giving the x and y coordinates, returned silently. The list has three items:
 #' * `x` The datetimes of each point. These are at the end of the time period during which the weather was measured (or for smoothed data, the end of the time period over which the data was smoothed).
@@ -93,13 +93,13 @@ plot_weather = function(what="rain", xlim=NULL, k=21, nticks=3, add=FALSE, weath
 	plot_args$y = w$y
 	
 	# plot
-	if (add){ do.call(points, args=plot_args) } else { do.call(plot, args=plot_args) }
+	if (add){ do.call(graphics::points, args=plot_args) } else { do.call(plot, args=plot_args) }
 	
 	# add a default y axis if asked to do so
 	if (! is.na(nticks)){
-		ticks = pretty(par("yaxp")[1:2], n=nticks)
+		ticks = pretty(graphics::par("yaxp")[1:2], n=nticks)
 		ticks = ticks[-length(ticks)]
-		axis(2, at=ticks, col=plot_args$col, col.axis=plot_args$col)
+		graphics::axis(2, at=ticks, col=plot_args$col, col.axis=plot_args$col)
 	}
 	
 	# return the x and y coordinates invisibly

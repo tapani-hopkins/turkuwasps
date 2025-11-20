@@ -21,13 +21,13 @@ plot_weather(
 
 \item{k}{How much to smooth the data by (see \code{\link[=smooth_data]{smooth_data()}}). Number of days over which to smooth the data. Default (21) is to take the average of the past 21 days. If NA, the data is not smoothed.}
 
-\item{nticks}{How many tick marks to have on the default y axis. Approximate, passed to \code{\link[=pretty]{pretty()}}.The default (3ish) prevents the axis from getting squashed in typical plotting of weather data, where there is little vertical space. If NA, the default y axis is not drawn.}
+\item{nticks}{How many tick marks to have on the default y axis. Approximate, passed to \code{\link[=pretty]{pretty()}}. The default (3ish) prevents the axis from getting squashed in typical plotting of weather data, where there is little vertical space. If NA, the default y axis is not drawn.}
 
-\item{add}{If TRUE, the data is added to the existing plot with \code{\link[=points.datetime]{points.datetime()}}. If FALSE, the default, draws a new plot with \code{\link[=plot.datetime]{plot.datetime()}}.}
+\item{add}{If TRUE, the data is added to the existing plot with \code{\link[=points.datetime]{points.datetime()}}. If FALSE (the default) draws a new plot with \code{\link[=plot.datetime]{plot.datetime()}}.}
 
-\item{weather}{Data frame giving the weather data. Must contain columns "start", "end", and the column to be plotted. Default is to use the package's built in data \link{weather}.}
+\item{weather}{Data frame giving the weather data. Must contain columns "start", "end", and the column to be plotted. Default is to use the package's built in data (\link{weather}).}
 
-\item{...}{Graphical parameters and other arguments passed to \code{\link[=plot.datetime]{plot.datetime()}} or (if \code{add} is TRUE, to \code{\link[=points.datetime]{points.datetime()}}). These will override any default values. Typical arguments to adjust include \code{axes}, \code{bty}, \code{col}, \code{type}, \code{xlabel}.}
+\item{...}{Graphical parameters and other arguments passed to \code{\link[=plot.datetime]{plot.datetime()}}, or if \code{add} is TRUE to \code{\link[=points.datetime]{points.datetime()}}. These will override any default values. Typical arguments to adjust include \code{axes}, \code{bty}, \code{col}, \code{type}, \code{xlabel}.}
 }
 \value{
 A list giving the x and y coordinates, returned silently. The list has three items:

@@ -18,19 +18,17 @@ ecology_usable = function(x, unusable=""){
 	unusable = c(unusable, m$name[m$damaged])
 	
 	# get wasps that came from unusable samples or had an empty value for the trap (typically hand-netted wasps)
-	i0 = which(x$sample %in% unusable)
-	i1 = which(is.na(x$trap) | x$trap == "")
-	i_x = union(i0, i1)
+	is_unusable = (x$sample %in% unusable) | (is.na(x$trap) | x$trap == "")
 	
 	# remove unusable wasps
-	x = x[-i_x, ]
+	x = x[! is_unusable, ]
 	
 	# remove unusable samples
-	i_m = which(m$name %in% unusable)
-	m = m[-i_m, ]
+	is_unusable_m = (m$name %in% unusable)
+	m = m[! is_unusable_m, ]
 	
 	# return
-	return(list(wasps=x, samples=m, removed_wasps=i_x, removed_samples=i_m))
+	return(list(wasps=x, samples=m, removed_wasps=which(is_unusable), removed_samples=which(is_unusable_m)))
 	
 }
 

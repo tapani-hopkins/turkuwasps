@@ -585,7 +585,10 @@ match_names = function(x, xname, levs, column_name){
 #' @export
 #' 
 plot_rarefaction = function(x, n=10, n_ci=NULL, p=0.84, add=FALSE, by=NULL, col="black", lty=1, pch=NA, pch_col="black", ...){
-
+	
+	# unfactor the taxon column, to avoid overcounting the number of species later in the function
+	x$taxon = as.character(x$taxon)
+	
 	# draw a separate rarefaction curve for each level in column `by`..
 	if(! is.null(by)){
 		
